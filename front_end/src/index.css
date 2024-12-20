@@ -3,36 +3,116 @@
 @tailwind utilities;
 
 * {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
-  font-optical-sizing: auto;
-  background: #f5f0f0;
-  color: rgba(0, 0, 0, 0.7);
+	font-family: "Montserrat", sans-serif;
+	font-optical-sizing: auto;
+	background: #f5f0f0;
+	color: rgba(0, 0, 0, 0.7);
+	overflow-x: hidden;
 }
+
+::-webkit-scrollbar {
+	width: 5px !important;
+	height: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #ff5252;
+}
+
+::-webkit-scrollbar-track {
+	background: #fff;
+}
+
 .container {
-  width: 90%;
-  margin: auto;
+	width: 90%;
+	margin: auto;
 }
 
 .MuiBadge-badge {
-  background-color: #ff5252 !important;
+	background-color: #ff5252 !important;
 }
 
 .link:hover {
-  color: #ff5252;
+	color: #ff5252;
 }
 
 nav ul Button {
-  text-transform: capitalize !important;
-  color: rgba(0, 0, 0, 0.7) !important;
+	text-transform: capitalize !important;
+	color: rgba(0, 0, 0, 0.7) !important;
 }
 
 nav ul Button:hover {
-  text-transform: capitalize !important;
-  color: #ff5252 !important;
+	text-transform: capitalize !important;
+	color: #ff5252 !important;
+}
+
+.sliderHome {
+	overflow: inherit !important;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #fff;
+	border-radius: 100%;
+	width: 45px;
+	height: 45px;
+	min-width: 45px;
+	box-shadow: 0 1px 3px #0000003d !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+	font-size: 22px !important;
+	color: #000;
+}
+
+.homeCatSlider {
+	overflow: inherit !important;
+}
+
+.homeCatSlider .swiper-button-next,
+.homeCatSlider .swiper-button-prev {
+	width: 30px;
+	height: 30px;
+	min-width: 30px;
+}
+
+.homeCatSlider .swiper-button-next::after,
+.homeCatSlider .swiper-button-prev::after {
+	font-size: 16px !important;
+}
+
+/* .homeCatSlider .swiper-button-next {
+	right: -10px !important;
+}
+
+.homeCatSlider .swiper-button-prev {
+	left: -10px !important;
+} */
+
+.homeCatSlider .item {
+	border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+	background: #ff5252 !important;
+}
+
+.swiper-button-next:hover::after,
+.swiper-button-prev:hover::after {
+	color: #fff !important;
+}
+
+.homeCatSlider .item:hover img {
+	transform: scale(1.1);
 }
