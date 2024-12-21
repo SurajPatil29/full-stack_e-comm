@@ -6,7 +6,7 @@ import { Navigation } from "swiper/modules";
 
 function HomeCatSlider() {
 	return (
-		<div className="homeCatSlider py-4 pb-8">
+		<div className="homeCatSlider py-4 pb-8 text-black">
 			<div className="container">
 				<Swiper
 					slidesPerView={6}
