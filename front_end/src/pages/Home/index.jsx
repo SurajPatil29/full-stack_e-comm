@@ -9,6 +9,12 @@ import Box from "@mui/material/Box";
 import { useState } from "react";
 import ProductsSlider from "../../componants/ProductsSlider";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+import { BlogItem } from "../../componants/BlogItem/index";
+
 function Home() {
 	const [value, setValue] = useState(0);
 
@@ -86,21 +92,49 @@ function Home() {
 				<AddBannerSlider items={3} />
 			</section>
 
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
+			<section className="py-5 bg-white">
+				<div className="container">
+					<h2 className="text-[20px]">Latest Products</h2>
+					<ProductsSlider items={5} />
+					<AddBannerSlider items={3} />
+				</div>
+			</section>
+
+			<section className="py-4 pt-0 pb-8  bg-white blogSection ">
+				<div className="py-4 container ">
+					<h2 className="text-[20px] font-[600] mb-4">From The Blog</h2>
+					<Swiper
+						slidesPerView={4}
+						rewind={true}
+						spaceBetween={40}
+						navigation={true}
+						modules={[Navigation]}
+						className="smlBtn"
+					>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+						<SwiperSlide>
+							<BlogItem />
+						</SwiperSlide>
+					</Swiper>
+				</div>
+			</section>
 		</>
 	);
 }

@@ -22,14 +22,14 @@ function ProductItem() {
 						<img
 							src="https://api.spicezgold.com/download/file_1734528821890_siril-georgette-brown-color-saree-with-blouse-piece-product-images-rvegeptjtj-0-202308161431.webp"
 							alt="fashion"
-							className="w-full transition-all duration-150 absolute top-0 left-0 opacity-0 group-hover:opacity-100"
+							className="w-full transition-all duration-500 absolute top-0 left-0 opacity-0 group-hover:opacity-100"
 						/>
 					</div>
 				</Link>
 				<span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
 					10%
 				</span>
-				<div className="actions absolute top-[-200px] right-[1px] z-50 flex items-center gap-4 flex-col w-[80px] transition-all duration-300 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
+				<div className="actions absolute top-[-200px] right-[1px] z-50 flex items-center gap-4 flex-col w-[80px] transition-all duration-700 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
 					<Tooltip title="View" placement="left-start">
 						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
 							<MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white " />

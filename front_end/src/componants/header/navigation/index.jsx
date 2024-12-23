@@ -15,7 +15,7 @@ function Navigation() {
 
 	return (
 		<>
-			<nav className="py-2">
+			<nav>
 				<div className="container flex items-center justify-end gap-8">
 					<div className="col_1 w-[20%] ">
 						<Button
@@ -30,12 +30,18 @@ function Navigation() {
 					<div className="col_2 w-[60%]">
 						<ul className="flex items-center gap-4 nav">
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Home</Button>
 								</Link>
 							</li>
 							<li className="list-none relative">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500]!py-4"
+								>
 									<Button>Fashion</Button>
 								</Link>
 								<div className="submenu absolute top-[120%] left-[0%] min-w-[200px] bg-white shadow-md opacity-0 transition-all">
@@ -118,37 +124,58 @@ function Navigation() {
 								</div>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Electronics</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Bags</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Footware</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Groceries</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Beauty</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Wellness</Button>
 								</Link>
 							</li>
 							<li className="list-none">
-								<Link to="/" className="link transition text-[14px] font-[500]">
+								<Link
+									to="/"
+									className="link transition text-[14px] font-[500] !py-4"
+								>
 									<Button>Jewellery</Button>
 								</Link>
 							</li>
