@@ -9,7 +9,7 @@ function ProductsSlider(props) {
 		<div className="productsSlider py-4 smlBtn">
 			<Swiper
 				slidesPerView={props.items}
-				rewind={true}
+				loop={true}
 				spaceBetween={40}
 				navigation={true}
 				modules={[Navigation]}

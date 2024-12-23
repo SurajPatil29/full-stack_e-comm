@@ -151,7 +151,7 @@ function Footer() {
 								Subscribe to our latest newsletter to get news about special
 								discounts
 							</p>
-							<form className="mt-5">
+							<form className="mt-5 ">
 								<input
 									type="text"
 									className="w-full h-[45px] border outline-none pl-4 pr-4 rounded-md focus:border-[gbga(0,0,0,0.3)]"

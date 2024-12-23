@@ -141,3 +141,57 @@ nav ul Button:hover {
 	margin-left: -15px;
 	margin-right: -15px;
 }
+
+.swiper-pagination-bullet-active {
+	/*this use for pagination bullet coler set on slider */
+	background: #ff5252 !important;
+}
+
+.homeSliderV2 .swiper-button-prev,
+.homeSliderV2 .swiper-button-next {
+	/* css for sliderV2-buttons square button */
+	border-radius: 15%;
+	width: 30px;
+	height: 30px;
+	min-width: 30px;
+}
+
+.homeSliderV2 .swiper-button-next {
+	/* margin for button */
+	margin-right: 2.5%;
+	right: -100%;
+	opacity: 0;
+}
+
+.homeSliderV2:hover .swiper-button-next {
+	/* margin for button */
+	right: 0px !important;
+	opacity: 1;
+	transition: all;
+	transition-duration: 300ms;
+}
+
+.homeSliderV2:hover .swiper-button-prev {
+	/* margin for button */
+	left: 0px !important;
+	opacity: 1;
+	transition: all;
+	transition-duration: 300ms;
+}
+
+.homeSliderV2 .swiper-button-prev {
+	/* margin for button */
+	margin-left: 2.5%;
+	left: -100%;
+	opacity: 0;
+}
+
+.homeSliderV2 .swiper-slide-active .info {
+	right: 0px !important;
+	opacity: 1;
+}
+
+.homeSliderV2 .swiper-slide-active .info h4 {
+	right: 0px !important;
+	opacity: 1;
+}

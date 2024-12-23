@@ -10,7 +10,7 @@ function HomeCatSlider() {
 			<div className="container">
 				<Swiper
 					slidesPerView={6}
-					rewind={true}
+					loop={true}
 					spaceBetween={40}
 					navigation={true}
 					modules={[Navigation]}

@@ -10,7 +10,7 @@ function AddBannerSlider(props) {
 		<div className="pt-10 px-8 w-full">
 			<Swiper
 				slidesPerView={props.items}
-				rewind={true}
+				loop={true}
 				spaceBetween={30}
 				navigation={true}
 				modules={[Navigation]}

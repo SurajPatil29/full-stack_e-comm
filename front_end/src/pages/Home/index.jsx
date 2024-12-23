@@ -1,6 +1,6 @@
 import AddBannerSlider from "../../componants/AddBannerSlider";
 import { HomeCatSlider } from "../../componants/HomeCatSlider";
-import { HomeSlider } from "../../componants/HomeSlider";
+// import { HomeSlider } from "../../componants/HomeSlider";
 import { FaShippingFast } from "react-icons/fa";
 
 import Tabs from "@mui/material/Tabs";
@@ -14,6 +14,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { BlogItem } from "../../componants/BlogItem/index";
+import HomeBanner2 from "../../componants/HomeSliderV2";
+import BannerBoxV2 from "../../componants/BannerBoxV2";
 
 function Home() {
 	const [value, setValue] = useState(0);
@@ -23,7 +25,34 @@ function Home() {
 	};
 	return (
 		<>
-			<HomeSlider />
+			{/* <HomeSlider /> */}
+
+			<section className="py-6">
+				<div className="container flex items-center">
+					<div className="part1 w-[70%]">
+						<HomeBanner2 />
+					</div>
+					<div className="part2 w-[30%] flex items-center justify-between flex-col gap-5">
+						<div className="mx-[10%]">
+							<BannerBoxV2
+								info="left"
+								image={
+									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965948/sub-banner-1_kky0b0.jpg"
+								}
+							/>
+						</div>
+						<div className="mx-[10%] ">
+							<BannerBoxV2
+								info="right"
+								image={
+									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965945/sub-banner-2_sduheq.jpg"
+								}
+							/>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			<HomeCatSlider />
 
 			<section className="bg-white py-8">
@@ -104,8 +133,9 @@ function Home() {
 				<div className="py-4 container ">
 					<h2 className="text-[20px] font-[600] mb-4">From The Blog</h2>
 					<Swiper
+						loop={true}
 						slidesPerView={4}
-						rewind={true}
+						// rewind={true}
 						spaceBetween={40}
 						navigation={true}
 						modules={[Navigation]}
