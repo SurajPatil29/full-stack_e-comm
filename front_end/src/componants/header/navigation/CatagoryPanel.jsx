@@ -13,6 +13,7 @@ import { useState } from "react";
 function CatagoryPanel({ toggleDrawer, open }) {
 	const [submenuindex, setSubmenuIndex] = useState(null);
 	const [innersubmenuindex, setInnerSubmenuIndex] = useState(null);
+	// both state use for the toggeling purpose open and close the catagory filters
 
 	const openSubmenu = (index) => {
 		if (submenuindex === index) {
@@ -29,10 +30,13 @@ function CatagoryPanel({ toggleDrawer, open }) {
 			setInnerSubmenuIndex(index);
 		}
 	};
+	// above both funcuction use to chane the state
 
 	const DrawerList = (
 		<Box sx={{ width: 300 }} role="presentation" className="catagoryPanel">
+			{/* this box represent the drawer */}
 			<div className="flex items-center justify-between p-3 gap-1">
+				{/* this contain title and close button */}
 				<h3 className="text-[16px] font-[500] ">Shop By Categories </h3>
 				<Button
 					onClick={toggleDrawer(false)}
@@ -43,6 +47,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 			</div>
 			<Divider />
 			<div className="scorll">
+				{/* this div contain full drawer and filters */}
 				<ul className="w-full">
 					<li className="list-none flex items-center relative flex-col">
 						<Link className="w-full">
@@ -50,6 +55,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 								FASHION
 							</Button>
 						</Link>
+						{/* use condition rendering to show case the buttons according to open or close */}
 						{submenuindex === 0 ? (
 							<CiSquareMinus
 								className="absolute top-[10px] right-[15px] cursor-pointer"
@@ -61,7 +67,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 								onClick={() => openSubmenu(0)}
 							/>
 						)}
-
+						{/* this rendering use to show case the filter option acoording to condition */}
 						{submenuindex === 0 && (
 							<ul className="submenu w-full pl-4 ">
 								<li className="list-none relative ">
@@ -70,6 +76,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 											APPERAL
 										</Button>
 									</Link>
+									{/* redering for buttons */}
 									{innersubmenuindex === 0 ? (
 										<CiSquareMinus
 											className="absolute top-[10px] right-[15px] cursor-pointer"
@@ -81,6 +88,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 											onClick={() => openinnerSubmenu(0)}
 										/>
 									)}
+									{/* rendering for menu / filters */}
 									{innersubmenuindex == 0 && (
 										<ul className="inner_submenu w-full pl-8 ">
 											<li className="list-none relative py-1">
@@ -121,7 +129,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 							</ul>
 						)}
 					</li>
-
+					{/* this is same as above but state is chane */}
 					<li className="list-none flex items-center relative flex-col">
 						<Link className="w-full">
 							<Button className="w-full !text-left !justify-start px-3 !text-[rgba(0,0,0,0.8)]">

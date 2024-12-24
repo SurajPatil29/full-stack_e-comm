@@ -5,6 +5,6 @@
 	color: #fff !important;
 }
 
-productItem .actions button svg {
+.productItem .actions button svg {
 	pointer-events: none !important;
 }

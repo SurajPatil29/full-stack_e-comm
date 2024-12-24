@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 function BannerBoxV2(props) {
+	// this is v2 of banners in this banner contain link, text
 	return (
 		<div className="bannerBoxV2 w-full overflow-hidden rounded-md group relative">
 			<img
@@ -26,5 +28,10 @@ function BannerBoxV2(props) {
 		</div>
 	);
 }
+
+BannerBoxV2.propTypes = {
+	image: PropTypes.string.isRequired,
+	info: PropTypes.oneOf(["left", "right"]).isRequired,
+};
 
 export default BannerBoxV2;

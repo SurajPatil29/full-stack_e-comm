@@ -1,10 +1,10 @@
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react"; // swiper slider is module use to create sliders
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { Autoplay, Navigation } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules"; //moduls from swiper slider use in swiper componant
 
 import "./style.css";
 
@@ -12,19 +12,21 @@ function HomeSlider() {
 	return (
 		<div className="homeSlider py-4">
 			<div className="container">
-				<Swiper
-					loop={true}
-					spaceBetween={20}
-					centeredSlides={true}
-					navigation={true}
+				<Swiper // swiper sliders main compo this contain banners/ sliders img
+					loop={true} //loop of slider
+					spaceBetween={20} //space between slider
+					centeredSlides={true} //slider in position in center
+					navigation={true} // navigation button true
 					autoplay={{
+						// autoplay slider with given time
 						delay: 2500,
 						disableOnInteraction: false,
 					}}
-					modules={[Autoplay, Navigation]}
+					modules={[Autoplay, Navigation]} //use of  moduls
 					className="sliderHome"
 				>
 					<SwiperSlide>
+						{/* this use to place slider details */}
 						<div className="item rounded-[20px] overflow-hidden">
 							<img
 								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581212/s5_wjefxg.jpg"

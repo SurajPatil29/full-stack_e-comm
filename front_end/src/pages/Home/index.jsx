@@ -26,8 +26,11 @@ function Home() {
 	return (
 		<>
 			{/* <HomeSlider /> */}
+			{/* homeslider v1 */}
 
 			<section className="py-6">
+				{/* homeslider v2 */}
+
 				<div className="container flex items-center">
 					<div className="part1 w-[70%]">
 						<HomeBanner2 />
@@ -54,8 +57,10 @@ function Home() {
 			</section>
 
 			<HomeCatSlider />
+			{/* catagory slider */}
 
 			<section className="bg-white py-8">
+				{/* catagory product - slider contain catagory and below it products of perticular catagory  */}
 				<div className="container ">
 					<div className="flex items-center justify-between">
 						<div className="leftSec text-black">
@@ -92,12 +97,14 @@ function Home() {
 						</div>
 					</div>
 					<ProductsSlider items={5} />
+					{/* product slider */}
 				</div>
 			</section>
 
 			<section className="py-16 p-4 bg-white">
 				<div className="container ">
 					<div className="freeShiping w-[80%] m-auto p-4 border-[3px] border-[#c33535] flex items-center justify-between rounded-lg">
+						{/* Ads div */}
 						<div className="col1 flex items-center gap-4">
 							<FaShippingFast className="text-[#ff5252] text-[50px]" />
 							<h1 className="text-[20px] font-[600] text-black">
@@ -119,17 +126,21 @@ function Home() {
 				</div>
 
 				<AddBannerSlider items={3} />
+				{/* ads banner slider */}
 			</section>
 
 			<section className="py-5 bg-white">
 				<div className="container">
 					<h2 className="text-[20px]">Latest Products</h2>
 					<ProductsSlider items={5} />
+					{/* product slider */}
 					<AddBannerSlider items={3} />
+					{/* Ads slider */}
 				</div>
 			</section>
 
 			<section className="py-4 pt-0 pb-8  bg-white blogSection ">
+				{/* Blog slider */}
 				<div className="py-4 container ">
 					<h2 className="text-[20px] font-[600] mb-4">From The Blog</h2>
 					<Swiper

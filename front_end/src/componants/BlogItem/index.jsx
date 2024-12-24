@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 
 function BlogItem() {
+	// this componant contain blog box  contain the link , pulish date and information
 	return (
 		<div className="blogItem">
 			<div className="imgWrapper  w-full overflow-hidden rounded-md cursor-pointer relative group">

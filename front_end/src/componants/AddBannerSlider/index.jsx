@@ -6,6 +6,7 @@ import BannerBox from "../BannerBox";
 import PropTypes from "prop-types";
 
 function AddBannerSlider(props) {
+	// in this componant i was create banner slider
 	return (
 		<div className="pt-10 px-8 w-full">
 			<Swiper

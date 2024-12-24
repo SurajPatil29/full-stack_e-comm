@@ -10,6 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { Navigation } from "./navigation";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
+	//this is material ui componant shows the how many product in cart on symbol
 	"& .MuiBadge-badge": {
 		right: -3,
 		top: 13,
@@ -21,7 +22,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 function Header() {
 	return (
 		<header className="bg-white">
+			{/* header include top strim line, mid search line, bottom navigation line */}
 			<div className="top-strim py-2 mt-1 border-t-[1px] border-gray-300 border-b-[1px]">
+				{/* top strim line */}
 				<div className="container">
 					<div className="flex items-center justify-between">
 						<div className="col1 w-[50%]">
@@ -56,6 +59,7 @@ function Header() {
 			</div>
 
 			<div className="header py-3  border-gray-300 border-b-[1px]">
+				{/* all componanat include search, login, register and fevorite cart */}
 				<div className="container flex items-center justify-between">
 					<div className="clo1 w-[25%]">
 						<Link to={"/"}>
@@ -118,6 +122,7 @@ function Header() {
 			</div>
 
 			<Navigation />
+			{/* this is nav componant we import here */}
 		</header>
 	);
 }

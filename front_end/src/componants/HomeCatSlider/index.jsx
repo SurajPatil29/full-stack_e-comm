@@ -5,6 +5,7 @@ import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
 function HomeCatSlider() {
+	// this slider create for catagory showcase on website
 	return (
 		<div className="homeCatSlider py-4 pb-8 text-black">
 			<div className="container">

@@ -5,6 +5,7 @@ import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import ProductItem from "../ProductItem";
 function ProductsSlider(props) {
+	// product slider show products
 	return (
 		<div className="productsSlider py-4 smlBtn">
 			<Swiper

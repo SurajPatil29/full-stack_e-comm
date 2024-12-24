@@ -7,6 +7,7 @@
 	padding: 0px;
 	box-sizing: border-box;
 }
+/* this css for all */
 
 body {
 	font-family: "Montserrat", sans-serif;
@@ -15,6 +16,7 @@ body {
 	color: rgba(0, 0, 0, 0.7);
 	overflow-x: hidden;
 }
+/* this for body */
 
 ::-webkit-scrollbar {
 	width: 5px !important;
@@ -28,11 +30,13 @@ body {
 ::-webkit-scrollbar-track {
 	background: #fff;
 }
+/* above 3 classes related to the scroll bar */
 
 .container {
 	width: 90%;
 	margin: auto;
 }
+/* this class for set div width and use all across the page same/ apply to every compo */
 
 .btn-org {
 	background: #ff5252 !important;
@@ -40,6 +44,7 @@ body {
 	font-weight: 500 !important;
 	font-size: 16px !important;
 }
+/* button class */
 
 .MuiBadge-badge {
 	background-color: #ff5252 !important;
@@ -48,6 +53,7 @@ body {
 .link:hover {
 	color: #ff5252;
 }
+/* link class */
 
 nav ul Button {
 	text-transform: capitalize !important;
@@ -58,10 +64,12 @@ nav ul Button:hover {
 	text-transform: capitalize !important;
 	color: #ff5252 !important;
 }
+/* 2 css related nav and there buttons */
 
 .sliderHome {
 	overflow: inherit !important;
 }
+/* homeslider class */
 
 .swiper-button-prev,
 .swiper-button-next {
@@ -75,12 +83,14 @@ nav ul Button:hover {
 	min-width: 45px;
 	box-shadow: 0 1px 3px #0000003d !important;
 }
+/* swiper buttons css set default */
 
 .swiper-button-next:after,
 .swiper-button-prev:after {
 	font-size: 22px !important;
 	color: #000;
 }
+/* swiper buttons css set default */
 
 .homeCatSlider {
 	overflow: inherit !important;
@@ -94,6 +104,7 @@ nav ul Button:hover {
 	height: 30px;
 	min-width: 30px;
 }
+/* swiper buttons css set according to the slider size */
 
 .homeCatSlider .swiper-button-next::after,
 .homeCatSlider .swiper-button-prev::after,
@@ -101,6 +112,7 @@ nav ul Button:hover {
 .smlBtn .swiper-button-next::after {
 	font-size: 16px !important;
 }
+/* swiper buttons css set according to the slider size */
 
 /* .homeCatSlider .swiper-button-next {
 	right: -10px !important;
@@ -118,11 +130,13 @@ nav ul Button:hover {
 .swiper-button-prev:hover {
 	background: #ff5252 !important;
 }
+/* swiper buttons css set default */
 
 .swiper-button-next:hover::after,
 .swiper-button-prev:hover::after {
 	color: #fff !important;
 }
+/* swiper buttons css set default */
 
 .homeCatSlider .item:hover img {
 	transform: scale(1.1);

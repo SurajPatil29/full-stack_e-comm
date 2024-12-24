@@ -11,6 +11,8 @@ import { EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Button } from "@mui/material";
 
 function HomeBanner2() {
+	// this home main / top slider is crete using swiper slider this is v2
+	// diff is create live / text banner wich contain shop link and text anbout banner
 	return (
 		<Swiper
 			loop={true}

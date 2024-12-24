@@ -13,12 +13,14 @@ import { RiYoutubeLine } from "react-icons/ri";
 import { FaPinterestP } from "react-icons/fa";
 
 function Footer() {
+	// this is footer componant this include multiple links
 	return (
 		<>
 			<footer className="py-6 bg-[#fafafa]">
 				<hr />
 				<div className="container py-4 ">
 					<div className="flex items-center justify-around gap-2 text-black pb-8 px-20">
+						{/* this div contain info about site */}
 						<div className="col flex items-center justify-center flex-col group">
 							<LiaShippingFastSolid className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
 							<h3 className="text-[18px] font-[500]">Free Shipping</h3>
@@ -47,6 +49,7 @@ function Footer() {
 					</div>
 					<hr />
 					<div className="footer flex  py-8">
+						{/* footer div contact us , product, our company, newsletter related info */}
 						<div className="part1 w-[25%] border-r border-[rgba(0,0,0,0.3)]">
 							<h2 className="text-[20px] font-[600] mb-4 ">Contact Us</h2>
 							<p className="text-[14px] font-[400] pb-4 ">
@@ -170,6 +173,7 @@ function Footer() {
 			</footer>
 
 			<div className="bottomStrip border-t border-[rgba(0,0,0,.2)] py-3 bg-white">
+				{/* this div contain social media and payment partener info */}
 				<div className="container flex item-center justify-between">
 					<ul className="flex item-center justify-between gap-4">
 						<li className="list-none">

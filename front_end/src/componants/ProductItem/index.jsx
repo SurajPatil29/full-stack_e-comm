@@ -8,11 +8,14 @@ import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 
 function ProductItem() {
+	// this componant use for shocase product info on home page
 	return (
 		<div className="productItem shadow-md rounded-md overflow-hidden border-2 border-[rgba(0,0,0,0.1)]">
+			{/* this div contain image , title of product, info of product rating in star, price   */}
 			<div className="group imgWrapper w-[100%] overflow-hidden rounded-md relative">
 				<Link to="/">
 					<div className="img h-[220px] overflow-hidden">
+						{/* 2 image change when hover */}
 						<img
 							src="https://api.spicezgold.com/download/file_1734528821892_siril-georgette-brown-color-saree-with-blouse-piece-product-images-rvegeptjtj-1-202308161431.jpg"
 							alt="fashion"
@@ -27,9 +30,11 @@ function ProductItem() {
 					</div>
 				</Link>
 				<span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
+					{/* this use for show discount on image */}
 					10%
 				</span>
 				<div className="actions absolute top-[-200px] right-[1px] z-50 flex items-center gap-4 flex-col w-[80px] transition-all duration-700 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
+					{/* 3 icons favorit, compair, cart when hover it show the icons */}
 					<Tooltip title="View" placement="left-start">
 						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
 							<MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white " />
@@ -51,6 +56,7 @@ function ProductItem() {
 			</div>
 
 			<div className="info p-3 py-4 bg-[#f8f6f6]">
+				{/* info about product */}
 				<h5 className="text-[14px]">
 					<Link to="/" className="link transition-all">
 						Soylent Green
