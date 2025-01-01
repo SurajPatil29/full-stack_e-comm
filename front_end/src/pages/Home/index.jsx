@@ -16,6 +16,7 @@ import { Navigation } from "swiper/modules";
 import { BlogItem } from "../../componants/BlogItem/index";
 import HomeBanner2 from "../../componants/HomeSliderV2";
 import BannerBoxV2 from "../../componants/BannerBoxV2";
+import AddBannerSliderV2 from "../../componants/AddBannerSliderv2";
 
 function Home() {
 	const [value, setValue] = useState(0);
@@ -125,7 +126,7 @@ function Home() {
 					</div>
 				</div>
 
-				<AddBannerSlider items={3} />
+				<AddBannerSliderV2 items={4} />
 				{/* ads banner slider */}
 			</section>
 

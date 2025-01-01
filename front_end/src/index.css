@@ -44,6 +44,10 @@ body {
 	font-weight: 500 !important;
 	font-size: 16px !important;
 }
+
+.btn-org:hover {
+	background: #171717 !important;
+}
 /* button class */
 
 .MuiBadge-badge {
@@ -207,5 +211,34 @@ nav ul Button:hover {
 
 .homeSliderV2 .swiper-slide-active .info h4 {
 	right: 0px !important;
+	opacity: 1;
+}
+
+/* checkbox color css in footer*/
+.css-imrjgg-MuiButtonBase-root-MuiCheckbox-root.Mui-checked,
+.css-imrjgg-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
+	color: #ff5252 !important;
+}
+
+/* check title in footer */
+.MuiFormControlLabel-label {
+	font-size: 13px !important;
+	color: rgba(0, 0, 0, 0.7);
+}
+
+/* checkbox padding */
+.MuiCheckbox-root {
+	padding: 6px !important;
+}
+
+/* colaps style in sidebar in productListing */
+
+.ReactCollapse--collapse {
+	transition: height 500ms;
+}
+
+/* on productListing page grid and list icon css */
+.itemViewAction button.active svg {
+	color: #ff5252 !important;
 	opacity: 1;
 }
