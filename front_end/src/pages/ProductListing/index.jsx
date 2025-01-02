@@ -22,14 +22,14 @@ function ProductListing() {
 		setAnchorEl(null);
 	};
 	return (
-		<section className="py-5 pb-0">
+		<section className="py-5 ">
 			<div className="container">
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link
 						underline="hover"
 						color="inherit"
 						href="/"
-						className="link transition-all"
+						className="link transition !text[14px]"
 					>
 						Home
 					</Link>
@@ -37,7 +37,7 @@ function ProductListing() {
 						underline="hover"
 						color="inherit"
 						href="/"
-						className="link transition-all"
+						className="link transition !text[14px]"
 					>
 						Fashion
 					</Link>

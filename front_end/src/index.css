@@ -13,7 +13,7 @@ body {
 	font-family: "Montserrat", sans-serif;
 	font-optical-sizing: auto;
 	background: #f5f0f0;
-	color: rgba(0, 0, 0, 0.7);
+	color: #666;
 	overflow-x: hidden;
 }
 /* this for body */
@@ -241,4 +241,34 @@ nav ul Button:hover {
 .itemViewAction button.active svg {
 	color: #ff5252 !important;
 	opacity: 1;
+}
+
+/* zoom product componant inside product detail */
+.zoomProductSliderThumbs .swiper-slider {
+	height: auto !important;
+}
+
+.zoomProductSliderThumbs .swiper-button-next {
+	bottom: 0px !important;
+	right: inherit !important;
+	top: inherit !important;
+	width: 100% !important;
+	height: 30px !important;
+	border-radius: 0px;
+}
+
+.zoomProductSliderThumbs .swiper-button-next::after {
+	transform: rotate(90deg);
+}
+
+.zoomProductSliderThumbs .swiper-button-prev {
+	top: 20px !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 30px !important;
+	border-radius: 0px;
+}
+
+.zoomProductSliderThumbs .swiper-button-prev::after {
+	transform: rotate(90deg);
 }

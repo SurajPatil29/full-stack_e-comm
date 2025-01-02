@@ -4,6 +4,7 @@ import { Header } from "./componants/header";
 import { Home } from "./pages/Home";
 import Footer from "./componants/Footer";
 import ProductListing from "./pages/ProductListing";
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
 	return (
@@ -15,6 +16,11 @@ function App() {
 					path={"/productListing"}
 					exact={true}
 					element={<ProductListing />}
+				/>
+				<Route
+					path={"/productDetails/:id"}
+					exact={true}
+					element={<ProductDetails />}
 				/>
 			</Routes>
 			<Footer />
