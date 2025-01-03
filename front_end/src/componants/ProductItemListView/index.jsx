@@ -58,7 +58,7 @@ function ProductItemListView() {
 
 			<div className="info px-4 w-[75%] py-4 ">
 				{/* info about product */}
-				<h5 className="text-[15px]">
+				<h5 className="text-[15px] !font-[400]">
 					<Link to="/" className="link transition-all">
 						Soylent Green
 					</Link>

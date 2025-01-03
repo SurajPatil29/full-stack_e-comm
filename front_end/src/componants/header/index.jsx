@@ -63,7 +63,7 @@ function Header() {
 				<div className="container flex items-center justify-between">
 					<div className="clo1 w-[25%]">
 						<Link to={"/"}>
-							<img src="../../../public/logo.jpg" />{" "}
+							<img src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png" />{" "}
 						</Link>
 					</div>
 					<div className="clo2 w-[45%]">

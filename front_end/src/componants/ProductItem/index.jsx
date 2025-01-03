@@ -57,8 +57,8 @@ function ProductItem() {
 
 			<div className="info p-3 py-4 bg-[#f8f6f6]">
 				{/* info about product */}
-				<h5 className="text-[14px]">
-					<Link to="/" className="link transition-all">
+				<h5 className="text-[14px] !font-[400]">
+					<Link to="/" className="link transition-all ">
 						Soylent Green
 					</Link>
 				</h5>

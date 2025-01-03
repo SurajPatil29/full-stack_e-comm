@@ -9,11 +9,28 @@
 }
 /* this css for all */
 
+/* paragraph css */
+p {
+	font-size: 14px;
+	line-height: 25px;
+	margin-bottom: 10px;
+}
+
+/* heding css */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
+}
+
 body {
 	font-family: "Montserrat", sans-serif;
 	font-optical-sizing: auto;
 	background: #f5f0f0;
-	color: #666;
+	color: #464646;
 	overflow-x: hidden;
 }
 /* this for body */
@@ -271,4 +288,30 @@ nav ul Button:hover {
 
 .zoomProductSliderThumbs .swiper-button-prev::after {
 	transform: rotate(90deg);
+}
+
+/* product details page */
+.productContent .actions button {
+	min-width: 40px !important;
+	height: 30px !important;
+	border: 1px solid rgba(0, 0, 0, 0.1) !important;
+	color: rgba(0, 0, 0, 0.7);
+}
+
+/* product details page input */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+/* product detail review box */
+.css-113d811-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+	color: #ff5252 !important;
+}
+
+.css-xrmkj5-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused
+	.MuiOutlinedInput-notchedOutline {
+	border-color: #ff5252 !important;
 }

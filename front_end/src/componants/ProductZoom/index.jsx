@@ -29,7 +29,7 @@ function ProductZoom() {
 						spaceBetween={10}
 						navigation={true}
 						modules={[Mousewheel, Navigation]}
-						className="zoomProductSliderThumbs h-[74vh] overflow-hidden "
+						className="zoomProductSliderThumbs h-[500px] overflow-hidden "
 					>
 						<SwiperSlide>
 							<div
@@ -73,7 +73,7 @@ function ProductZoom() {
 					</Swiper>
 				</div>
 
-				<div className="w-[85%] h-[75vh] overflow-hidden ">
+				<div className="w-[85%] h-[500px] overflow-hidden rounded-xl ">
 					<Swiper
 						ref={zoomSliderBig}
 						slidesPerView={1}
