@@ -13,6 +13,8 @@ import DialogContent from "@mui/material/DialogContent";
 import ProductZoom from "./componants/ProductZoom";
 import { IoMdClose } from "react-icons/io";
 import ProductDetailsComponant from "./componants/ProductDetailsComponant";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const MyContext = createContext();
 function App() {
@@ -41,6 +43,8 @@ function App() {
 						exact={true}
 						element={<ProductDetails />}
 					/>
+					<Route path={"/login"} exact={true} element={<Login />} />
+					<Route path={"/register"} exact={true} element={<Register />} />
 				</Routes>
 				<Footer />
 			</MyContext.Provider>

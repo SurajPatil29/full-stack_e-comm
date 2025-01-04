@@ -65,6 +65,11 @@ body {
 .btn-org:hover {
 	background: #171717 !important;
 }
+
+.btn-lg {
+	font-weight: 600 !important;
+	font-size: 18px !important;
+}
 /* button class */
 
 .MuiBadge-badge {
