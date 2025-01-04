@@ -46,7 +46,7 @@ function Navigation() {
 							<li className="list-none relative">
 								{/* in this link write the code of submenu when hover it occurs the submenu */}
 								<Link
-									to="/"
+									to="/productListing"
 									className="link transition text-[14px] font-[500] !py-4"
 								>
 									<Button>Fashion</Button>

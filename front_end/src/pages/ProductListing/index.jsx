@@ -22,8 +22,8 @@ function ProductListing() {
 		setAnchorEl(null);
 	};
 	return (
-		<section className="py-5 ">
-			<div className="container">
+		<section className="">
+			<div className="container py-5">
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link
 						underline="hover"
