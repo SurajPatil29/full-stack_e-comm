@@ -15,10 +15,18 @@ import { IoMdClose } from "react-icons/io";
 import ProductDetailsComponant from "./componants/ProductDetailsComponant";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { Drawer } from "@mui/material";
+import CartPanel from "./componants/CartPanel";
 
 const MyContext = createContext();
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
+
+	const [openCartPanel, setOpenCartPanel] = useState(true);
+
+	const toggleDrawer = (newOpen) => () => {
+		setOpenCartPanel(newOpen);
+	};
 
 	const handleCloseProductDetailsModel = () => {
 		setOpenProductDetailsModel(false);
@@ -26,6 +34,7 @@ function App() {
 
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
+		setOpenCartPanel: setOpenCartPanel,
 	};
 	return (
 		<>
@@ -54,7 +63,7 @@ function App() {
 				onClose={handleCloseProductDetailsModel}
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
-				fullWidth="true"
+				fullWidth={true}
 				maxWidth="lg"
 				className="productDetailsModel "
 			>
@@ -75,6 +84,23 @@ function App() {
 					</div>
 				</DialogContent>
 			</Dialog>
+
+			{/* cart panel */}
+
+			<Drawer open={openCartPanel} onClose={toggleDrawer(false)} anchor="right">
+				<div className="w-[400px] py-3 px-4 ">
+					<div className="flex items-center justify-between  gap-3  border-b border-[rgba(0,0,0,0.1)] ">
+						<h4>Shoping Cart (1)</h4>
+						<Button
+							className=" !w-[30px] !min-w-[30px] !h-[30px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
+							onClick={toggleDrawer(false)}
+						>
+							<IoMdClose className="!text-[16px]  " />
+						</Button>
+					</div>
+					<CartPanel />
+				</div>
+			</Drawer>
 		</>
 	);
 }

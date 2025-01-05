@@ -6,6 +6,14 @@ import { FaAngleUp } from "react-icons/fa";
 function QtyBox() {
 	const [qtyVal, setQtyVal] = useState(1);
 
+	const handleChange = (e) => {
+		const newValue = parseInt(e.target.value, 10);
+
+		if (!isNaN(newValue) && newValue > 0) {
+			setQtyVal(newValue);
+		}
+	};
+
 	const plusQty = () => {
 		setQtyVal(qtyVal + 1);
 	};
@@ -22,6 +30,7 @@ function QtyBox() {
 				type="number"
 				className="w-full h-[40px] p-2 pl-4 text-[15px] focus:outline-none border border-[rgba(0,0,0,0.1) rounded-md]  "
 				value={qtyVal}
+				onChange={handleChange}
 			/>
 			<div className="flex items-center flex-col justify-between h-[40px] absolute top-0 right-0 z-50  border-l-[2px] ">
 				<Button

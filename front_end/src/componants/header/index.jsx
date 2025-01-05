@@ -8,6 +8,8 @@ import { GoGitCompare } from "react-icons/go";
 import { MdFavoriteBorder } from "react-icons/md";
 import Tooltip from "@mui/material/Tooltip";
 import { Navigation } from "./navigation";
+import { useContext } from "react";
+import { MyContext } from "../../App";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	//this is material ui componant shows the how many product in cart on symbol
@@ -20,6 +22,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 function Header() {
+	const { setOpenCartPanel } = useContext(MyContext);
 	return (
 		<header className="bg-white">
 			{/* header include top strim line, mid search line, bottom navigation line */}
@@ -109,7 +112,10 @@ function Header() {
 
 							<li>
 								<Tooltip title="Cart">
-									<IconButton aria-label="cart">
+									<IconButton
+										aria-label="cart"
+										onClick={() => setOpenCartPanel(true)}
+									>
 										<StyledBadge badgeContent={5} color="secondary">
 											<IoCartOutline />
 										</StyledBadge>
