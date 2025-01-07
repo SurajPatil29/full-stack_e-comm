@@ -7,12 +7,14 @@ function CartPanel() {
 		<>
 			<div className="scroll w-full max-h-[400px] overflow-y-scroll overflow-hidden ">
 				<div className="cartItem w-full flex items-center gap-4 border-b border-[rgba(0,0,0,0.3)] mb-2 ">
-					<div className="img w-[25%] border border-[rgba(0,0,0,0.1)] rounded-md ">
-						<img
-							className="w-full h-[80px] rounded-md"
-							src="https://demos.codezeel.com/prestashop/PRS21/PRS210502/71-home_default/mug-today-is-a-good-day.jpg"
-							alt="productimg"
-						/>
+					<div className="img w-[25%] border border-[rgba(0,0,0,0.1)] rounded-md group ">
+						<Link to="/productDetails/123" className="block">
+							<img
+								className="w-full h-[80px] rounded-md group-hover:scale-105 "
+								src="https://demos.codezeel.com/prestashop/PRS21/PRS210502/71-home_default/mug-today-is-a-good-day.jpg"
+								alt="productimg"
+							/>
+						</Link>
 					</div>
 
 					<div className="w-[75%] pr-7 relative ">
@@ -176,7 +178,7 @@ function CartPanel() {
 			</div>
 
 			<div className="bottomSec absolute bottom-[10px] left-[10px] w-[95%] !overflow-hidden ">
-				<div className="bottomInfo py-3 mt-2 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
+				<div className="bottomInfo py-3 mt-1 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
 					<br />
 					<div className="flex items-center justify-between w-full">
 						<span className="text-black font-[500]">1 item</span>
@@ -204,8 +206,12 @@ function CartPanel() {
 				</div>
 
 				<div className="flex items-center justify-center w-full gap-5">
-					<Button className="btn-org btn-lg w-[50%] ">VIEW CART</Button>
-					<Button className="btn-org btn-lg w-[50%] ">CHECKOUT</Button>
+					<Link to="/cart" className="w-[50%] d-block link">
+						<Button className="btn-org btn-lg w-full ">VIEW CART</Button>
+					</Link>
+					<Link to="/cart" className="w-[50%] d-block link">
+						<Button className="btn-org btn-lg w-full ">CHECKOUT</Button>
+					</Link>
 				</div>
 			</div>
 		</>
