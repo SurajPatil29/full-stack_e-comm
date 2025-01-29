@@ -1,12 +1,27 @@
 import { Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { MyContext } from "../../App";
 
 function Login() {
+	const context = useContext(MyContext);
 	const [isShowPassword, setIsShowPassWord] = useState(false);
+	// const [formFields, setFormFields] = useState({
+	// 	email: "",
+	// 	password: "",
+	// });
+
+	const history = useNavigate();
+
+	const forgotPassword = () => {
+		// if (formFields.email !== "") {
+		history("/verify");
+		context.openAlertBox("success", "OTP is send");
+		// }
+	};
 
 	return (
 		<section className="section py-10">
@@ -24,6 +39,7 @@ function Login() {
 								label="Email Id *"
 								variant="outlined"
 								className="w-full"
+								name="email"
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -39,11 +55,12 @@ function Login() {
 
 						<div className="form-group w-full mb-5 relative">
 							<TextField
-								type={`${isShowPassword === true ? "password" : "text"}`}
+								type={`${isShowPassword === true ? "text" : "password"}`}
 								id="outlined-suffix-shrink"
 								label="Password *"
 								variant="outlined"
 								className="w-full"
+								name="password"
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -60,19 +77,22 @@ function Login() {
 									onClick={() => setIsShowPassWord(!isShowPassword)}
 									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
 								>
-									<MdVisibilityOff className="16px" />
+									<MdVisibility className="16px" />
 								</Button>
 							) : (
 								<Button
 									onClick={() => setIsShowPassWord(!isShowPassword)}
 									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
 								>
-									<MdVisibility className="16px" />
+									<MdVisibilityOff className="16px" />
 								</Button>
 							)}
 						</div>
 
-						<a className="link cursor-pointer text-[14px] font-[600] ">
+						<a
+							onClick={forgotPassword}
+							className="link cursor-pointer text-[14px] font-[600] "
+						>
 							Forgot Password
 						</a>
 

@@ -320,3 +320,19 @@ input[type="number"]::-webkit-outer-spin-button {
 	.MuiOutlinedInput-notchedOutline {
 	border-color: #ff5252 !important;
 }
+
+/* verify / otp page css */
+.otpBox input {
+	border: 1px solid rgba(0, 0, 0, 0.3) !important;
+	outline: none !important;
+	border-radius: 4px;
+}
+
+.otpBox input:focus {
+	border: 1px solid rgba(0, 0, 0, 0.7) !important;
+}
+
+.otpPage .container {
+	height: 90vh;
+	display: flex;
+}

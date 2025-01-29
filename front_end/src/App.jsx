@@ -18,6 +18,9 @@ import Register from "./pages/Register";
 import { Drawer } from "@mui/material";
 import CartPanel from "./componants/CartPanel";
 import CartPage from "./pages/Cart";
+import Verify from "./pages/Verify";
+import toast, { Toaster } from "react-hot-toast";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const MyContext = createContext();
 function App() {
@@ -33,9 +36,19 @@ function App() {
 		setOpenProductDetailsModel(false);
 	};
 
+	const openAlertBox = (status, msg) => {
+		if (status === "success") {
+			toast.success(msg);
+		}
+		if (status === "error") {
+			toast.error(msg);
+		}
+	};
+
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
 		setOpenCartPanel: setOpenCartPanel,
+		openAlertBox: openAlertBox,
 	};
 	return (
 		<>
@@ -56,10 +69,17 @@ function App() {
 					<Route path={"/login"} exact={true} element={<Login />} />
 					<Route path={"/register"} exact={true} element={<Register />} />
 					<Route path={"/cart"} exact={true} element={<CartPage />} />
+					<Route path={"/verify"} exact={true} element={<Verify />} />
+					<Route
+						path={"/forgot-password"}
+						exact={true}
+						element={<ForgotPassword />}
+					/>
 				</Routes>
 				<Footer />
 			</MyContext.Provider>
-
+			{/* toast from hot tost npm */}
+			<Toaster />
 			<Dialog
 				open={openProductDetailsModel}
 				onClose={handleCloseProductDetailsModel}
