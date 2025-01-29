@@ -209,7 +209,7 @@ function CartPanel() {
 					<Link to="/cart" className="w-[50%] d-block link">
 						<Button className="btn-org btn-lg w-full ">VIEW CART</Button>
 					</Link>
-					<Link to="/cart" className="w-[50%] d-block link">
+					<Link to="/checkout" className="w-[50%] d-block link">
 						<Button className="btn-org btn-lg w-full ">CHECKOUT</Button>
 					</Link>
 				</div>
