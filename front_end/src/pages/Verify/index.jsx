@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "@mui/material";
-import OtpBox from "../../componants/Otpbox";
+import OtpBox from "../../componants/OtpBox";
 
 function Verify() {
 	const [otp, setOtp] = useState("");
