@@ -107,7 +107,7 @@ function App() {
 				</DialogContent>
 			</Dialog>
 
-			{/* cart panel */}
+			{/* cart panel . */}
 
 			<Drawer open={openCartPanel} onClose={toggleDrawer(false)} anchor="right">
 				<div className="w-[400px] py-3 px-4 ">

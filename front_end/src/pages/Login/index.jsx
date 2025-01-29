@@ -35,7 +35,7 @@ function Login() {
 						<div className="form-group w-full mb-5">
 							<TextField
 								type="email"
-								id="outlined-suffix-shrink"
+								id="outlined-suffix-shrink1"
 								label="Email Id *"
 								variant="outlined"
 								className="w-full"
@@ -56,7 +56,7 @@ function Login() {
 						<div className="form-group w-full mb-5 relative">
 							<TextField
 								type={`${isShowPassword === true ? "text" : "password"}`}
-								id="outlined-suffix-shrink"
+								id="outlined-suffix-shrink2"
 								label="Password *"
 								variant="outlined"
 								className="w-full"
