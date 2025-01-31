@@ -22,12 +22,13 @@ import Verify from "./pages/Verify";
 import toast, { Toaster } from "react-hot-toast";
 import ForgotPassword from "./pages/ForgotPassword";
 import Checkout from "./pages/Checkout";
+import MyAccount from "./pages/MyAccount";
 
 const MyContext = createContext();
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
-
 	const [openCartPanel, setOpenCartPanel] = useState(false);
+	const [isLogin, setIsLogin] = useState(true);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -50,6 +51,8 @@ function App() {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
 		setOpenCartPanel: setOpenCartPanel,
 		openAlertBox: openAlertBox,
+		isLogin: isLogin,
+		setIsLogin: setIsLogin,
 	};
 	return (
 		<>
@@ -77,7 +80,9 @@ function App() {
 						element={<ForgotPassword />}
 					/>
 					<Route path={"/checkout"} exact={true} element={<Checkout />} />
+					<Route path={"/my-account"} exact={true} element={<MyAccount />} />
 				</Routes>
+
 				<Footer />
 			</MyContext.Provider>
 			{/* toast from hot tost npm */}

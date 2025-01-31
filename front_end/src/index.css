@@ -60,15 +60,31 @@ body {
 	color: #fff !important;
 	font-weight: 500 !important;
 	font-size: 16px !important;
+	padding: 7px 20px;
 }
 
 .btn-org:hover {
 	background: #171717 !important;
 }
 
-.btn-lg {
-	font-weight: 600 !important;
+.btn-org.btn-border {
+	background: none !important;
+	color: #ff5252 !important;
+	border: 1px solid #ff5252;
+	font-weight: 500 !important;
 	font-size: 16px !important;
+	padding: 7px 20px;
+}
+
+.btn-org.btn-border:hover {
+	background: #171717 !important;
+	color: #fff !important;
+	border: 1px solid #ff5252;
+}
+
+.btn-lg {
+	padding: 10px 20px !important;
+	font-size: 18px !important;
 }
 /* button class */
 
@@ -335,4 +351,38 @@ input[type="number"]::-webkit-outer-spin-button {
 .otpPage .container {
 	height: 90vh;
 	display: flex;
+}
+
+/* css for account menu droupdown*/
+#account-menu .MuiPaper-root {
+	width: 200px !important;
+}
+
+/* css for vertical tabs in my account */
+.myAccountTabs li a {
+	position: relative;
+	display: block;
+}
+
+.myAccountTabs li a:before {
+	content: "";
+	width: 3px;
+	height: 50%;
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	background: #ff5252;
+	transition: all 0.3s ease-in-out;
+	opacity: 0;
+}
+
+.myAccountTabs li a.isActive::before {
+	height: 100%;
+	opacity: 1;
+	top: 0px;
+}
+
+.myAccountTabs li a.isActive button svg {
+	color: #ff5252 !important;
+	opacity: 1 !important;
 }
