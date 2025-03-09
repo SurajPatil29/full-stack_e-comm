@@ -3,7 +3,7 @@ import MyListItems from "./MyListItems";
 
 function MyList() {
 	return (
-		<section className="section py-10 px-5">
+		<section className="section py-10 ">
 			<div className="container  min-w-[80%] flex gap-5">
 				<div className="col1 w-[20%] ">
 					<AccountSideBar />
@@ -14,7 +14,7 @@ function MyList() {
 							<h2>My List</h2>
 							<p className="mt-0">
 								There are <span className="font-bold text-[#ff5151]">2</span>{" "}
-								products in your cart
+								products in your My List
 							</p>
 						</div>
 						<MyListItems />

@@ -25,7 +25,7 @@ function AccountSideBar() {
 					</div>
 				</div>
 				<h3>Rajesh Sharma</h3>
-				<h6 className="text-[13px] font-[500] ">surajp@gmail.com</h6>
+				<h6 className="text-[13px] font-[500] ">rajeshsharma@gmail.com</h6>
 			</div>
 
 			<ul className="list-none pb-5 bg-[#f1f1f1] myAccountTabs">
