@@ -1,0 +1,9 @@
+.MuiBadge-badge {
+	background: #ff5252 !important;
+	/* this used for bell icon bage color in header */
+}
+
+.ReactCollapse--collapse {
+	transition: height 300ms;
+	/* this used to smooth opting of collapse in sidebar */
+}
