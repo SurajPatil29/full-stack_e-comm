@@ -7,3 +7,23 @@
 	transition: height 300ms;
 	/* this used to smooth opting of collapse in sidebar */
 }
+
+.btn-blue {
+	background: #3872fa !important;
+	color: #fff !important;
+	padding: 8px 20px;
+}
+
+.btn-blue {
+	background: #3067e5 !important;
+}
+/* btn-blue use in dashbord compo */
+
+::-webkit-scrollbar {
+	width: 10px !important;
+	height: 10px !important;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #ccc !important;
+}
