@@ -7,7 +7,7 @@ import MainLayout from "./Components/MainLayout";
 const MyContext = createContext();
 
 function App() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 	const values = {
 		isSidebarOpen,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react"; // the pureComponant use for the chart
 import DashboardBoxes from "../../Components/DashboardBoxes";
 import Button from "@mui/material/Button";
 import { FaPlus } from "react-icons/fa";
@@ -14,6 +14,7 @@ import { MdOutlineDelete } from "react-icons/md";
 import { FormControl, InputLabel, Tooltip } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 
+// mui table
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,9 +23,23 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
+// use for category
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { PiExport } from "react-icons/pi";
+
+// use for charts
+import {
+	LineChart,
+	Line,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip as RechartsTooltip,
+	Legend,
+	ResponsiveContainer,
+} from "recharts";
+// here was 2 tooltip because i rename tooltip
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
 
@@ -55,6 +70,21 @@ const columns = [
 ];
 
 // this is use for material ui table
+
+// custom tooltip for chart
+// const CustomTooltip = ({ active, payload, label }) => {
+// 	if (active && payload && payload.length) {
+// 		return (
+// 			<div className="bg-white p-3 rounded shadow-md border text-sm">
+// 				<p className="font-semibold mb-1">{label}</p>
+// 				<p className="text-green-600">Total Users: {payload[0].value}</p>
+// 				<p className="text-blue-600">Total Sales: ₹{payload[1].value}</p>
+// 			</div>
+// 		);
+// 	}
+// 	return null;
+// };
+// custom tooltip for chart
 
 function Dashboard() {
 	// this for recent order table
@@ -90,6 +120,23 @@ function Dashboard() {
 		setCategoryFilterValue(event.target.value);
 	};
 	// this for use filters
+
+	// this is chart data
+	const chart1Data = [
+		{ name: "JAN", TotalUsers: 4200, TotalSales: 12000 },
+		{ name: "FEB", TotalUsers: 3800, TotalSales: 9500 },
+		{ name: "MAR", TotalUsers: 4500, TotalSales: 14200 },
+		{ name: "APR", TotalUsers: 5000, TotalSales: 13500 },
+		{ name: "MAY", TotalUsers: 5200, TotalSales: 15000 },
+		{ name: "JUN", TotalUsers: 4800, TotalSales: 13800 },
+		{ name: "JUL", TotalUsers: 5300, TotalSales: 15500 },
+		{ name: "AUG", TotalUsers: 5500, TotalSales: 16000 },
+		{ name: "SEP", TotalUsers: 4900, TotalSales: 14800 },
+		{ name: "OCT", TotalUsers: 4700, TotalSales: 14300 },
+		{ name: "NOV", TotalUsers: 5100, TotalSales: 15700 },
+		{ name: "DEC", TotalUsers: 5600, TotalSales: 16500 },
+	];
+	// this is chart data
 
 	return (
 		<>
@@ -2677,6 +2724,56 @@ function Dashboard() {
 							)}
 						</tbody>
 					</table>
+				</div>
+			</div>
+
+			{/* chart */}
+			<div className="card my-4 shadow-md sm:rounded-lg bg-white">
+				<div className="flex items-center justify-between px-5 py-5 pb-0">
+					<h2 className="text-[18px] font-[600]">Total Users & Total Sales</h2>
+				</div>
+
+				{/* Custom Legend */}
+				<div className="flex items-center gap-5 px-5 py-5 pt-1">
+					<span className="flex items-center gap-1 text-[15px]">
+						<span className="block w-[8px] h-[8px] rounded-full bg-green-600"></span>
+						Total Users
+					</span>
+					<span className="flex items-center gap-1 text-[15px]">
+						<span className="block w-[8px] h-[8px] rounded-full bg-[#3872fa]"></span>
+						Total Sales
+					</span>
+				</div>
+
+				{/* Chart */}
+				<div className="w-full h-[400px] px-5 pb-5">
+					<ResponsiveContainer width="100%" height="100%">
+						<LineChart
+							data={chart1Data}
+							margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+						>
+							<CartesianGrid strokeDasharray="3 3" stroke="#none" />
+							<XAxis dataKey="name" tick={{ fontSize: 12 }} />
+							<YAxis tick={{ fontSize: 12 }} />
+							{/* <RechartsTooltip content={<CustomTooltip />} /> // this i was use for cutom chart */}
+							<RechartsTooltip />
+
+							<Legend />
+							<Line
+								type="monotone"
+								dataKey="TotalUsers"
+								stroke="#16a34a" // Tailwind green-600
+								strokeWidth={3}
+								activeDot={{ r: 8 }}
+							/>
+							<Line
+								type="monotone"
+								dataKey="TotalSales"
+								stroke="#3872fa"
+								strokeWidth={3}
+							/>
+						</LineChart>
+					</ResponsiveContainer>
 				</div>
 			</div>
 		</>
