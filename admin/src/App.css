@@ -14,11 +14,20 @@
 	padding: 8px 20px;
 }
 
-.btn-blue {
+.btn {
+	padding: 8px 20px !important;
+}
+.btn {
+	padding: 6px 20px !important;
+	font-size: 13px !important;
+}
+
+.btn-blue:hover {
 	background: #3067e5 !important;
 }
 /* btn-blue use in dashbord compo */
 
+/* scroll bar seting in tables on dashbord page */
 ::-webkit-scrollbar {
 	width: 10px !important;
 	height: 10px !important;
@@ -26,4 +35,9 @@
 
 ::-webkit-scrollbar-thumb {
 	background: #ccc !important;
+}
+
+/* mui table css */
+th.MuiTableCell-root {
+	@apply bg-[#F9FAFB] py-2;
 }

@@ -23,7 +23,7 @@ function Sidebar() {
 	return (
 		<>
 			<div className="sidebar fixed top-0 left-0 bg-[#fff] w-[18%] h-full border-r border-[rgba(0,0,0,0.1)] py-2 px-2 ">
-				<div className="py-2 w-full">
+				<div className="py-2  w-full">
 					<Link to="/">
 						<img
 							src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"

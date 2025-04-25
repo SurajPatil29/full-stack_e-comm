@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Divider } from "@mui/material";
 import { RiMenu2Line } from "react-icons/ri";
 import Badge from "@mui/material/Badge";
@@ -8,6 +8,9 @@ import { FaRegBell, FaRegUser } from "react-icons/fa";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { IoIosLogOut } from "react-icons/io";
+import { MyContext } from "../../App";
+import { Link } from "react-router-dom";
+import { AiOutlineMenuFold } from "react-icons/ai";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -27,12 +30,38 @@ function Header() {
 	const handleCloseMyAcc = () => {
 		setAnchorMyAcc(null);
 	};
+
+	const context = useContext(MyContext);
 	return (
-		<header className="w-full bg-white h-[auto] py-2 pl-[19%] pr-7 shadow-md flex items-center justify-between ">
-			<div className="part1">
-				<Button className="!w-[40px] !h-[40px] !rounded-full !min-w-[40px] !text-[rgba(0,0,0,0.8)] ">
-					<RiMenu2Line className="text-[18px] text-[rgba(0,0,0,0.8)] " />
-				</Button>
+		<header
+			className={`w-full bg-white h-[auto] py-2 ${
+				context.isSidebarOpen ? "pl-[19%]" : "pl-2 "
+			} pr-7 shadow-md flex items-center justify-between`}
+		>
+			<div className="flex items-center gap-2 w-[50%]">
+				{!context.isSidebarOpen && (
+					<div className="py-2 w-[35%]">
+						<Link to="/">
+							<img
+								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
+								alt="site_logo"
+								className="w-[100%] max-w-[150px] "
+							/>
+						</Link>
+					</div>
+				)}
+				<div className="part1">
+					<Button
+						className="!w-[40px] !h-[40px] !rounded-full !min-w-[40px] !text-[rgba(0,0,0,0.8)] "
+						onClick={() => context.setIsSidebarOpen(!context.isSidebarOpen)}
+					>
+						<AiOutlineMenuFold
+							className={`text-[20px] text-[rgba(0,0,0,0.8)] ${
+								context.isSidebarOpen ? "rotate-0" : "rotate-180"
+							}`}
+						/>
+					</Button>
+				</div>
 			</div>
 
 			<div className="part2 w-[40%] flex items-center justify-end gap-4 ">
@@ -53,7 +82,7 @@ function Header() {
 						/>
 					</div>
 					<Menu
-						anchorMyAcc={anchorMyAcc}
+						anchorEl={anchorMyAcc}
 						id="account-menu"
 						open={openMyAcc}
 						onClose={handleCloseMyAcc}
@@ -115,7 +144,7 @@ function Header() {
 
 						<MenuItem
 							onClick={handleCloseMyAcc}
-							className="flex item-center gap-3"
+							className="flex items-center gap-3"
 						>
 							<FaRegUser className="text-[18px] " />
 							<span className="text-[14px] ">Profile</span>
@@ -125,7 +154,7 @@ function Header() {
 
 						<MenuItem
 							onClick={handleCloseMyAcc}
-							className="flex item-center gap-3"
+							className="flex items-center gap-3"
 						>
 							<IoIosLogOut className="text-[18px]" />
 							<span className="text-[14px] ">Sign out</span>
