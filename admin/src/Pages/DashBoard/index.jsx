@@ -39,6 +39,7 @@ import {
 	Legend,
 	ResponsiveContainer,
 } from "recharts";
+import { RiProductHuntLine } from "react-icons/ri";
 // here was 2 tooltip because i rename tooltip
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
@@ -140,7 +141,7 @@ function Dashboard() {
 
 	return (
 		<>
-			<div className="w-full bg-[#f1faff] py-2 p-5 border border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 justify-between rounded-md">
+			<div className="dashboard w-full bg-[#f1faff] py-2 p-5 border border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 justify-between rounded-md">
 				<div className="info">
 					<h1 className="text-[35px] font-bold leading-10 mb-3 ">
 						Good Morning, <br />
@@ -201,7 +202,11 @@ function Dashboard() {
 							<PiExport className="text-white text-[20px] " />
 							Export
 						</Button>
-						<Button className="btn-blue btn-sm !text-white">Add Product</Button>
+						<Button className="btn-blue btn-sm !text-white gap-2 flex items-center">
+							{" "}
+							<RiProductHuntLine className="text-white text-[20px]   " />
+							Add Product
+						</Button>
 					</div>
 				</div>
 
@@ -1028,7 +1033,10 @@ function Dashboard() {
 							<PiExport className="text-white text-[20px] " />
 							Export
 						</Button>
-						<Button className="btn-blue btn-sm !text-white">Add Product</Button>
+						<Button className="btn-blue btn-sm !text-white gap-2 flex items-center">
+							<RiProductHuntLine className="text-white text-[20px]   " />
+							Add Product
+						</Button>
 					</div>
 				</div>
 				<br />
@@ -2771,6 +2779,7 @@ function Dashboard() {
 								dataKey="TotalSales"
 								stroke="#3872fa"
 								strokeWidth={3}
+								activeDot={{ r: 8 }}
 							/>
 						</LineChart>
 					</ResponsiveContainer>

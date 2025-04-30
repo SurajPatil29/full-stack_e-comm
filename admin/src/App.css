@@ -14,17 +14,27 @@
 	padding: 8px 20px;
 }
 
+.btn-blue:hover {
+	background: #3067e5 !important;
+}
+
+.btn svg {
+	font-size: 20px;
+}
+
 .btn {
 	padding: 8px 20px !important;
 }
-.btn {
+.btn-sm {
 	padding: 6px 20px !important;
 	font-size: 13px !important;
 }
 
-.btn-blue:hover {
-	background: #3067e5 !important;
+.btn-lg {
+	padding: 8px 20px !important;
+	font-size: 16px !important;
 }
+
 /* btn-blue use in dashbord compo */
 
 /* scroll bar seting in tables on dashbord page */
@@ -41,3 +51,10 @@
 th.MuiTableCell-root {
 	@apply bg-[#F9FAFB] py-2;
 }
+
+/* this is used for signup login page button activation shocasing */
+a.isActive button {
+	background: #f3f3f3 !important;
+}
+
+/* this is used for signup login page button activation shocasing */

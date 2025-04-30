@@ -3,6 +3,5 @@
 @tailwind utilities;
 body {
 	font-family: "Raleway", sans-serif;
-	background: #f1f1f1;
 	/* google font family added in index.js add fontfamily here  */
 }
