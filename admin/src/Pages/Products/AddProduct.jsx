@@ -3,7 +3,7 @@ import React from "react";
 import Rating from "@mui/material/Rating";
 import UploadBox from "../../Components/UploadBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
+import "react-lazy-load-image-component/src/effects/blur.css"; //css for lasyload img
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaCloudUploadAlt } from "react-icons/fa";
 

@@ -163,7 +163,9 @@ function Header() {
 						</Menu>
 					</div>
 				) : (
-					<Button className="btn-blue btn-sm !rounded-full">Sign In</Button>
+					<Link to="/signup">
+						<Button className="btn-blue btn-sm !rounded-full">Sign In</Button>
+					</Link>
 				)}
 			</div>
 		</header>

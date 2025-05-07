@@ -2602,6 +2602,8 @@ function Dashboard() {
 
 			{/* this is material ui table v2 */}
 
+			{/* recent order table */}
+
 			<div className="card m-4 shadow-md sm:rounded-lg bg-white">
 				<div className="flex items-center justify-between px-5 py-5">
 					<h2 className="text-[18px] font-[600] ">Recent Orders</h2>
@@ -2770,6 +2772,8 @@ function Dashboard() {
 					</table>
 				</div>
 			</div>
+
+			{/* recent order table */}
 
 			{/* chart */}
 			<div className="card my-4 shadow-md sm:rounded-lg bg-white">
