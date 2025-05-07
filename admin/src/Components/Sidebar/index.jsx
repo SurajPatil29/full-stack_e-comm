@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { FaAngleDown, FaProductHunt, FaRegImage } from "react-icons/fa";
@@ -10,8 +10,10 @@ import { TbCategory } from "react-icons/tb";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { MdOutlineLogout } from "react-icons/md";
 import { Collapse } from "react-collapse";
+import { MyContext } from "../../App";
 
 function Sidebar() {
+	const context = useContext(MyContext);
 	const [submenuIndex, setSubmenuIndex] = useState(null);
 	const isOpenSubMenu = (index) => {
 		if (submenuIndex === index) {
@@ -109,12 +111,18 @@ function Sidebar() {
 									</Link>
 								</li>
 								<li className="w-full">
-									<Link to="/product/upload">
-										<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
-											<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
-											Product Upload
-										</Button>
-									</Link>
+									<Button
+										className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 "
+										onClick={() =>
+											context.setIsOpenFullScreenPanel({
+												open: true,
+												model: "Add Product",
+											})
+										}
+									>
+										<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+										Product Upload
+									</Button>
 								</li>
 							</ul>
 						</Collapse>
