@@ -25,6 +25,9 @@ import SubCatList from "./Pages/Category/SubCatList";
 import AddSubCategory from "./Pages/Category/AddSubCategory";
 import User from "./Pages/User";
 import Orders from "./Pages/Orders";
+import ForgotPassword from "./Pages/ForgotPassword";
+import VerifyAccount from "./Pages/VerifyAccount";
+import ChangePassword from "./Pages/ChangePassword";
 
 // add product dilog
 
@@ -132,6 +135,21 @@ function App() {
 					element: <Orders />,
 				},
 			],
+		},
+		{
+			path: "/forgot-password",
+
+			element: <ForgotPassword />,
+		},
+		{
+			path: "/verify-account",
+
+			element: <VerifyAccount />,
+		},
+		{
+			path: "/change-password",
+
+			element: <ChangePassword />,
 		},
 	]);
 	return (

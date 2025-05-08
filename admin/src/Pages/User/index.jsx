@@ -2,7 +2,11 @@ import React from "react";
 
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
-import { MdLocalPhone, MdOutlineMarkEmailRead } from "react-icons/md";
+import {
+	MdDateRange,
+	MdLocalPhone,
+	MdOutlineMarkEmailRead,
+} from "react-icons/md";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -30,6 +34,11 @@ const columns = [
 	{
 		id: "userPh",
 		label: "USER PHONE NO",
+		minWidth: 150,
+	},
+	{
+		id: "createdDate",
+		label: "CREATED",
 		minWidth: 150,
 	},
 ];
@@ -91,7 +100,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -115,6 +124,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -123,7 +138,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -147,6 +162,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -155,7 +176,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -179,6 +200,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -187,7 +214,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -211,6 +238,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -219,7 +252,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -243,6 +276,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -251,7 +290,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -275,6 +314,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -283,7 +328,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -307,6 +352,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 							<TableRow>
@@ -315,7 +366,7 @@ function User() {
 								</TableCell>
 								<TableCell style={{ minWidth: columns.minWidth }}>
 									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
+										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
 											<Link to="/product/474557">
 												<img
 													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
@@ -339,6 +390,12 @@ function User() {
 										<MdLocalPhone />
 										91 90123456789
 									</span>{" "}
+								</TableCell>
+								<TableCell style={{ minWidth: columns.minWidth }}>
+									<span className="flex items-center gap-2">
+										<MdDateRange />
+										10-12-2024
+									</span>
 								</TableCell>
 							</TableRow>
 						</TableBody>

@@ -70,3 +70,26 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
 	-moz-appearance: textfield;
 }
+
+/* otp box css */
+
+.otpBox input {
+	border: 1px solid rgba(0, 0, 0, 0.3) !important;
+	outline: none !important;
+	border-radius: 4px;
+}
+.otpBox input:focus {
+	border: 1px solid rgba(0, 0, 0, 0.7) !important;
+}
+.otpPage .container {
+	height: 90vh;
+	display: flex;
+}
+
+/* otp box css */
+
+.MuiTableBody-root tr:nth-child(even) {
+	@apply bg-gray-50;
+}
+
+/* mui table css */
