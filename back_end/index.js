@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
 import connectDB from "./config/connectDB.js";
+import userRouter from "./route/user.route.js";
 
 // Load env variables
 dotenv.config();
@@ -28,6 +29,8 @@ app.use(
 app.get("/", (req, res) => {
 	res.json({ message: `Server is running on PORT ${PORT}` });
 });
+
+app.use("/api/user", userRouter);
 
 // Connect DB and start server
 connectDB().then(() => {
