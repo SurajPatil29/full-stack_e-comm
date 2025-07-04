@@ -1,21 +1,22 @@
-import UserModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import UserModel from "../models/user.model.js";
 
-const generatedRefreshToken = async (userId) => {
-	if (!process.env.SECRET_KEY_REFRESH_TOKEN) {
+const generatedRefreshToken = async (userId, saveInDB = true) => {
+	const secret = process.env.SECRET_KEY_REFRESH_TOKEN;
+	if (!secret) {
 		throw new Error(
-			"Refresh token secret key is not defined in environment variables"
+			"Refresh token secret key is missing in environment variables"
 		);
 	}
 
-	const token = jwt.sign({ id: userId }, process.env.SECRET_KEY_REFRESH_TOKEN, {
+	const token = jwt.sign({ id: userId }, secret, {
 		expiresIn: "7d",
 	});
 
-	const updateResult = await UserModel.updateOne(
-		{ _id: userId },
-		{ refresh_token: token }
-	);
+	// Optional: Save to DB if needed (e.g. for logout/invalidation)
+	if (saveInDB) {
+		await UserModel.findByIdAndUpdate(userId, { refresh_token: token });
+	}
 
 	return token;
 };

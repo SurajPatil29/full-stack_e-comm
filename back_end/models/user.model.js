@@ -5,11 +5,16 @@ const userSchema = mongoose.Schema(
 		name: {
 			type: String,
 			required: [true, "Provide Name"],
+			trim: true,
+			minlength: 2,
 		},
 		email: {
 			type: String,
 			required: [true, "Provide Email"],
 			unique: true,
+			lowercase: true,
+			trim: true,
+			index: true,
 		},
 		password: {
 			type: String,
@@ -20,8 +25,9 @@ const userSchema = mongoose.Schema(
 			default: null,
 		},
 		mobile: {
-			type: Number,
+			type: String,
 			default: null,
+			trim: true,
 		},
 		verify_email: {
 			type: Boolean,
@@ -37,7 +43,7 @@ const userSchema = mongoose.Schema(
 		},
 		last_login_date: {
 			type: Date,
-			default: "",
+			default: null,
 		},
 		status: {
 			type: String,
@@ -62,23 +68,30 @@ const userSchema = mongoose.Schema(
 				ref: "order",
 			},
 		],
-		otp: {
-			type: String,
-		},
-		otpExpires: {
-			type: Date,
-		},
+		otp: String,
+		otpExpires: Date,
 		role: {
 			type: String,
 			enum: ["ADMIN", "USER"],
 			default: "USER",
 		},
+		// Optional soft-delete flag
+		isDeleted: {
+			type: Boolean,
+			default: false,
+			select: false,
+		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
-const UserModel = mongoose.model("User", userSchema);
+// Normalize email
+userSchema.pre("save", function (next) {
+	if (this.isModified("email")) {
+		this.email = this.email.toLowerCase().trim();
+	}
+	next();
+});
 
+const UserModel = mongoose.model("User", userSchema);
 export default UserModel;

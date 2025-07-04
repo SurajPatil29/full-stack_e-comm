@@ -10,10 +10,10 @@ if (!MONGOOSE_URL) {
 
 async function connectDB() {
 	try {
-		await mongoose.connect(MONGOOSE_URL);
-		console.log("connect DB");
+		const conn = await mongoose.connect(MONGOOSE_URL);
+		console.log(`✅ MongoDB connected`);
 	} catch (error) {
-		console.log("MongoDB connect Error");
+		console.error("❌ MongoDB connect error:", error.message);
 		process.exit(1);
 	}
 }

@@ -1,759 +1,302 @@
+// product.controller.js
 import ProductModel from "../models/product.model.js";
-
-import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import CategoryModel from "../models/category.model.js";
-import { error } from "console";
-import { response } from "express";
+import cloudinary from "../config/cloudinary.js";
+import { sendError, sendSuccess } from "../utils/response.js";
+import { paginate } from "../utils/pagination.js";
+import { buildProductQuery } from "../utils/filterQuery.js";
+import { extractPublicIdFromUrl } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
 
-cloudinary.config({
-	cloud_name: process.env.cloudinary_Config_Cloud_Name,
-	api_key: process.env.cloudinary_Config_api_key,
-	api_secret: process.env.cloudinary_Config_api_secret,
-	secure: true,
-});
+// Helper: Upload to Cloudinary
+const uploadToCloudinary = async (
+	files = [],
+	folder = "classyshop/productimg"
+) => {
+	const uploadedImages = [];
+	const validMimeTypes = ["image/jpeg", "image/png", "image/webp"];
 
-var imagesArr = [];
-export async function uploadImage(req, res) {
-	try {
-		const imageFiles = req.files;
-
-		for (let i = 0; i < imageFiles?.length; i++) {
-			const result = await cloudinary.uploader.upload(
-				imageFiles[i].path, // this should be the local file path
-				{
-					folder: "classyshop/productimg", // 📁 target folder in Cloudinary
-					use_filename: true,
-					unique_filename: true,
-					overwrite: false,
-				}
-			);
-
-			imagesArr.push(result.secure_url);
-
-			// Delete file from local uploads folder
-			fs.unlinkSync(imageFiles[i].path);
+	for (const file of files) {
+		if (!validMimeTypes.includes(file.mimetype)) {
+			fs.unlinkSync(file.path);
+			throw new Error("Unsupported image type");
 		}
-
-		return res.status(200).json({
-			message: "Images uploaded successfully",
-			images: imagesArr,
-			error: false,
-			success: true,
+		const result = await cloudinary.uploader.upload(file.path, {
+			folder,
+			use_filename: true,
+			unique_filename: true,
+			overwrite: false,
 		});
-	} catch (error) {
-		return res.send(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		uploadedImages.push(result.secure_url);
+		fs.unlinkSync(file.path);
 	}
-}
+	return uploadedImages;
+};
 
-export async function createProduct(req, res) {
+export async function uploadImage(req, res, next) {
 	try {
-		const product = new ProductModel({
-			name: req.body.name,
-			description: req.body.description,
-			images: imagesArr,
-			brand: req.body.brand,
-			price: req.body.price,
-			oldPrice: req.body.oldPrice,
-			catName: req.body.catName,
-			catId: req.body.catId,
-			subCatId: req.body.subCatId,
-			subCat: req.body.subCat,
-			thirdsubCat: req.body.thirdsubCat,
-			thirdsubCatId: req.body.thirdsubCatId,
-			category: req.body.category, // make sure this is included if required
-			countInStock: req.body.countInStock,
-			rating: req.body.rating,
-			isFeatured: req.body.isFeatured, // Corrected key (case-sensitive)
-			discount: req.body.discount,
-			productRam: req.body.productRam,
-			size: req.body.size,
-			productWeight: req.body.productWeight,
-		});
-
-		await product.save();
-
-		imagesArr = []; // Clear image array after saving
-
-		res.status(200).json({
-			message: "Product Created Successfully",
-			error: false,
-			success: true,
-			product,
-		});
+		const files = req.files;
+		if (!files || files.length === 0)
+			return sendError(res, "No files provided", 422);
+		const images = await uploadToCloudinary(files);
+		return sendSuccess(res, "Images uploaded successfully", { images });
 	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 }
 
-export async function getAllProducts(req, res) {
+export async function createProduct(req, res, next) {
+	try {
+		const files = req.files;
+		if (!files || files.length === 0)
+			return sendError(res, "No images provided", 422);
+		const uploadedImages = await uploadToCloudinary(files);
+		const product = new ProductModel({ ...req.body, images: uploadedImages });
+		await product.save();
+		return sendSuccess(res, "Product created successfully", { product });
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function getAllProducts(req, res, next) {
 	try {
 		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
+		const perPage = parseInt(req.query.perPage) || 10;
+		const sort = req.query.sort || "createdAt";
+		const order = req.query.order === "desc" ? -1 : 1;
 
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
+		const { totalPages } = await paginate(ProductModel, {}, page, perPage);
+		if (page > totalPages && totalPages !== 0)
+			return sendError(res, "Page not found", 404);
 
 		const products = await ProductModel.find()
-			.populate("category")
+			.sort({ [sort]: order })
 			.skip((page - 1) * perPage)
 			.limit(perPage)
-			.exec();
+			.populate("category");
 
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
+		return sendSuccess(res, "Fetched products successfully", {
 			data: products,
-			totalPages: totalPages,
-			page: page,
+			page,
+			totalPages,
 		});
 	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 }
 
-export async function getAllProductsByCatId(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		console.log(req.params.Id);
-		const products = await ProductModel.find({ catId: req.params.Id })
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+export async function getAllProductsByCatId(req, res, next) {
+	const page = parseInt(req.query.page) || 1;
+	const perPage = parseInt(req.query.perPage) || 10;
+	return fetchPaginatedProducts(
+		res,
+		{ catId: req.params.id },
+		page,
+		perPage,
+		"Products by Category ID fetched"
+	);
 }
 
 export async function getAllProductsByCatName(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		// console.log(req.params.Id);
-		const products = await ProductModel.find({ catName: req.query.catName })
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+	const { catName, page = 1, perPage = 10 } = req.query;
+	return fetchPaginatedProducts(
+		res,
+		{ catName },
+		parseInt(page),
+		parseInt(perPage),
+		"Products by Category Name fetched"
+	);
 }
 
 export async function getAllProductsBySubCatId(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		console.log(req.params.Id);
-		const products = await ProductModel.find({ subCatId: req.params.Id })
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+	const { page = 1, perPage = 10 } = req.query;
+	return fetchPaginatedProducts(
+		res,
+		{ subCatId: req.params.id },
+		parseInt(page),
+		parseInt(perPage),
+		"Products by SubCategory ID fetched"
+	);
 }
 
 export async function getAllProductsBySubCatName(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		// console.log(req.params.Id);
-		const products = await ProductModel.find({ subCat: req.query.subCat })
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+	const { subCat, page = 1, perPage = 10 } = req.query;
+	return fetchPaginatedProducts(
+		res,
+		{ subCat },
+		parseInt(page),
+		parseInt(perPage),
+		"Products by SubCategory Name fetched"
+	);
 }
 
 export async function getAllProductsByThirdLevelCatId(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		// console.log(req.params.Id);
-		const products = await ProductModel.find({ thirdsubCatId: req.params.Id })
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+	const { page = 1, perPage = 10 } = req.query;
+	return fetchPaginatedProducts(
+		res,
+		{ thirdsubCatId: req.params.id },
+		parseInt(page),
+		parseInt(perPage),
+		"Products by Third-Level SubCategory ID fetched"
+	);
 }
 
 export async function getAllProductsByThirdLevelCatName(req, res) {
-	try {
-		const page = parseInt(req.query.page) || 1;
-		const perPage = parseInt(req.query.perPage);
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-		// console.log(req.params.Id);
-		const products = await ProductModel.find({
-			thirdsubCat: req.query.thirdsubCat,
-		})
-			.populate("category")
-			.skip((page - 1) * perPage)
-			.limit(perPage)
-			.exec();
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: products,
-			totalPages: totalPages,
-			page: page,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
-	}
+	const { thirdsubCat, page = 1, perPage = 10 } = req.query;
+	return fetchPaginatedProducts(
+		res,
+		{ thirdsubCat },
+		parseInt(page),
+		parseInt(perPage),
+		"Products by Third-Level SubCategory Name fetched"
+	);
 }
 
 export async function getAllProductsByPrice(req, res) {
-	let productList = [];
+	try {
+		const { minPrice, maxPrice, ...rest } = req.query;
+		const query = buildProductQuery(rest);
+		let products = await ProductModel.find(query).populate("category");
 
-	if (req.query.catId !== "" && req.query.catId !== undefined) {
-		const productListArr = await ProductModel.find({
-			catId: req.query.catId,
-		}).populate("category");
+		products = products.filter((p) => {
+			if (minPrice && p.price < parseInt(minPrice)) return false;
+			if (maxPrice && p.price > parseInt(maxPrice)) return false;
+			return true;
+		});
 
-		productList = productListArr;
+		return sendSuccess(res, "Filtered products by price", { products });
+	} catch (error) {
+		return sendError(res, error.message);
 	}
-
-	if (req.query.subCatId !== "" && req.query.subCatId !== undefined) {
-		const productListArr = await ProductModel.find({
-			subCatId: req.query.subCatId,
-		}).populate("category");
-
-		productList = productListArr;
-	}
-
-	if (req.query.thirdsubCatId !== "" && req.query.thirdsubCatId !== undefined) {
-		const productListArr = await ProductModel.find({
-			thirdsubCatId: req.query.thirdsubCatId,
-		}).populate("category");
-
-		productList = productListArr;
-	}
-
-	const filteredProducts = productList.filter((product) => {
-		if (req.query.minPrice && product.price < parseInt(+req.query.minPrice)) {
-			return false;
-		}
-		if (req.query.maxPrice && product.price > parseInt(+req.query.maxPrice)) {
-			return false;
-		}
-
-		return true;
-	});
-
-	return res.status(200).json({
-		error: false,
-		success: true,
-		products: filteredProducts,
-		totalPages: 0,
-		page: 0,
-	});
 }
 
 export async function getAllProductsByRating(req, res) {
 	try {
-		const page = parseInt(req.query.apge) || 1;
-		const perPage = parseInt(req.query.perPage) || 10000;
-
-		const totalPosts = await ProductModel.countDocuments();
-		const totalPages = Math.ceil(totalPosts / perPage);
-
-		if (page > totalPages) {
-			return res.status(404).json({
-				message: "Page not found",
-				success: false,
-				error: true,
-			});
-		}
-
-		let products = [];
-
-		if (req.query.catId !== undefined) {
-			products = await ProductModel.find({
-				rating: req.query.rating,
-				catId: req.query.catId,
-			})
-				.populate("category")
-				.skip((page - 1) * perPage)
-				.limit(perPage)
-				.exec();
-		}
-
-		if (req.query.subCatId !== undefined) {
-			products = await ProductModel.find({
-				rating: req.query.rating,
-				subCatId: req.query.subCatId,
-			})
-				.populate("category")
-				.skip((page - 1) * perPage)
-				.limit(perPage)
-				.exec();
-		}
-
-		if (req.query.thirdsubCatId !== undefined) {
-			products = await ProductModel.find({
-				rating: req.query.rating,
-				thirdsubCatId: req.query.thirdsubCatId,
-			})
-				.populate("category")
-				.skip((page - 1) * perPage)
-				.limit(perPage)
-				.exec();
-		}
-
-		if (!products) {
-			res.status(500).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			products: products,
-			totalPages: totalPages,
-			page: page,
+		const { rating, page = 1, perPage = 10, ...rest } = req.query;
+		const query = buildProductQuery({ ...rest, rating });
+		const { data, totalPages } = await paginate(
+			ProductModel,
+			query,
+			parseInt(page),
+			parseInt(perPage),
+			"category"
+		);
+		if (page > totalPages && totalPages !== 0)
+			return sendError(res, "Page not found", 404);
+		return sendSuccess(res, "Products filtered by rating", {
+			products: data,
+			page,
+			totalPages,
 		});
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || message,
-			error: true,
-			success: false,
-		});
+		return sendError(res, error.message);
 	}
 }
 
 export async function getProductsCount(req, res) {
 	try {
-		const productsCount = await ProductModel.countDocuments();
-
-		if (!productsCount) {
-			res.status(400).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			productsCount: productsCount,
-		});
+		const count = await ProductModel.countDocuments();
+		return sendSuccess(res, "Product count fetched", { productsCount: count });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		return sendError(res, error.message);
 	}
 }
 
 export async function getFeaturesProducts(req, res) {
 	try {
-		const products = await ProductModel.find({
-			isFeatured: true,
-		}).populate("category");
-
-		if (!products) {
-			res.status(400).json({
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			products: products,
-		});
+		const products = await ProductModel.find({ isFeatured: true }).populate(
+			"category"
+		);
+		return sendSuccess(res, "Featured products", { products });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		return sendError(res, error.message);
 	}
 }
 
-export async function deleteProduct(req, res) {
+export async function deleteProduct(req, res, next) {
 	try {
+		if (!mongoose.Types.ObjectId.isValid(req.params.id))
+			return sendError(res, "Invalid product ID", 400);
+		const product = await ProductModel.findById(req.params.id);
+		if (!product) return sendError(res, "Product not found", 404);
+		for (const imageUrl of product.images) {
+			const publicId = extractPublicIdFromUrl(imageUrl);
+			if (publicId) await cloudinary.uploader.destroy(publicId);
+		}
+		await product.deleteOne();
+		return sendSuccess(res, "Product deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function getProduct(req, res, next) {
+	try {
+		if (!mongoose.Types.ObjectId.isValid(req.params.id))
+			return sendError(res, "Invalid product ID", 400);
 		const product = await ProductModel.findById(req.params.id).populate(
 			"category"
 		);
-
-		if (!product) {
-			return res.status(400).json({
-				message: "Product Not Found",
-				error: true,
-				success: false,
-			});
-		}
-
-		const images = product.images;
-
-		// Delete each image from Cloudinary
-		for (const imageUrl of images) {
-			const match = imageUrl.match(
-				/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
-			);
-			if (match && match[1]) {
-				const publicId = match[1]; // example: classyshop/categoryimg/image_name
-				await cloudinary.uploader.destroy(publicId);
-			}
-		}
-
-		// Delete product from DB
-		const deletedProduct = await ProductModel.findByIdAndDelete(req.params.id);
-
-		if (!deletedProduct) {
-			return res.status(400).json({
-				message: "Product not deleted!",
-				success: false,
-				error: true,
-			});
-		}
-
-		return res.status(200).json({
-			message: "Product deleted successfully",
-			success: true,
-			error: false,
-		});
+		if (!product) return sendError(res, "Product not found", 404);
+		return sendSuccess(res, "Product fetched", { product });
 	} catch (error) {
-		console.error("Delete Product Error:", error);
-		return res.status(500).json({
-			message: error.message || "Server Error",
-			success: false,
-			error: true,
-		});
+		next(error);
 	}
 }
 
-export async function getProduct(req, res) {
+export async function updateProduct(req, res, next) {
 	try {
-		const product = await ProductModel.findById(req.params.id).populate(
-			"category"
+		if (!mongoose.Types.ObjectId.isValid(req.params.id))
+			return sendError(res, "Invalid product ID", 400);
+		const updateFields = { ...req.body };
+		const updated = await ProductModel.findByIdAndUpdate(
+			req.params.id,
+			updateFields,
+			{ new: true }
 		);
-
-		if (!product) {
-			return res.status(400).json({
-				message: "The product is not found",
-				error: true,
-				success: false,
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-		});
+		if (!updated) return sendError(res, "Product not updated", 404);
+		return sendSuccess(res, "Product updated", { product: updated });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 }
 
-export async function removeImageFromCloudinary(req, res) {
+export async function removeImageFromCloudinary(req, res, next) {
 	try {
 		const imgUrl = req.query.img;
-
-		if (!imgUrl) {
-			return res.status(400).json({ error: "Image URL is required" });
-		}
-
-		// Step 1: Extract public_id
-		const match = imgUrl.match(
-			/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
-		);
-
-		if (!match || !match[1]) {
-			return res
-				.status(400)
-				.json({ error: "Invalid Cloudinary image URL format" });
-		}
-
-		const publicId = match[1]; // e.g., classyshop/categoryimg/filename
-		console.log("Deleting Cloudinary image with public_id:", publicId);
-
-		// Step 2: Delete from Cloudinary
+		if (!imgUrl) return sendError(res, "Image URL required", 400);
+		const publicId = extractPublicIdFromUrl(imgUrl);
+		if (!publicId) return sendError(res, "Invalid image URL", 400);
 		const result = await cloudinary.uploader.destroy(publicId);
+		if (result.result !== "ok")
+			return sendError(res, "Failed to delete from Cloudinary", 404);
 
-		if (result.result !== "ok") {
-			return res.status(404).json({
-				error: "Image not found on Cloudinary or deletion failed",
-				result,
-			});
+		const product = await ProductModel.findOne({ images: imgUrl });
+		if (product) {
+			product.images = product.images.filter((img) => img !== imgUrl);
+			await product.save();
 		}
-
-		// Step 3: Remove image URL from CategoryModel
-		const category = await ProductModel.findOne({ images: imgUrl });
-
-		if (category) {
-			category.images = category.images.filter((img) => img !== imgUrl);
-			await category.save();
-			console.log(`Removed image URL from category ${category._id}`);
-		} else {
-			console.warn("No category found with this image URL.");
-		}
-
-		// Step 4: Return response
-		return res.status(200).json({
-			message: "Image deleted from Cloudinary and removed from category",
-			result,
-		});
+		return sendSuccess(res, "Image removed", { result });
 	} catch (error) {
-		console.error("Cloudinary deletion error:", error);
-		return res.status(500).json({ error: "Server error while deleting image" });
+		next(error);
 	}
 }
 
-export async function updateProduct(req, res) {
+// Shared fetch function
+async function fetchPaginatedProducts(res, query, page, perPage, message) {
 	try {
-		const product = await ProductModel.findByIdAndUpdate(req.params.id, {
-			name: req.body.name,
-			description: req.body.description,
-			images: imagesArr,
-			brand: req.body.brand,
-			price: req.body.price,
-			oldPrice: req.body.oldPrice,
-			catName: req.body.catName,
-			catId: req.body.catId,
-			subCatId: req.body.subCatId,
-			subCat: req.body.subCat,
-			thirdsubCat: req.body.thirdsubCat,
-			thirdsubCatId: req.body.thirdsubCatId,
-			category: req.body.category, // make sure this is included if required
-			countInStock: req.body.countInStock,
-			rating: req.body.rating,
-			isFeatured: req.body.isFeatured, // Corrected key (case-sensitive)
-			discount: req.body.discount,
-			productRam: req.body.productRam,
-			size: req.body.size,
-			productWeight: req.body.productWeight,
-		});
-
-		if (!product) {
-			res.status(404).json({
-				message: "The product can not be updated",
-			});
-		}
-
-		imagesArr = [];
-
-		return res.status(200).json({
-			message: "The product is updated",
-			error: false,
-			success: true,
-		});
+		const { data, totalPages } = await paginate(
+			ProductModel,
+			query,
+			page,
+			perPage,
+			"category"
+		);
+		if (page > totalPages && totalPages !== 0)
+			return sendError(res, "Page not found", 404);
+		return sendSuccess(res, message, { data, page, totalPages });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		return sendError(res, error.message);
 	}
 }

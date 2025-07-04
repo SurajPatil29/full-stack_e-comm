@@ -1,21 +1,16 @@
 import jwt from "jsonwebtoken";
-import UserModel from "../models/user.model.js";
 
 const generatedAccessToken = (userId) => {
-	if (!process.env.JSON_WEB_TOKEN_SECRET_KEY) {
-		throw new Error("JWT secret key is not defined in environment variables");
+	const secret = process.env.SECRET_KEY_ACCESS_TOKEN;
+	if (!secret) {
+		throw new Error(
+			"Access token secret key is missing in environment variables"
+		);
 	}
 
-	const token = jwt.sign({ id: userId }, process.env.SECRET_KEY_ACCESS_TOKEN, {
+	return jwt.sign({ id: userId }, secret, {
 		expiresIn: "5h",
 	});
-
-	const updateResult = UserModel.updateOne(
-		{ _id: userId },
-		{ access_token: token }
-	);
-
-	return token;
 };
 
 export default generatedAccessToken;

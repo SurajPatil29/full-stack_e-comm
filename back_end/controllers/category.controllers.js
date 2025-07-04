@@ -1,146 +1,112 @@
 import CategoryModel from "../models/category.model.js";
-
-import { v2 as cloudinary } from "cloudinary";
-import { error } from "console";
+import cloudinary from "../config/cloudinary.js";
+import { sendSuccess, sendError } from "../utils/response.js";
 import fs from "fs";
 
-cloudinary.config({
-	cloud_name: process.env.cloudinary_Config_Cloud_Name,
-	api_key: process.env.cloudinary_Config_api_key,
-	api_secret: process.env.cloudinary_Config_api_secret,
-	secure: true,
-});
+// Utility to upload images
+async function uploadToCloudinary(files, folder) {
+	const uploadedUrls = [];
 
-var imagesArr = [];
-export async function uploadImage(req, res) {
+	for (const file of files) {
+		const result = await cloudinary.uploader.upload(file.path, {
+			folder,
+			use_filename: true,
+			unique_filename: true,
+			overwrite: false,
+		});
+		uploadedUrls.push(result.secure_url);
+		fs.unlinkSync(file.path); // delete local file
+	}
+
+	return uploadedUrls;
+}
+
+// Controller: Upload category images
+export async function uploadImage(req, res, next) {
 	try {
 		const imageFiles = req.files;
 
-		for (let i = 0; i < imageFiles?.length; i++) {
-			const result = await cloudinary.uploader.upload(
-				imageFiles[i].path, // this should be the local file path
-				{
-					folder: "classyshop/categoryimg", // 📁 target folder in Cloudinary
-					use_filename: true,
-					unique_filename: true,
-					overwrite: false,
-				}
-			);
-
-			imagesArr.push(result.secure_url);
-
-			// Delete file from local uploads folder
-			fs.unlinkSync(imageFiles[i].path);
+		if (!imageFiles || imageFiles.length === 0) {
+			return sendError(res, "No images provided", 400);
 		}
 
-		return res.status(200).json({
-			message: "Images uploaded successfully",
-			images: imagesArr,
-			error: false,
-			success: true,
-		});
+		const images = await uploadToCloudinary(
+			imageFiles,
+			"classyshop/categoryimg"
+		);
+		return sendSuccess(res, "Images uploaded successfully", { images });
 	} catch (error) {
-		return res.send(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function createCategory(req, res) {
+// Controller: Create a category
+export async function createCategory(req, res, next) {
 	try {
-		let category = new CategoryModel({
-			name: req.body.name,
-			images: imagesArr,
-			parentId: req.body.parentId,
-			parentCatName: req.body.parentCatName,
-		});
+		const { name, parentId, parentCatName, images } = req.body;
 
-		if (!category) {
-			return res.status(500).json({
-				message: "Category not created",
-				error: true,
-				success: false,
-			});
+		if (!name || !images?.length) {
+			return sendError(res, "Category name and images are required", 400);
 		}
 
-		category = await category.save();
-		imagesArr = [];
+		const category = new CategoryModel({
+			name,
+			images,
+			parentId: parentId || null,
+			parentCatName: parentCatName || null,
+		});
 
-		return res.status(200).json({
-			message: "Category created successfully",
-			category: category,
-			error: false,
-			success: true,
-		});
+		await category.save();
+		return sendSuccess(res, "Category created successfully", { category });
 	} catch (error) {
-		return res.send(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function getCategories(req, res) {
+export async function getCategories(req, res, next) {
 	try {
 		const categories = await CategoryModel.find();
 		const categoryMap = {};
 
+		// Step 1: Map each category by ID and add `children` array
 		categories.forEach((cat) => {
 			categoryMap[cat._id] = { ...cat._doc, children: [] };
 		});
 
+		// Step 2: Build nested structure
 		const rootCategories = [];
-
 		categories.forEach((cat) => {
 			if (cat.parentId) {
-				categoryMap[cat.parentId].children.push(categoryMap[cat._id]);
+				if (categoryMap[cat.parentId]) {
+					categoryMap[cat.parentId].children.push(categoryMap[cat._id]);
+				}
 			} else {
 				rootCategories.push(categoryMap[cat._id]);
 			}
 		});
 
-		return res.status(200).json({
+		return sendSuccess(res, "Categories fetched successfully", {
 			data: rootCategories,
-			error: false,
-			success: true,
 		});
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function getCategoriesCount(req, res) {
+export async function getCategoriesCount(req, res, next) {
 	try {
+		// Counting only top-level categories (parentId: null)
 		const categoryCount = await CategoryModel.countDocuments({
-			parentId: undefined,
+			parentId: null,
 		});
-		if (!categoryCount) {
-			res.status(500).json({
-				success: false,
-				error: true,
-			});
-		} else {
-			res.send({
-				categoryCount: categoryCount,
-			});
-		}
+
+		return sendSuccess(res, "Top-level categories count", { categoryCount });
 	} catch (error) {
-		return res.status(500).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function getSubCategoriesCount(req, res) {
+export async function getSubCategoriesCount(req, res, next) {
 	try {
 		const categories = await CategoryModel.find();
 		if (!categories) {
@@ -158,189 +124,135 @@ export async function getSubCategoriesCount(req, res) {
 			});
 		}
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function getCategory(req, res) {
+export async function getCategory(req, res, next) {
 	try {
 		const category = await CategoryModel.findById(req.params.id);
 
 		if (!category) {
-			res.status(500).json({
-				message: "The category with the given Id was not found.",
-				error: true,
-				success: false,
-			});
+			return sendError(
+				res,
+				"The category with the given ID was not found.",
+				404
+			);
 		}
 
-		return res.status(200).json({
-			error: false,
-			success: true,
-			category: category,
-		});
+		return sendSuccess(res, "Category fetched successfully", { category });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || message,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function removeImageFromCloudinary(req, res) {
+export async function removeImageFromCloudinary(req, res, next) {
 	try {
 		const imgUrl = req.query.img;
 
 		if (!imgUrl) {
-			return res.status(400).json({ error: "Image URL is required" });
+			return sendError(res, "Image URL is required", 400);
 		}
 
-		// Step 1: Extract public_id
+		// Extract public_id from Cloudinary URL
 		const match = imgUrl.match(
 			/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
 		);
 
 		if (!match || !match[1]) {
-			return res
-				.status(400)
-				.json({ error: "Invalid Cloudinary image URL format" });
+			return sendError(res, "Invalid Cloudinary image URL format", 400);
 		}
 
 		const publicId = match[1]; // e.g., classyshop/categoryimg/filename
-		console.log("Deleting Cloudinary image with public_id:", publicId);
 
-		// Step 2: Delete from Cloudinary
+		// Delete image from Cloudinary
 		const result = await cloudinary.uploader.destroy(publicId);
 
 		if (result.result !== "ok") {
-			return res.status(404).json({
-				error: "Image not found on Cloudinary or deletion failed",
-				result,
-			});
+			return sendError(
+				res,
+				"Image not found on Cloudinary or deletion failed",
+				404
+			);
 		}
 
-		// Step 3: Remove image URL from CategoryModel
+		// Remove image URL from associated category
 		const category = await CategoryModel.findOne({ images: imgUrl });
 
 		if (category) {
 			category.images = category.images.filter((img) => img !== imgUrl);
 			await category.save();
-			console.log(`Removed image URL from category ${category._id}`);
-		} else {
-			console.warn("No category found with this image URL.");
 		}
 
-		// Step 4: Return response
-		return res.status(200).json({
-			message: "Image deleted from Cloudinary and removed from category",
+		return sendSuccess(res, "Image deleted and removed from category", {
 			result,
 		});
 	} catch (error) {
 		console.error("Cloudinary deletion error:", error);
-		return res.status(500).json({ error: "Server error while deleting image" });
+		next();
 	}
 }
 
-export async function deleteCategory(req, res) {
+export async function deleteCategory(req, res, next) {
 	try {
 		const category = await CategoryModel.findById(req.params.id);
-		const images = category.images;
 
-		for (img of images) {
-			const urlUrl = img;
-			const urlArr = imgUrl.split("/");
-			const image = urlArr[urlArr.length - 1];
-			const imageName = image.split(".")[0];
-
-			if (imageName) {
-				cloudinary.uploader.destroy(imageName, (error, result) => {
-					// console.log(error, result)
-				});
-				//console.log(imageName)
-			}
+		if (!category) {
+			return sendError(res, "Category not found!", 404);
 		}
 
-		const subCategory = await CategoryModel.find({
-			parentId: req.params.id,
-		});
-
-		for (let i = 0; i < subCategory.length; i++) {
-			const thirdsubCategory = await CategoryModel.find({
-				parentId: subCategory[i]._id,
-			});
-
-			for (let i = 0; i < thirdsubCategory.length; i++) {
-				const deletedThirdSubCat = await CategoryModel.findByIdAndDelete(
-					thirdsubCategory[i]._id
-				);
-			}
-
-			const deletedSubCat = await CategoryModel.findByIdAndDelete(
-				subCategory[i]._id
+		// Delete all images from Cloudinary
+		const deleteImagePromises = category.images.map(async (imgUrl) => {
+			const match = imgUrl.match(
+				/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
 			);
-		}
-
-		const deleteCat = await CategoryModel.findByIdAndDelete(req.params.id);
-		if (!deleteCat) {
-			res.status(404).json({
-				message: "Category not found!",
-				success: false,
-				error: true,
-			});
-		}
-
-		res.status(200).json({
-			success: true,
-			error: false,
-			message: "Category Delete!",
+			if (match && match[1]) {
+				await cloudinary.uploader.destroy(match[1]);
+			}
 		});
+		await Promise.all(deleteImagePromises);
+
+		// Delete all sub-sub-categories
+		const subCategories = await CategoryModel.find({ parentId: req.params.id });
+		for (const sub of subCategories) {
+			await CategoryModel.deleteMany({ parentId: sub._id }); // delete 3rd-level subs
+			await CategoryModel.findByIdAndDelete(sub._id); // delete sub-category
+		}
+
+		// Delete main category
+		await CategoryModel.findByIdAndDelete(req.params.id);
+
+		return sendSuccess(res, "Category and all nested categories deleted!");
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }
 
-export async function updateCategory(req, res) {
+export async function updateCategory(req, res, next) {
 	try {
+		const { name, images, parentId, parentCatName } = req.body;
+
+		if (!name || !images?.length) {
+			return sendError(res, "Name and images are required", 400);
+		}
+
 		const category = await CategoryModel.findByIdAndUpdate(
 			req.params.id,
 			{
-				name: req.body.name,
-				images: imagesArr.length > 0 ? imagesArr[0] : req.body.images,
-				parentId: req.body.parentId,
-				parentCatName: req.body.parentCatName,
+				name,
+				images,
+				parentId: parentId || null,
+				parentCatName: parentCatName || null,
 			},
 			{ new: true }
 		);
 
 		if (!category) {
-			return res.status(500).json({
-				message: "Category cannot br update!",
-				success: false,
-				error: true,
-			});
+			return sendError(res, "Category could not be updated", 500);
 		}
 
-		imagesArr = [];
-
-		res.status(200).json({
-			error: false,
-			success: true,
-			category: category,
-		});
+		return sendSuccess(res, "Category updated successfully", { category });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next();
 	}
 }

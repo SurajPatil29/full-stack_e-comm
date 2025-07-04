@@ -2,8 +2,8 @@ import { Router } from "express";
 import auth from "../middlewares/auth.js";
 import {
 	addToMyListController,
-	deleteToMylistController,
 	getMyListController,
+	deleteToMylistController,
 } from "../controllers/myList.controller.js";
 
 const myListRouter = Router();

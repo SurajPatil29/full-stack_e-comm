@@ -1,12 +1,13 @@
-const VerificationEmail = (username, otp) => {
+export function VerificationEmail(username, otp) {
 	return `
   <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Verify Your Email</title>
-    <style>
+    <title>Email Verification</title>
+   
+<style>
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
@@ -72,23 +73,16 @@ const VerificationEmail = (username, otp) => {
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <h1>Verify Your Email</h1>
-      </div>
+      <div class="header"><h1>Verify Your Email</h1></div>
       <div class="content">
         <p>Hello <strong>${username}</strong>,</p>
-        <p>Thanks for signing up with <strong>Classyshop</strong>!</p>
-        <p>Please use the OTP below to verify your email address:</p>
+        <p>Please use the OTP below to verify your email:</p>
         <div class="otp">${otp}</div>
         <p>This OTP is valid for 10 minutes.</p>
-        <p>If you didn’t create this account, you can safely ignore this email.</p>
       </div>
-      <div class="footer">
-        <p>&copy; 2025 Classyshop. All rights reserved.</p>
-      </div>
+      <div class="footer">&copy; 2025 Classyshop</div>
     </div>
   </body>
   </html>
-  `;
-};
-export default VerificationEmail;
+	`;
+}

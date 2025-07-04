@@ -1,101 +1,57 @@
-import MyListModel from "../models/myList.model.js";
+import MyListModel from "../models/mylist.model.js";
+import UserModel from "../models/user.model.js";
+import { sendError, sendSuccess } from "../utils/response.js";
 
-export const addToMyListController = async (req, res) => {
+// Add to my list
+export const addToMyListController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
-		const { productId, image, rating, price, oldPrice, brand, discount } =
-			req.body;
-		const item = await MyListModel.findOne({
-			userId: userId,
-			productId: productId,
-		});
+		const { productId } = req.body;
 
-		if (item) {
-			return res.status(400).json({
-				message: "Item already i my list",
-			});
-		}
+		if (!productId) return sendError(res, "Provide productId", 400);
 
-		const myList = new MyListModel({
-			productId,
-			image,
-			rating,
-			price,
-			oldPrice,
-			brand,
-			discount,
-			userId,
-		});
+		const alreadyExists = await MyListModel.findOne({ userId, productId });
+		if (alreadyExists) return sendError(res, "Item already in list", 400);
 
-		return res.status(200).json({
-			error: false,
-			success: true,
-			message: "The product saved in the my list",
-		});
-		const save = await myList.save();
+		const item = await MyListModel.create({ userId, productId });
+
+		await UserModel.updateOne(
+			{ _id: userId },
+			{ $push: { my_list: productId } }
+		);
+
+		return sendSuccess(res, "Item added to MyList", { data: item });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 };
 
-export const deleteToMylistController = async (req, res) => {
+// Get all my list items
+export const getMyListController = async (req, res, next) => {
 	try {
-		const myListItem = await MyListModel.findById(req.params.id);
-
-		if (!myListItem) {
-			return res.status(400).json({
-				error: true,
-				success: false,
-				message: "This item with this given id was not found",
-			});
-		}
-
-		const deleteditem = await MyListModel.findByIdAndDelete(req.params.id);
-
-		if (!deleteditem) {
-			return res.status(400).json({
-				error: true,
-				success: false,
-				message: "The item is not deleted",
-			});
-		}
-
-		return res.status(200).json({
-			error: false,
-			success: true,
-			message: "this item removed from my list",
-		});
+		const userId = req.userId;
+		const items = await MyListModel.find({ userId }).populate("productId");
+		return sendSuccess(res, "MyList items fetched", { data: items });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 };
 
-export const getMyListController = async (req, res) => {
+// Delete item from MyList
+export const deleteToMylistController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
+		const productId = req.params.id;
 
-		const myListItems = await MyListModel.find({
-			userId: userId,
-		});
+		const deleted = await MyListModel.deleteOne({ userId, productId });
 
-		return res.status(200).json({
-			error: false,
-			success: true,
-			data: myListItems,
-		});
+		await UserModel.updateOne(
+			{ _id: userId },
+			{ $pull: { my_list: productId } }
+		);
+
+		return sendSuccess(res, "Item removed from MyList", { data: deleted });
 	} catch (error) {
-		return res.status(400).json({
-			message: error.message || error,
-			error: true,
-			success: false,
-		});
+		next(error);
 	}
 };

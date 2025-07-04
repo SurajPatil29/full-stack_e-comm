@@ -1,35 +1,30 @@
 import jwt from "jsonwebtoken";
+import { sendError } from "../utils/response.js";
 
-const auth = async (req, res, next) => {
+const auth = (req, res, next) => {
 	try {
+		const authHeader = req.headers?.authorization || "";
 		const token =
-			req.cookies.accessToken || req?.headers?.authorization?.split(" ")[1];
+			req.cookies?.accessToken ||
+			(authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null);
 
 		if (!token) {
-			return res.status(401).json({
-				message: "Provide token",
-			});
+			return sendError(res, "Access token not provided", 401);
 		}
 
-		const decode = await jwt.verify(token, process.env.SECRET_KEY_ACCESS_TOKEN);
+		const decoded = jwt.verify(token, process.env.SECRET_KEY_ACCESS_TOKEN);
 
-		if (!decode) {
-			return res.status(401).json({
-				message: "unauthorized access",
-				error: true,
-				success: false,
-			});
+		if (!decoded || !decoded.id._id) {
+			return sendError(res, "Invalid token", 401);
 		}
-
-		req.userId = decode.id;
+		// console.log(decoded.id._id);
+		req.userId = decoded.id._id;
+		// req.user = decoded.id
 
 		next();
 	} catch (error) {
-		return res.status(500).json({
-			message: "You have not login",
-			error: true,
-			success: false,
-		});
+		console.error("Auth middleware error:", error.message);
+		return sendError(res, "Unauthorized - Invalid or expired token", 401);
 	}
 };
 

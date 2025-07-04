@@ -4,30 +4,28 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+
 import connectDB from "./config/connectDB.js";
 import userRouter from "./route/user.route.js";
 import categoryRouter from "./route/category.route.js";
 import productRouter from "./route/product.route.js";
 import cartRouter from "./route/cart.route.js";
 import myListRouter from "./route/myList.route.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 // Load env variables
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middlewares
-app.use(cors());
-// app.options("/*", cors());
-app.use(express.json());
+// Middleware
+app.use(cors()); //{ origin: "http://localhost:3000", credentials: true }
+app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use(
-	helmet({
-		crossOriginResourcePolicy: false,
-	})
-);
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Default route
 app.get("/", (req, res) => {
@@ -40,9 +38,20 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/myList", myListRouter);
 
+// app.use("*", (req, res) => {
+// 	res.status(404).json({ success: false, message: "Route not found" });
+// });
+
+app.use(errorHandler);
+
 // Connect DB and start server
-connectDB().then(() => {
-	app.listen(PORT, () => {
-		console.log(`Server is running on http://localhost:${PORT}`);
+connectDB()
+	.then(() => {
+		app.listen(PORT, () => {
+			console.log(`🚀 Server running at http://localhost:${PORT}`);
+		});
+	})
+	.catch((err) => {
+		console.error("❌ DB Connection Failed:", err.message);
+		process.exit(1);
 	});
-});
