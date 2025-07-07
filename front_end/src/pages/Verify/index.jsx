@@ -1,18 +1,44 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import OtpBox from "../../componants/OtpBox";
+import { useNavigate } from "react-router-dom";
+import { MyContext } from "../../App";
+import { postData } from "../../utils/api";
 
 function Verify() {
 	const [otp, setOtp] = useState("");
+	const [isLoading, setIsLoding] = useState(false);
 	const handleOtpChange = (value) => {
 		setOtp(value);
 	};
 
-	const verifyOTP = (e) => {
+	const history = useNavigate();
+	const context = useContext(MyContext);
+	const verifyOTP = async (e) => {
 		e.preventDefault();
-		alert(otp);
+		setIsLoding(true);
+
+		try {
+			const res = await postData("/api/user/verifyEmail", {
+				email: localStorage.getItem("userEmail"),
+				otp: otp,
+			});
+			setIsLoding(false);
+
+			if (res?.error === false) {
+				context.openAlertBox("success", res.message);
+				localStorage.removeItem("userEmail");
+				history("/login");
+			} else {
+				context.openAlertBox("error", res.message);
+			}
+		} catch (error) {
+			setIsLoding(false);
+			context.openAlertBox("error", "Something went wrong. Try again.");
+		}
 	};
+
 	return (
 		<section className="otpPage section py-10">
 			<div className="container">
@@ -30,15 +56,20 @@ function Verify() {
 
 					<p className="text-center mb-4 ">
 						OTP send to{" "}
-						<span className="text-[#ff5252] font-bold ">surajp@gamil.com</span>
+						<span className="text-[#ff5252] font-bold ">
+							{localStorage.getItem("userEmail")}
+						</span>
 					</p>
 					<form onSubmit={verifyOTP}>
 						<OtpBox length={6} onChange={handleOtpChange} />
 
 						<div className="flex items-center justify-center mt-5 px-3">
 							<Button type="submit" className="w-full btn-org btn-lg">
-								{" "}
-								Verify OTP
+								{isLoading === true ? (
+									<CircularProgress color="inherit" />
+								) : (
+									"Verify OTP"
+								)}
 							</Button>
 						</div>
 					</form>
