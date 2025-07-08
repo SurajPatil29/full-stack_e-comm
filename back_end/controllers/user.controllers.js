@@ -152,8 +152,8 @@ export async function loginUserController(req, res, next) {
 			return sendError(res, "Invalid email or password", 400);
 		}
 
-		const accessToken = generatedAccessToken(user);
-		const refreshToken = await generatedRefreshToken(user);
+		const accessToken = generatedAccessToken(user._id);
+		const refreshToken = await generatedRefreshToken(user._id);
 
 		await UserModel.findByIdAndUpdate(user._id, {
 			last_login_date: new Date(),

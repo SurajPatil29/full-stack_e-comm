@@ -14,11 +14,11 @@ const auth = (req, res, next) => {
 
 		const decoded = jwt.verify(token, process.env.SECRET_KEY_ACCESS_TOKEN);
 
-		if (!decoded || !decoded.id._id) {
+		if (!decoded || !decoded.id) {
 			return sendError(res, "Invalid token", 401);
 		}
-		// console.log(decoded.id._id);
-		req.userId = decoded.id._id;
+		// console.log(decoded.id);
+		req.userId = decoded.id;
 		// req.user = decoded.id
 
 		next();

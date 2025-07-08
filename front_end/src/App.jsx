@@ -5,7 +5,7 @@ import { Home } from "./pages/Home";
 import Footer from "./componants/Footer";
 import ProductListing from "./pages/ProductListing";
 import ProductDetails from "./pages/ProductDetails";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -25,12 +25,14 @@ import Checkout from "./pages/Checkout";
 import MyAccount from "./pages/MyAccount";
 import MyList from "./pages/MyList";
 import Orders from "./pages/Orders";
+import { fetchDataFromApi } from "./utils/api";
 
 const MyContext = createContext();
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
 	const [openCartPanel, setOpenCartPanel] = useState(false);
 	const [isLogin, setIsLogin] = useState(false);
+	const [userData, setUserData] = useState(null);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -49,12 +51,39 @@ function App() {
 		}
 	};
 
+	useEffect(() => {
+		const token = localStorage.getItem("accessToken");
+
+		if (token !== undefined && token !== null && token !== "") {
+			setIsLogin(true);
+		} else {
+			setIsLogin(false);
+		}
+	}, [isLogin]);
+
+	useEffect(() => {
+		if (isLogin && !userData?.name) {
+			fetchDataFromApi("/api/user/user-details")
+				.then((res) => {
+					if (res?.user) {
+						setUserData(res.user);
+					} else {
+						console.warn("User details not found in response", res);
+					}
+				})
+				.catch((err) => {
+					console.error("Failed to fetch user details", err);
+				});
+		}
+	}, [isLogin]);
+
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
 		setOpenCartPanel: setOpenCartPanel,
 		openAlertBox: openAlertBox,
 		isLogin: isLogin,
 		setIsLogin: setIsLogin,
+		userData: userData,
 	};
 	return (
 		<>

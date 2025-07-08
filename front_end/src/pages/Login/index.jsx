@@ -1,18 +1,20 @@
-import { Button, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { MyContext } from "../../App";
+import { postData } from "../../utils/api";
 
 function Login() {
+	const [isLoading, setIsLoading] = useState(false);
 	const context = useContext(MyContext);
 	const [isShowPassword, setIsShowPassWord] = useState(false);
-	// const [formFields, setFormFields] = useState({
-	// 	email: "",
-	// 	password: "",
-	// });
+	const [formFields, setFormFields] = useState({
+		email: "",
+		password: "",
+	});
 
 	const history = useNavigate();
 
@@ -23,6 +25,51 @@ function Login() {
 		// }
 	};
 
+	const onChangeInput = (e) => {
+		const { name, value } = e.target;
+		setFormFields(() => {
+			return {
+				...formFields,
+				[name]: value,
+			};
+		});
+	};
+
+	const valideValue = Object.values(formFields).every((el) => el);
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		setIsLoading(true);
+
+		if (formFields.email === "") {
+			context.openAlertBox("error", "Please enter email id");
+			return false;
+		}
+
+		if (formFields.password === "") {
+			context.openAlertBox("error", "Please enter password");
+		}
+
+		postData("/api/user/login", formFields).then((res) => {
+			console.log(res?.accessToken, res?.refreshToken);
+			if (res.error !== true) {
+				setIsLoading(false);
+				context.openAlertBox("success", res.message);
+
+				setFormFields({
+					email: "",
+					password: "",
+				});
+				localStorage.setItem("accessToken", res?.accessToken);
+				localStorage.setItem("refreshToken", res?.refreshToken);
+				context.setIsLogin(true);
+				history("/");
+			} else {
+				setIsLoading(false);
+			}
+		});
+	};
 	return (
 		<section className="section py-10">
 			<div className="container">
@@ -31,7 +78,7 @@ function Login() {
 						Login to our account
 					</h3>
 
-					<form className="w-full mt-5">
+					<form className="w-full mt-5" onSubmit={handleSubmit}>
 						<div className="form-group w-full mb-5">
 							<TextField
 								type="email"
@@ -40,6 +87,9 @@ function Login() {
 								variant="outlined"
 								className="w-full"
 								name="email"
+								value={formFields.email}
+								disabled={isLoading === true ? true : false}
+								onChange={onChangeInput}
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -61,6 +111,9 @@ function Login() {
 								variant="outlined"
 								className="w-full"
 								name="password"
+								value={formFields.password}
+								disabled={isLoading === true ? true : false}
+								onChange={onChangeInput}
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -97,7 +150,17 @@ function Login() {
 						</a>
 
 						<div className="flex items-center w-full mt-3 mb-3">
-							<Button className="btn-org btn-lg w-full">Login</Button>
+							<Button
+								className="btn-org btn-lg w-full flex gap-3"
+								type="submit"
+								disabled={!valideValue}
+							>
+								{isLoading === true ? (
+									<CircularProgress color="inherit" />
+								) : (
+									"Login"
+								)}
+							</Button>
 						</div>
 
 						<p className="text-center">

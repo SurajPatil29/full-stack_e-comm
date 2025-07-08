@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search } from "../Search/index";
 import Badge from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
@@ -15,6 +15,7 @@ import { FaRegHeart, FaRegUser } from "react-icons/fa";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { LuLogOut } from "react-icons/lu";
+import { fetchDataFromApi } from "../../utils/api";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	//this is material ui componant shows the how many product in cart on symbol
@@ -28,6 +29,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 function Header() {
 	const { setOpenCartPanel, isLogin } = useContext(MyContext);
+	const context = useContext(MyContext);
+
+	const history = useNavigate();
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -37,6 +41,18 @@ function Header() {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	const logout = () => {
+		setAnchorEl(null);
+		fetchDataFromApi("/api/user/logout").then((res) => {
+			// console.log(res);
+			context.setIsLogin(false);
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+			history("/");
+		});
+	};
+
 	return (
 		<header className="bg-white">
 			{/* header include top strim line, mid search line, bottom navigation line */}
@@ -110,16 +126,24 @@ function Header() {
 										onClick={handleClick}
 										className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer "
 									>
-										<Button className="!text-[#000] !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-[#f1f1f1] ">
-											<FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)] " />
+										<Button className="!text-[#000] !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-[#f1f1f1] p-0">
+											{!context?.userData?.avatar ? (
+												<FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)]" />
+											) : (
+												<img
+													src={context.userData.avatar}
+													alt="user avatar"
+													className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full object-cover"
+												/>
+											)}
 										</Button>
 
 										<div className="info flex flex-col ">
 											<h4 className="leading-3 text-[14px] text-[rgba(0,0,0,06)] font-[500] mb-0 capitalize text-left justify-start ">
-												Suraj Patil
+												{context?.userData?.name}
 											</h4>
 											<span className="text-[13px] text-[rgba(0,0,0,0.6)] font-[400] capitalize text-left justify-start ">
-												surajp@gmail.com
+												{context?.userData?.email}
 											</span>
 										</div>
 									</Button>
@@ -189,15 +213,12 @@ function Header() {
 												<span className="text-[14px] ">My Orders</span>
 											</MenuItem>
 										</Link>
-										<Link to="logout" className="w-full block">
-											<MenuItem
-												onClick={handleClose}
-												className="flex gap-2 py-2"
-											>
-												<LuLogOut className="text-[18px] " />{" "}
-												<span className="text-[14px] ">Logout</span>
+										<div className="w-full block" onClick={logout}>
+											<MenuItem className="flex gap-2 py-2">
+												<LuLogOut className="text-[18px]" />
+												<span className="text-[14px]">Logout</span>
 											</MenuItem>
-										</Link>
+										</div>
 									</Menu>
 								</>
 							)}
