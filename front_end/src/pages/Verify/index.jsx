@@ -19,23 +19,47 @@ function Verify() {
 		e.preventDefault();
 		setIsLoding(true);
 
-		try {
-			const res = await postData("/api/user/verifyEmail", {
-				email: localStorage.getItem("userEmail"),
-				otp: otp,
-			});
-			setIsLoding(false);
+		const actionType = localStorage.getItem("actionType");
 
-			if (res?.error === false) {
-				context.openAlertBox("success", res.message);
-				localStorage.removeItem("userEmail");
-				history("/login");
-			} else {
-				context.openAlertBox("error", res.message);
+		if (actionType !== "forgot-password") {
+			try {
+				const res = await postData("/api/user/verifyEmail", {
+					email: localStorage.getItem("userEmail"),
+					otp: otp,
+				});
+				setIsLoding(false);
+
+				if (res?.error === false) {
+					context.openAlertBox("success", res.message);
+					localStorage.removeItem("userEmail");
+					history("/login");
+				} else {
+					context.openAlertBox("error", res.message);
+				}
+			} catch (error) {
+				setIsLoding(false);
+				context.openAlertBox("error", "Something went wrong. Try again.");
 			}
-		} catch (error) {
-			setIsLoding(false);
-			context.openAlertBox("error", "Something went wrong. Try again.");
+		} else {
+			try {
+				const res = await postData("/api/user/verify-forgot-password-otp", {
+					email: localStorage.getItem("userEmail"),
+					otp: otp,
+				});
+				setIsLoding(false);
+
+				if (res?.error === false) {
+					context.openAlertBox("success", res.message);
+					localStorage.removeItem("actionType");
+
+					history("/forgot-password");
+				} else {
+					context.openAlertBox("error", res.message);
+				}
+			} catch (error) {
+				setIsLoding(false);
+				context.openAlertBox("error", "Something went wrong. Try again.");
+			}
 		}
 	};
 

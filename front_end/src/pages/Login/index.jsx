@@ -19,10 +19,35 @@ function Login() {
 	const history = useNavigate();
 
 	const forgotPassword = () => {
-		// if (formFields.email !== "") {
-		history("/verify");
-		context.openAlertBox("success", "OTP is send");
-		// }
+		setIsLoading(true);
+
+		if (formFields.email !== "") {
+			postData("/api/user/forgot-password", {
+				email: formFields.email,
+			}).then((res) => {
+				if (res?.error === false) {
+					context.openAlertBox("success", `OTP send to ${formFields.email}`);
+					localStorage.setItem("userEmail", formFields.email);
+					localStorage.setItem("actionType", "forgot-password");
+					history("/verify");
+
+					setFormFields(() => {
+						return {
+							email: "",
+							password: "",
+						};
+					});
+					setIsLoading(false);
+				} else {
+					setIsLoading(false);
+
+					context.openAlertBox("error", res.message);
+				}
+			});
+		}
+		if (formFields.email === "") {
+			context.openAlertBox("error", "Enter email");
+		}
 	};
 
 	const onChangeInput = (e) => {
@@ -52,7 +77,7 @@ function Login() {
 		}
 
 		postData("/api/user/login", formFields).then((res) => {
-			console.log(res?.accessToken, res?.refreshToken);
+			// console.log(res?.accessToken, res?.refreshToken);
 			if (res.error !== true) {
 				setIsLoading(false);
 				context.openAlertBox("success", res.message);

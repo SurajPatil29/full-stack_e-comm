@@ -28,9 +28,9 @@ userRouter.put(
 	userAvatarController
 );
 userRouter.delete("/deleteImage", auth, removeImageFromCloudinary);
-userRouter.put("/forgot-password", forgotPasswordController);
-userRouter.put("/verify-forgot-password-otp", verifyForgotPasswordOtp);
-userRouter.put("/reset-password", resetPassword);
+userRouter.post("/forgot-password", forgotPasswordController);
+userRouter.post("/verify-forgot-password-otp", verifyForgotPasswordOtp);
+userRouter.post("/reset-password", resetPassword);
 userRouter.post("/refresh-token", refreshToken);
 userRouter.get("/user-details", auth, userDetails);
 userRouter.put("/:id", auth, updateUserDetails);

@@ -1,11 +1,65 @@
-import { Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { Button, CircularProgress, TextField } from "@mui/material";
+import { useContext, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
+import { postData } from "../../utils/api";
+import { useNavigate } from "react-router-dom";
+import { MyContext } from "../../App";
 
 function ForgotPassword() {
+	const email = localStorage.getItem("userEmail");
+	const [isLoading, setIsLoading] = useState(false);
+	const context = useContext(MyContext);
 	const [isShowPassword1, setIsShowPassWord1] = useState(false);
 	const [isShowPassword2, setIsShowPassWord2] = useState(false);
+	const [formFields, setFormFields] = useState({
+		newPassword: "",
+		confirmPassword: "",
+		email: email,
+	});
+
+	const history = useNavigate();
+	const valideValue = Object.values(formFields).every((el) => el);
+
+	const onChangeInput = (e) => {
+		const { name, value } = e.target;
+		setFormFields(() => {
+			return { ...formFields, [name]: value };
+		});
+	};
+	const changePass = (e) => {
+		e.preventDefault();
+		if (formFields.newPassword !== formFields.confirmPassword) {
+			context.openAlertBox("error", "Passwords do not match.");
+			setIsLoading(false);
+			return;
+		}
+		setIsLoading(true);
+
+		postData("/api/user/reset-password", formFields)
+			.then((res) => {
+				if (res?.error === false) {
+					context.openAlertBox("success", res.message);
+					localStorage.removeItem("userEmail");
+					history("/login");
+				} else {
+					context.openAlertBox(
+						"error",
+						res.message || "Password reset failed."
+					);
+				}
+			})
+			.catch((err) => {
+				console.error("Password reset error:", err);
+				context.openAlertBox(
+					"error",
+					"Something went wrong. Please try again."
+				);
+			})
+			.finally(() => {
+				setIsLoading(false); // ensures loading is stopped in all cases
+			});
+	};
 
 	return (
 		<section className="section py-10">
@@ -15,7 +69,7 @@ function ForgotPassword() {
 						Forgot Password
 					</h3>
 
-					<form className="w-full mt-5">
+					<form className="w-full mt-5" onSubmit={changePass}>
 						<div className="form-group w-full mb-5 relative">
 							<TextField
 								type={`${isShowPassword1 === true ? "text" : "password"}`}
@@ -23,7 +77,11 @@ function ForgotPassword() {
 								label="New Password *"
 								variant="outlined"
 								className="w-full"
-								name="password"
+								name="newPassword"
+								value={formFields.newPassword}
+								onChange={onChangeInput}
+								disabled={isLoading === true ? true : false}
+								required
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -60,6 +118,10 @@ function ForgotPassword() {
 								variant="outlined"
 								className="w-full"
 								name="confirmPassword"
+								value={formFields.confirmPassword}
+								onChange={onChangeInput}
+								disabled={isLoading === true ? true : false}
+								required
 								sx={{
 									"& .MuiOutlinedInput-root": {
 										"&.Mui-focused fieldset": {
@@ -89,7 +151,17 @@ function ForgotPassword() {
 						</div>
 
 						<div className="flex items-center w-full mt-3 mb-3">
-							<Button className="btn-org btn-lg w-full">Change Password</Button>
+							<Button
+								type="submit"
+								className="btn-org btn-lg w-full"
+								disabled={!valideValue}
+							>
+								{isLoading === true ? (
+									<CircularProgress color="inherit" />
+								) : (
+									"Change Password"
+								)}
+							</Button>
 						</div>
 					</form>
 				</div>
