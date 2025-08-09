@@ -49,6 +49,7 @@ function Header() {
 			context.setIsLogin(false);
 			localStorage.removeItem("accessToken");
 			localStorage.removeItem("refreshToken");
+			localStorage.removeItem("userId");
 			history("/");
 		});
 	};
@@ -133,7 +134,7 @@ function Header() {
 												<img
 													src={context.userData.avatar}
 													alt="user avatar"
-													className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full object-cover"
+													className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full object-contain "
 												/>
 											)}
 										</Button>

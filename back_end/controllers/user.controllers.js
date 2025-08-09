@@ -284,7 +284,7 @@ export async function removeImageFromCloudinary(req, res, next) {
 		}
 
 		const publicId = match[1]; // e.g. classyshop/classyshopProfile/xyz123
-		console.log("🔄 Deleting Cloudinary image:", publicId);
+		// console.log("🔄 Deleting Cloudinary image:", publicId);
 
 		// ✅ Step 2: Delete from Cloudinary
 		const result = await cloudinary.uploader.destroy(publicId);
@@ -298,7 +298,7 @@ export async function removeImageFromCloudinary(req, res, next) {
 		if (user) {
 			user.avatar = null;
 			await user.save();
-			console.log(`✅ Avatar removed from user ${user._id}`);
+			// console.log(`✅ Avatar removed from user ${user._id}`);
 		}
 
 		// ✅ Step 4: Return success response
@@ -314,51 +314,80 @@ export async function removeImageFromCloudinary(req, res, next) {
 export async function updateUserDetails(req, res, next) {
 	try {
 		const userId = req.userId;
-		const { name, email, mobile, password } = req.body;
+		const { name, email, mobile, oldPassword, newPassword, confermPassword } =
+			req.body;
 
 		const user = await UserModel.findById(userId);
 		if (!user) return sendError(res, "User not found", 404);
 
+		let hashedPassword = user.password;
 		let emailChanged = false;
-		let otp = "";
-		let newPassword = user.password;
 
-		// Check email change
+		// --- Check if email change ---
 		if (email && email.trim().toLowerCase() !== user.email) {
 			emailChanged = true;
-			otp = Math.floor(100000 + Math.random() * 900000).toString();
-		}
 
-		// Hash password if changed
-		if (password) {
+			// Require old password, new password & confirm password
+			if (!oldPassword || !newPassword || !confermPassword) {
+				return sendError(
+					res,
+					"Old, new and confirm password are required when changing email"
+				);
+			}
+
+			// Verify old password
+			const isMatch = await bcryptjs.compare(oldPassword, user.password);
+			if (!isMatch) {
+				return sendError(res, "Old password is incorrect");
+			}
+
+			// Check confirm password matches
+			if (newPassword !== confermPassword) {
+				return sendError(res, "Confirm password does not match new password");
+			}
+
+			// Hash new password
 			const salt = await bcryptjs.genSalt(10);
-			newPassword = await bcryptjs.hash(password, salt);
+			hashedPassword = await bcryptjs.hash(newPassword, salt);
 		}
 
-		// Update user
+		// --- Password change only ---
+		if (!emailChanged && (oldPassword || newPassword || confermPassword)) {
+			if (!oldPassword || !newPassword || !confermPassword) {
+				return sendError(
+					res,
+					"Old, new and confirm password are required when changing password"
+				);
+			}
+
+			// Verify old password
+			const isMatch = await bcryptjs.compare(oldPassword, user.password);
+			if (!isMatch) {
+				return sendError(res, "Old password is incorrect");
+			}
+
+			// Check confirm password matches
+			if (newPassword !== confermPassword) {
+				return sendError(res, "Confirm password does not match new password");
+			}
+
+			// Hash new password
+			const salt = await bcryptjs.genSalt(10);
+			hashedPassword = await bcryptjs.hash(newPassword, salt);
+		}
+
+		// --- Update user ---
 		const updatedUser = await UserModel.findByIdAndUpdate(
 			userId,
 			{
 				name: name?.trim() || user.name,
-				email: email?.trim().toLowerCase() || user.email,
+				email: emailChanged ? email.trim().toLowerCase() : user.email,
 				mobile: mobile || user.mobile,
-				password: newPassword,
-				verify_email: emailChanged ? false : user.verify_email,
-				otp: emailChanged ? otp : undefined,
-				otpExpires: emailChanged ? Date.now() + 10 * 60 * 1000 : undefined,
+				password: hashedPassword,
+				verify_email: emailChanged ? false : user.verify_email, // email verification flag reset if email changes
 			},
 			{ new: true }
 		);
-
-		// Send OTP email if email changed
-		if (emailChanged) {
-			await sendEmailFun({
-				to: email,
-				subject: "Verify email from Ecommerce App",
-				text: "",
-				html: VerificationEmail(updatedUser.name, otp),
-			});
-		}
 
 		return sendSuccess(res, "User updated successfully", {
 			user: updatedUser,

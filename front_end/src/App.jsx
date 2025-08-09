@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Header } from "./componants/header";
 import { Home } from "./pages/Home";
@@ -15,7 +15,7 @@ import { IoMdClose } from "react-icons/io";
 import ProductDetailsComponant from "./componants/ProductDetailsComponant";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { Drawer } from "@mui/material";
+import { CircularProgress, Drawer } from "@mui/material";
 import CartPanel from "./componants/CartPanel";
 import CartPage from "./pages/Cart";
 import Verify from "./pages/Verify";
@@ -33,6 +33,7 @@ function App() {
 	const [openCartPanel, setOpenCartPanel] = useState(false);
 	const [isLogin, setIsLogin] = useState(false);
 	const [userData, setUserData] = useState(null);
+	const [authChecked, setAuthChecked] = useState(false);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -59,7 +60,8 @@ function App() {
 		} else {
 			setIsLogin(false);
 		}
-	}, [isLogin]);
+		setAuthChecked(true);
+	}, []);
 
 	useEffect(() => {
 		if (isLogin && !userData?.name) {
@@ -67,6 +69,7 @@ function App() {
 				.then((res) => {
 					if (res?.user) {
 						setUserData(res.user);
+						localStorage.setItem("userId", res.user._id);
 					} else {
 						console.warn("User details not found in response", res);
 					}
@@ -84,7 +87,26 @@ function App() {
 		isLogin: isLogin,
 		setIsLogin: setIsLogin,
 		userData: userData,
+		setUserData: setUserData,
 	};
+
+	function PrivateRoutes({ children }) {
+		// privet route when login then only open route
+		// console.log(isLogin)
+		if (!authChecked) {
+			return (
+				<div>
+					{" "}
+					<CircularProgress color="inherit" />
+				</div>
+			); // or a spinner
+		}
+		if (!isLogin) {
+			return <Navigate to="/login" />;
+		}
+
+		return children;
+	}
 	return (
 		<>
 			<MyContext.Provider value={value}>
@@ -103,7 +125,15 @@ function App() {
 					/>
 					<Route path={"/login"} exact={true} element={<Login />} />
 					<Route path={"/register"} exact={true} element={<Register />} />
-					<Route path={"/cart"} exact={true} element={<CartPage />} />
+					<Route
+						path={"/cart"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<CartPage />
+							</PrivateRoutes>
+						}
+					/>
 					<Route path={"/verify"} exact={true} element={<Verify />} />
 					<Route
 						path={"/forgot-password"}
@@ -111,9 +141,33 @@ function App() {
 						element={<ForgotPassword />}
 					/>
 					<Route path={"/checkout"} exact={true} element={<Checkout />} />
-					<Route path={"/my-account"} exact={true} element={<MyAccount />} />
-					<Route path={"/my-list"} exact={true} element={<MyList />} />
-					<Route path={"/my-orders"} exact={true} element={<Orders />} />
+					<Route
+						path={"/my-account"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<MyAccount />
+							</PrivateRoutes>
+						}
+					/>
+					<Route
+						path={"/my-list"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<MyList />
+							</PrivateRoutes>
+						}
+					/>
+					<Route
+						path={"/my-orders"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<Orders />
+							</PrivateRoutes>
+						}
+					/>
 				</Routes>
 
 				<Footer />

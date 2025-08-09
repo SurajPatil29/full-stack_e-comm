@@ -21,7 +21,7 @@ userRouter.post("/register", registerUserController);
 userRouter.post("/verifyEmail", verifyEmailsController);
 userRouter.post("/login", loginUserController);
 userRouter.get("/logout", auth, logoutController);
-userRouter.put(
+userRouter.post(
 	"/user-avatar",
 	auth,
 	upload.array("avatar"),
@@ -33,6 +33,6 @@ userRouter.post("/verify-forgot-password-otp", verifyForgotPasswordOtp);
 userRouter.post("/reset-password", resetPassword);
 userRouter.post("/refresh-token", refreshToken);
 userRouter.get("/user-details", auth, userDetails);
-userRouter.put("/:id", auth, updateUserDetails);
+userRouter.post("/:id", auth, updateUserDetails);
 
 export default userRouter;
