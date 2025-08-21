@@ -14,6 +14,7 @@ function Login() {
 	const [formFields, setFormFields] = useState({
 		email: "",
 		password: "",
+		role: "USER",
 	});
 
 	const history = useNavigate();
@@ -24,6 +25,7 @@ function Login() {
 		if (formFields.email !== "") {
 			postData("/api/user/forgot-password", {
 				email: formFields.email,
+				role: formFields.role,
 			}).then((res) => {
 				if (res?.error === false) {
 					context.openAlertBox("success", `OTP send to ${formFields.email}`);
@@ -47,6 +49,7 @@ function Login() {
 		}
 		if (formFields.email === "") {
 			context.openAlertBox("error", "Enter email");
+			setIsLoading(false);
 		}
 	};
 

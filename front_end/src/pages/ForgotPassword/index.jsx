@@ -16,6 +16,7 @@ function ForgotPassword() {
 		newPassword: "",
 		confirmPassword: "",
 		email: email,
+		role: "USER",
 	});
 
 	const history = useNavigate();

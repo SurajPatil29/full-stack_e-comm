@@ -1,14 +1,62 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Button, Checkbox, FormControlLabel, Typography } from "@mui/material";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Button, CircularProgress } from "@mui/material";
 import { BiSolidUserAccount } from "react-icons/bi";
 import { IoLogInSharp } from "react-icons/io5";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebookF } from "react-icons/fa";
-import { MdVisibility } from "react-icons/md";
-import { MdVisibilityOff } from "react-icons/md";
+
+import { useState } from "react";
+import { useContext } from "react";
+import { MyContext } from "../../App";
+import { postData } from "../../utils/api";
 
 function ForgotPassword() {
+	const [isLoading, setIsLoading] = useState(false);
+	const [formFields, setFormFields] = useState({
+		email: "",
+		role: "ADMIN",
+	});
+	const context = useContext(MyContext);
+	const history = useNavigate();
+
+	const onChangeInput = (e) => {
+		const { name, value } = e.target;
+		setFormFields(() => {
+			return {
+				...formFields,
+				[name]: value,
+			};
+		});
+	};
+
+	const forgotPassword = (e) => {
+		e.preventDefault();
+		setIsLoading(true);
+
+		if (formFields.email !== "") {
+			postData("/api/user/forgot-password", formFields).then((res) => {
+				if (res?.error === false) {
+					context.openAlertBox("success", `OTP send to ${formFields.email}`);
+					localStorage.setItem("userEmail", formFields.email);
+					localStorage.setItem("actionType", "forgot-password");
+					history("/verify-account");
+
+					setFormFields(() => {
+						return {
+							email: "",
+						};
+					});
+					setIsLoading(false);
+				} else {
+					setIsLoading(false);
+
+					context.openAlertBox("error", res.message);
+				}
+			});
+		}
+		if (formFields.email === "") {
+			context.openAlertBox("error", "Enter email");
+			setIsLoading(false);
+		}
+	};
 	return (
 		<section className="  w-full ">
 			<header className="w-full fixed top-0 left-0  px-4 py-3 flex items-center justify-between ">
@@ -64,17 +112,28 @@ function ForgotPassword() {
 					</h1>
 				</div>
 
-				<form className="w-full px-8 py-4">
+				<form className="w-full px-8 py-4" onSubmit={forgotPassword}>
 					<div className="form-group mb-4 w-full">
 						<h4 className="text-[14px] font-[500] mb-1 ">Email</h4>
 						<input
 							type="email"
 							className="w-full h-[50px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3 "
 							placeholder="Enter your Email..."
+							name="email"
+							value={formFields.email}
+							onChange={onChangeInput}
+							disabled={isLoading === true ? true : false}
+							required
 						/>
 					</div>
 
-					<Button className="btn-blue btn-lg w-full">Reset Password</Button>
+					<Button className="btn-blue btn-lg w-full" type="submit">
+						{isLoading === true ? (
+							<CircularProgress color="inherit" />
+						) : (
+							"Reset Password"
+						)}
+					</Button>
 					<br />
 					<br />
 					<div className="text-center gap-2">

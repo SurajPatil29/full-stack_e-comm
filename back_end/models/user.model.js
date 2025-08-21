@@ -11,7 +11,6 @@ const userSchema = mongoose.Schema(
 		email: {
 			type: String,
 			required: [true, "Provide Email"],
-			unique: true,
 			lowercase: true,
 			trim: true,
 			index: true,
@@ -85,13 +84,8 @@ const userSchema = mongoose.Schema(
 	{ timestamps: true }
 );
 
-// Normalize email
-userSchema.pre("save", function (next) {
-	if (this.isModified("email")) {
-		this.email = this.email.toLowerCase().trim();
-	}
-	next();
-});
+// Ensure unique email per role
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 
 const UserModel = mongoose.model("User", userSchema);
 export default UserModel;

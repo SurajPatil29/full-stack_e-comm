@@ -6,7 +6,7 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { useState } from "react";
 import Badges from "../../Components/Badge";
 import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Progress from "../../Components/ProgressBar";
 import { AiOutlineEdit } from "react-icons/ai";
 import { FaRegEye } from "react-icons/fa";
@@ -90,6 +90,7 @@ const columns = [
 
 function Dashboard() {
 	const context = useContext(MyContext);
+	const history = useNavigate();
 
 	// this for recent order table
 	const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
@@ -148,7 +149,9 @@ function Dashboard() {
 				<div className="info">
 					<h1 className="text-[35px] font-bold leading-10 mb-3 ">
 						Good Morning, <br />
-						Suraj 👋
+						{context.isLogin
+							? `${context?.userData?.name}👋`
+							: "User Please sign up"}
 					</h1>
 					<p>
 						here's what happening on your tore today. see the statistics at once

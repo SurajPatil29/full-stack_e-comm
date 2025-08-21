@@ -1,7 +1,12 @@
 import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+	createBrowserRouter,
+	Navigate,
+	RouterProvider,
+	useNavigate,
+} from "react-router-dom";
 import Dashboard from "./Pages/DashBoard";
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import MainLayout from "./Components/MainLayout";
 import Login from "./Pages/Login";
 import SignUp from "./Pages/SignUp";
@@ -28,6 +33,10 @@ import Orders from "./Pages/Orders";
 import ForgotPassword from "./Pages/ForgotPassword";
 import VerifyAccount from "./Pages/VerifyAccount";
 import ChangePassword from "./Pages/ChangePassword";
+import toast, { Toaster } from "react-hot-toast";
+import { fetchDataFromApi } from "./utils/api";
+import { CircularProgress } from "@mui/material";
+import Profile from "./Pages/Profile";
 
 // add product dilog
 
@@ -44,6 +53,56 @@ function App() {
 		open: false,
 		model: "",
 	}); //this use for open dilog for add product
+	const [userData, setUserData] = useState(null);
+	const [authChecked, setAuthChecked] = useState(false);
+
+	const openAlertBox = (status, msg) => {
+		if (status === "success") {
+			toast.success(msg);
+		}
+		if (status === "error") {
+			toast.error(msg);
+		}
+	};
+
+	useEffect(() => {
+		const token = localStorage.getItem("accessToken");
+
+		if (token !== undefined && token !== null && token !== "") {
+			setIsLogin(true);
+			// localStorage.setItem("userId", userData._id);
+			// console.log(userData);
+		} else {
+			setIsLogin(false);
+		}
+
+		setAuthChecked(true);
+	}, []);
+	useEffect(() => {
+		if (isLogin && !userData?.name) {
+			fetchDataFromApi("/api/user/user-details")
+				.then((res) => {
+					if (res?.user) {
+						setUserData(res.user);
+						// localStorage.setItem("userId", res.user.id);
+					} else {
+						console.warn("user details not found in response", res);
+					}
+				})
+				.catch((err) => {
+					console.error("Failed to fetch user details", err);
+				});
+		}
+	}, [isLogin]);
+
+	useEffect(() => {
+		if (!isLogin && isOpenFullScreenPanel.open) {
+			setIsOpenFullScreenPanel({
+				open: false,
+				model: "",
+			});
+		}
+	}, [isOpenFullScreenPanel]);
 
 	// this values var use in context
 	const values = {
@@ -53,7 +112,25 @@ function App() {
 		setIsLogin,
 		isOpenFullScreenPanel,
 		setIsOpenFullScreenPanel,
+		openAlertBox,
+		userData: userData,
+		setUserData: setUserData,
 	};
+
+	function PrivateRoutes({ children }) {
+		// privet route when login then only open route
+		if (!authChecked) {
+			return (
+				<div>
+					<CircularProgress color="inherit" />
+				</div>
+			);
+		}
+		if (!isLogin) {
+			return <Navigate to="/login" />;
+		}
+		return children;
+	}
 
 	const router = createBrowserRouter([
 		{
@@ -78,7 +155,11 @@ function App() {
 		},
 		{
 			path: "/products",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
@@ -88,7 +169,11 @@ function App() {
 		},
 		{
 			path: "/homeslider/list",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
@@ -98,7 +183,11 @@ function App() {
 		},
 		{
 			path: "/category/list",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
@@ -108,7 +197,11 @@ function App() {
 		},
 		{
 			path: "/subcategory/list",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
@@ -118,7 +211,11 @@ function App() {
 		},
 		{
 			path: "/user",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
@@ -128,11 +225,29 @@ function App() {
 		},
 		{
 			path: "/orders",
-			element: <MainLayout />,
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
 			children: [
 				{
 					index: true,
 					element: <Orders />,
+				},
+			],
+		},
+		{
+			path: "/profile",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <Profile />,
 				},
 			],
 		},
@@ -202,6 +317,7 @@ function App() {
 					)}
 				</Dialog>
 			</MyContext.Provider>
+			<Toaster />
 		</>
 	);
 }

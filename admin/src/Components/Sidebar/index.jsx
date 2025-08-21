@@ -22,6 +22,17 @@ function Sidebar() {
 			setSubmenuIndex(index);
 		}
 	};
+
+	const logOut = () => {
+		setAnchorMyAcc(null);
+		fetchDataFromApi("/api/user/logout").then((res) => {
+			context.setIsLogin(false);
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+			localStorage.removeItem("userId");
+			history("/");
+		});
+	};
 	return (
 		<>
 			<div className="sidebar fixed top-0 left-0 bg-[#fff] w-[18%] h-full border-r border-[rgba(0,0,0,0.1)] py-2 px-2 ">
@@ -213,7 +224,10 @@ function Sidebar() {
 					</li>
 
 					<li>
-						<Button className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] ">
+						<Button
+							className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] "
+							onClick={logOut}
+						>
 							<MdOutlineLogout className="text-[20px] " /> <span>Logout</span>
 						</Button>
 					</li>

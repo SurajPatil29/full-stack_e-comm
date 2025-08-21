@@ -16,6 +16,7 @@ function Register() {
 		name: "",
 		email: "",
 		password: "",
+		role: "USER", // For client side
 	});
 
 	const context = useContext(MyContext);

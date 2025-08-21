@@ -9,8 +9,9 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { IoIosLogOut } from "react-icons/io";
 import { MyContext } from "../../App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineMenuFold } from "react-icons/ai";
+import { fetchDataFromApi } from "../../utils/api";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -31,7 +32,21 @@ function Header() {
 		setAnchorMyAcc(null);
 	};
 
+	const history = useNavigate();
+
 	const context = useContext(MyContext);
+	// localStorage.setItem("userId", context.userData._id);
+
+	const logOut = () => {
+		setAnchorMyAcc(null);
+		fetchDataFromApi("/api/user/logout").then((res) => {
+			context.setIsLogin(false);
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+			localStorage.removeItem("userId");
+			history("/");
+		});
+	};
 	return (
 		<header
 			className={`w-full bg-white h-[auto] py-2 ${
@@ -71,16 +86,23 @@ function Header() {
 					</StyledBadge>
 				</IconButton>
 
-				{context.isLogIn === true ? (
+				{context.isLogin === true ? (
 					<div className="relative">
 						<div
 							className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer "
 							onClick={handleClickMyAcc}
 						>
-							<img
-								src="https://www.shutterstock.com/image-photo/studio-close-portrait-happy-smiling-260nw-2153541715.jpg"
-								alt="profile img"
-							/>
+							<Button className="!text-[#000] !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-[#f1f1f1] p-0">
+								{!context?.userData?.avatar ? (
+									<FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)]" />
+								) : (
+									<img
+										src={context.userData.avatar}
+										alt="user avatar"
+										className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full object-contain "
+									/>
+								)}
+							</Button>
 						</div>
 						<Menu
 							anchorEl={anchorMyAcc}
@@ -125,19 +147,26 @@ function Header() {
 										className="rounded-full w-[35px] h-[35px] overflow-hidden cursor-pointer "
 										onClick={handleClickMyAcc}
 									>
-										<img
-											src="https://www.shutterstock.com/image-photo/studio-close-portrait-happy-smiling-260nw-2153541715.jpg"
-											alt="profile img"
-										/>
+										<Button className="!text-[#000] !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-[#f1f1f1] p-0">
+											{!context?.userData?.avatar ? (
+												<FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)]" />
+											) : (
+												<img
+													src={context.userData.avatar}
+													alt="user avatar"
+													className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full object-contain "
+												/>
+											)}
+										</Button>
 									</div>
 
-									<div className="info">
-										<h3 className="text-[15px] font-[500] leading-5 ">
-											Suraj Patil
-										</h3>
-										<p className="text-[12px] font-[400] opacity-70 ">
-											surajpatil@gmail.com
-										</p>
+									<div className="info flex flex-col ">
+										<h4 className="leading-3 text-[14px] text-[rgba(0,0,0,06)] font-[500] mb-0 capitalize text-left justify-start ">
+											{context?.userData?.name}
+										</h4>
+										<span className="text-[13px] text-[rgba(0,0,0,0.6)] font-[400] capitalize text-left justify-start ">
+											{context?.userData?.email}
+										</span>
 									</div>
 								</div>
 							</MenuItem>
@@ -148,17 +177,16 @@ function Header() {
 								className="flex items-center gap-3"
 							>
 								<FaRegUser className="text-[18px] " />
-								<span className="text-[14px] ">Profile</span>
+								<Link to="/profile" className="text-[14px] ">
+									Profile
+								</Link>
 							</MenuItem>
 
 							<Divider />
 
-							<MenuItem
-								onClick={handleCloseMyAcc}
-								className="flex items-center gap-3"
-							>
+							<MenuItem onClick={logOut} className="flex items-center gap-3">
 								<IoIosLogOut className="text-[18px]" />
-								<span className="text-[14px] ">Sign out</span>
+								<span className="text-[14px] ">Log out</span>
 							</MenuItem>
 						</Menu>
 					</div>

@@ -12,20 +12,21 @@ function Verify() {
 	const handleOtpChange = (value) => {
 		setOtp(value);
 	};
-
+	// console.log(otp);
 	const history = useNavigate();
 	const context = useContext(MyContext);
 	const verifyOTP = async (e) => {
 		e.preventDefault();
 		setIsLoding(true);
 
-		const actionType = localStorage.getItem("actionType");
+		const actionType = localStorage.getItem("actionType") || "";
 
 		if (actionType !== "forgot-password") {
 			try {
 				const res = await postData("/api/user/verifyEmail", {
 					email: localStorage.getItem("userEmail"),
 					otp: otp,
+					role: "USER",
 				});
 				setIsLoding(false);
 
@@ -45,6 +46,7 @@ function Verify() {
 				const res = await postData("/api/user/verify-forgot-password-otp", {
 					email: localStorage.getItem("userEmail"),
 					otp: otp,
+					role: "USER",
 				});
 				setIsLoding(false);
 

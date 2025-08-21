@@ -14,72 +14,89 @@ dotenv.config();
 
 export async function registerUserController(req, res, next) {
 	try {
-		const { name, email, password } = req.body;
+		const { name, email, password, role } = req.body;
 
 		if (!name || !email || !password) {
 			return sendError(res, "Provide name, email and password", 400);
 		}
+		console.log(role);
 
-		let user = await UserModel.findOne({ email: email.toLowerCase().trim() });
+		const normalizedEmail = email.toLowerCase().trim();
+		const userRole = role || "USER"; // Default USER if not passed
+
+		let user = await UserModel.findOne({
+			email: normalizedEmail,
+			role: userRole,
+		});
+
+		// ✅ Early exit if user exists and is verified
+		if (user && user.verify_email) {
+			return sendError(
+				res,
+				"This email is already registered for this role.",
+				400
+			);
+		}
 
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();
 		const otpExpires = Date.now() + 600000; // 10 mins
-		const salt = await bcryptjs.genSalt(10);
-		const hashedPassword = await bcryptjs.hash(password, salt);
+		const hashedPassword = await bcryptjs.hash(password, 10);
 
+		// If user exists but is NOT verified → resend OTP
 		if (user) {
-			// Already registered but not verified
-			if (!user.verify_email) {
-				if (user.otpExpires && user.otpExpires > Date.now()) {
-					return sendError(
-						res,
-						"Email already registered. OTP still valid.",
-						400
-					);
-				}
-
-				// Update existing user with new OTP + password
-				user.name = name;
-				user.password = hashedPassword;
-				user.otp = otp;
-				user.otpExpires = otpExpires;
-				await user.save();
-
-				await sendEmailFun({
-					to: email,
-					subject: "Verify your email again - Classyshop",
-					text: "",
-					html: VerificationEmail(name, otp),
-				});
-
-				const token = generateToken({ email, id: user._id });
-				return sendSuccess(res, "OTP expired. New OTP sent. Please verify.", {
-					token,
-				});
+			if (user.otpExpires && user.otpExpires > Date.now()) {
+				return sendError(
+					res,
+					"Email already registered. OTP still valid.",
+					400
+				);
 			}
 
-			return sendError(res, "User already registered with this email", 400);
-		}
+			user.name = name;
+			user.password = hashedPassword;
+			user.otp = otp;
+			user.otpExpires = otpExpires;
+			await user.save();
 
-		// New user registration
+			await sendEmailFun({
+				to: normalizedEmail,
+				subject: `Verify your ${userRole} email - Classyshop`,
+				html: VerificationEmail(name, otp),
+			});
+
+			const token = generateToken({
+				email: normalizedEmail,
+				id: user._id,
+				role: userRole,
+			});
+			return sendSuccess(res, "OTP expired. New OTP sent. Please verify.", {
+				token,
+			});
+		}
+		console.log("err");
+		// ✅ New user registration
 		user = new UserModel({
 			name,
-			email,
+			email: normalizedEmail,
+			role: userRole,
 			password: hashedPassword,
 			otp,
 			otpExpires,
 		});
 		await user.save();
+		console.log("err");
 
 		await sendEmailFun({
-			to: email,
-			subject: "Verify your email - Classyshop",
-			text: "",
+			to: normalizedEmail,
+			subject: `Verify your ${userRole} email - Classyshop`,
 			html: VerificationEmail(name, otp),
 		});
 
-		const token = generateToken({ email, id: user._id });
-
+		const token = generateToken({
+			email: normalizedEmail,
+			id: user._id,
+			role: userRole,
+		});
 		return sendSuccess(res, "User registered. Please verify your email.", {
 			token,
 		});
@@ -92,15 +109,23 @@ export async function verifyEmailsController(req, res, next) {
 	try {
 		const email = req.body.email?.trim().toLowerCase();
 		const otp = req.body.otp;
+		const role = req.body.role?.trim(); // New: Require role
+		console.log(email, otp, role);
 
-		if (!email || !otp) {
-			return sendError(res, "Email and OTP are required", 400);
+		if (!email || !otp || !role) {
+			return sendError(res, "Email, OTP, and role are required", 400);
 		}
 
-		const user = await UserModel.findOne({ email: email });
-
+		// Find user with matching email and role
+		const user = await UserModel.findOne({ email, role });
+		// console.log(user);
 		if (!user) {
-			return sendError(res, "User not found", 404);
+			// Means this email is not registered with this role
+			return sendError(
+				res,
+				`No account found with email ${email} and role ${role}. Please check role.`,
+				404
+			);
 		}
 
 		const isCodeValid = user.otp === otp;
@@ -111,7 +136,7 @@ export async function verifyEmailsController(req, res, next) {
 		}
 
 		if (!isNotExpired) {
-			return sendError(res, "Otp expired", 400);
+			return sendError(res, "OTP expired", 400);
 		}
 
 		user.verify_email = true;
@@ -129,13 +154,24 @@ export async function loginUserController(req, res, next) {
 	try {
 		const email = req.body.email?.trim().toLowerCase();
 		const password = req.body.password;
+		const role = req.body.role?.trim(); // New: Role is required
 
-		if (!email || !password) {
-			return sendError(res, "Email and password are required", 400);
+		if (!email || !password || !role) {
+			return sendError(res, "Email, password, and role are required", 400);
 		}
 
-		const user = await UserModel.findOne({ email });
+		// Find user with both email and role
+		const user = await UserModel.findOne({ email, role });
 		if (!user) {
+			// Check if email exists with another role
+			const existingUser = await UserModel.findOne({ email });
+			if (existingUser) {
+				return sendError(
+					res,
+					`This email is registered as ${existingUser.role}. Please log in as that role.`,
+					400
+				);
+			}
 			return sendError(res, "Invalid email or password", 400);
 		}
 
@@ -157,7 +193,7 @@ export async function loginUserController(req, res, next) {
 
 		await UserModel.findByIdAndUpdate(user._id, {
 			last_login_date: new Date(),
-			refresh_token: refreshToken, // optional
+			refresh_token: refreshToken,
 		});
 
 		const cookieOptions = {
@@ -400,13 +436,24 @@ export async function updateUserDetails(req, res, next) {
 export async function forgotPasswordController(req, res, next) {
 	try {
 		const email = req.body.email?.trim().toLowerCase();
+		const role = req.body.role?.trim(); // New: Role required
 
-		if (!email) {
-			return sendError(res, "Email is required", 400);
+		if (!email || !role) {
+			return sendError(res, "Email and role are required", 400);
 		}
 
-		const user = await UserModel.findOne({ email });
+		// Find user with both email and role
+		const user = await UserModel.findOne({ email, role });
 		if (!user) {
+			// If email exists with another role, inform user
+			const existingUser = await UserModel.findOne({ email });
+			if (existingUser) {
+				return sendError(
+					res,
+					`This email is registered as ${existingUser.role}. Please select the correct role.`,
+					400
+				);
+			}
 			return sendError(res, "Email not registered", 404);
 		}
 
@@ -430,21 +477,36 @@ export async function forgotPasswordController(req, res, next) {
 
 		return sendSuccess(res, "OTP sent to your email");
 	} catch (error) {
-		next(error); // Forward to global error handler
+		next(error);
 	}
 }
 
 export async function verifyForgotPasswordOtp(req, res, next) {
 	try {
-		const { email, otp } = req.body;
+		const { email, otp, role } = req.body;
 
-		if (!email || !otp) {
-			return sendError(res, "Email and OTP are required", 400);
+		if (!email || !otp || !role) {
+			return sendError(res, "Email, OTP, and role are required", 400);
 		}
 
-		const user = await UserModel.findOne({ email });
+		// Find user with both email and role
+		const user = await UserModel.findOne({
+			email: email.trim().toLowerCase(),
+			role: role.trim(),
+		});
 
 		if (!user) {
+			// If email exists for another role, notify
+			const existingUser = await UserModel.findOne({
+				email: email.trim().toLowerCase(),
+			});
+			if (existingUser) {
+				return sendError(
+					res,
+					`This email is registered as ${existingUser.role}. Please choose the correct role.`,
+					400
+				);
+			}
 			return sendError(res, "User not found", 404);
 		}
 
@@ -462,18 +524,18 @@ export async function verifyForgotPasswordOtp(req, res, next) {
 
 		return sendSuccess(res, "OTP verified successfully");
 	} catch (error) {
-		next(error); // Use global error handler
+		next(error);
 	}
 }
 
 export async function resetPassword(req, res, next) {
 	try {
-		const { email, newPassword, confirmPassword } = req.body;
+		const { email, role, newPassword, confirmPassword } = req.body;
 
-		if (!email || !newPassword || !confirmPassword) {
+		if (!email || !role || !newPassword || !confirmPassword) {
 			return sendError(
 				res,
-				"Email, new password, and confirm password are required",
+				"Email, role, new password, and confirm password are required",
 				400
 			);
 		}
@@ -486,11 +548,27 @@ export async function resetPassword(req, res, next) {
 			return sendError(res, "Password must be at least 6 characters", 400);
 		}
 
-		const user = await UserModel.findOne({ email });
+		// Find user by email and role
+		const user = await UserModel.findOne({
+			email: email.trim().toLowerCase(),
+			role: role.trim(),
+		});
 		if (!user) {
+			// If email exists with another role, inform the user
+			const existingUser = await UserModel.findOne({
+				email: email.trim().toLowerCase(),
+			});
+			if (existingUser) {
+				return sendError(
+					res,
+					`This email is registered as ${existingUser.role}. Please choose the correct role.`,
+					400
+				);
+			}
 			return sendError(res, "User not found", 404);
 		}
 
+		// Hash new password
 		const salt = await bcryptjs.genSalt(10);
 		const hashedPassword = await bcryptjs.hash(newPassword, salt);
 
@@ -501,7 +579,7 @@ export async function resetPassword(req, res, next) {
 
 		return sendSuccess(res, "Password reset successful. Please login again.");
 	} catch (error) {
-		next(error); // use global error handler
+		next(error);
 	}
 }
 

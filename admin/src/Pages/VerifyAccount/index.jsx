@@ -1,22 +1,71 @@
-import React, { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Button, Checkbox, FormControlLabel, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
+import { Button, CircularProgress } from "@mui/material";
 import { BiSolidUserAccount } from "react-icons/bi";
 import { IoLogInSharp } from "react-icons/io5";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebookF } from "react-icons/fa";
-import { MdVisibility } from "react-icons/md";
-import { MdVisibilityOff } from "react-icons/md";
 import OtpBox from "../../Components/OtpBox";
+import { MyContext } from "../../App";
+import { postData } from "../../utils/api";
 
 function VerifyAccount() {
 	const [otp, setOtp] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
 	const handleOtpChange = (value) => {
 		setOtp(value);
 	};
-	const verifyOTP = (e) => {
+	const history = useNavigate();
+	const context = useContext(MyContext);
+	const verifyOTP = async (e) => {
 		e.preventDefault();
-		alert(otp);
+		setIsLoading(true);
+
+		const actionType = localStorage.getItem("actionType") || ""; //use for what kind verification registretion verification or forgot password verification
+
+		if (actionType !== "forgot-password") {
+			try {
+				const res = await postData("/api/user/verifyEmail", {
+					email: localStorage.getItem("userEmail"),
+					otp: otp,
+					role: "ADMIN",
+				});
+				setIsLoading(false);
+
+				if (res?.error === false) {
+					context.openAlertBox("success", res.message);
+					localStorage.removeItem("userEmail");
+					history("/login");
+				} else {
+					context.openAlertBox("error", res.message);
+				}
+			} catch (error) {
+				setIsLoading(false);
+				console.log(error);
+				context.openAlertBox("error", "Something went wrong. Try again.");
+			}
+		} else {
+			try {
+				const res = await postData("/api/user/verify-forgot-password-otp", {
+					email: localStorage.getItem("userEmail"),
+					otp: otp,
+					role: "ADMIN",
+				});
+				setIsLoading(false);
+
+				if (res?.error === false) {
+					context.openAlertBox("success", res.message);
+					localStorage.removeItem("actionType");
+
+					history("/change-password");
+				} else {
+					context.openAlertBox("error", res.message);
+				}
+			} catch (error) {
+				setIsLoading(false);
+				context.openAlertBox("error", "Something went wrong. Try again.");
+			}
+		}
 	};
 	return (
 		<section className=" otpPage w-full ">
@@ -73,7 +122,9 @@ function VerifyAccount() {
 					</h1>
 					<p className="text-center text-[15px] ">
 						OTP send to{" "}
-						<span className="text-[#3872fa] font-bold ">suraj@email.com</span>
+						<span className="text-[#3872fa] font-bold ">
+							{localStorage.getItem("userEmail")}
+						</span>
 					</p>
 
 					<form onSubmit={verifyOTP}>
@@ -84,7 +135,11 @@ function VerifyAccount() {
 						<div className="w-[300px] m-auto ">
 							{" "}
 							<Button type="submit" className="btn-blue btn-lg w-full">
-								Verify OTP
+								{isLoading === true ? (
+									<CircularProgress color="inherit" />
+								) : (
+									"Verify OTP"
+								)}
 							</Button>
 						</div>
 					</form>

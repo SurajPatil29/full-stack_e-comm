@@ -1,13 +1,20 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Button, Checkbox, FormControlLabel, Typography } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import {
+	Button,
+	Checkbox,
+	CircularProgress,
+	FormControlLabel,
+	Typography,
+} from "@mui/material";
 import { BiSolidUserAccount } from "react-icons/bi";
 import { IoLogInSharp } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
-
+import { MyContext } from "../../App";
+import { postData } from "../../utils/api";
 function SignUp() {
 	//google state
 	const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -28,6 +35,69 @@ function SignUp() {
 	// password
 	const [isPasswordShow, setIsPasswordShow] = useState(false);
 	// password
+
+	const [isLoading, setIsLoading] = useState(false);
+	const [formFields, setFormFields] = useState({
+		name: "",
+		email: "",
+		password: "",
+		role: "ADMIN", // For admin side
+	});
+
+	const context = useContext(MyContext);
+
+	const history = useNavigate();
+
+	const onChangeInput = (e) => {
+		const { name, value } = e.target;
+		setFormFields(() => {
+			return {
+				...formFields,
+				[name]: value,
+			};
+		});
+	};
+
+	const valideValue = Object.values(formFields).every((el) => el);
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		setIsLoading(true);
+		if (formFields.name === "") {
+			context.openAlertBox("error", "Please provide Full Name");
+			return false;
+		}
+
+		if (formFields.email === "") {
+			context.openAlertBox("error", "Please provide Email");
+			return false;
+		}
+
+		if (formFields.password === "") {
+			context.openAlertBox("error", "Please provide Password");
+			return false;
+		}
+
+		postData("/api/user/register", formFields).then((res) => {
+			// console.log(res);
+
+			if (res?.error !== true) {
+				setIsLoading(false);
+				context.openAlertBox("success", res.message);
+				localStorage.setItem("userEmail", formFields.email);
+
+				setFormFields({
+					name: "",
+					email: "",
+					password: "",
+				});
+
+				history("/verify-account");
+			} else {
+				context.openAlertBox("error", res.message);
+				setIsLoading(false);
+			}
+		});
+	};
 
 	return (
 		<section className="  w-full ">
@@ -120,12 +190,16 @@ function SignUp() {
 					<span className="flex items-center w-[100px] h-[1px] bg-[rgba(0,0,0,0.3)] "></span>
 				</div>
 
-				<form className="w-full px-8 py-4">
+				<form className="w-full px-8 py-4" onSubmit={handleSubmit}>
 					<div className="form-group mb-4 w-full">
 						<h4 className="text-[14px] font-[500] mb-1 ">Full Name</h4>
 						<input
 							type="text"
 							className="w-full h-[50px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3 "
+							name="name"
+							value={formFields.name}
+							disabled={isLoading === true ? true : false}
+							onChange={onChangeInput}
 						/>
 					</div>
 					<div className="form-group mb-4 w-full">
@@ -133,14 +207,22 @@ function SignUp() {
 						<input
 							type="email"
 							className="w-full h-[50px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3 "
+							name="email"
+							value={formFields.email}
+							disabled={isLoading === true ? true : false}
+							onChange={onChangeInput}
 						/>
 					</div>
 					<div className="form-group mb-4 w-full">
 						<h4 className="text-[14px] font-[500] mb-1 ">Password</h4>
 						<div className="relative w-full">
 							<input
-								type={isPasswordShow === true ? "password" : "text"}
+								type={isPasswordShow === true ? "text" : "password"}
 								className="w-full h-[50px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3 "
+								name="password"
+								value={formFields.password}
+								disabled={isLoading === true ? true : false}
+								onChange={onChangeInput}
 							/>
 							<Button
 								className="!absolute top-[7px] right-[10px] z-50 !rounded-full !w-[35px] !h-[35px] !min-w-[35px] !text-[rgba(0,0,0,0.6)] "
@@ -159,14 +241,18 @@ function SignUp() {
 							control={<Checkbox defaultChecked />}
 							label={<Typography fontSize="14px">Remember me</Typography>}
 						/>
-						<Link
-							to="/forgot-password"
-							className="text-[#3872fa] font-[700] text-[15] hover:underline "
-						>
-							Forgot Password?
-						</Link>
 					</div>
-					<Button className="btn-blue btn-lg w-full">Sign Up</Button>
+					<Button
+						type="submit"
+						className="btn-blue btn-lg w-full"
+						disabled={!valideValue}
+					>
+						{isLoading === true ? (
+							<CircularProgress color="inherit" />
+						) : (
+							"sign Up"
+						)}
+					</Button>
 				</form>
 			</div>
 		</section>
