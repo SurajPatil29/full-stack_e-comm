@@ -8,7 +8,7 @@ import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { useContext } from "react";
-import { MyContext } from "../../App";
+import MyContext from "../../context/MyContext";
 
 function ProductItemListView() {
 	// this componant use for shocase product info on home page

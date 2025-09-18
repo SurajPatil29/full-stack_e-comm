@@ -99,3 +99,20 @@ button .MuiCircularProgress-root {
 	width: 30px !important;
 	height: 30px !important;
 }
+
+/* Fullscreen loader wrapper */
+.loader-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh; /* Full viewport height */
+	width: 100vw; /* Full viewport width */
+	background-color: #f9f9f9; /* optional: light background */
+}
+
+/* Customize CircularProgress itself */
+.custom-loader {
+	color: #1976d2; /* MUI primary color (change if needed) */
+	width: 60px !important; /* override default size */
+	height: 60px !important;
+}

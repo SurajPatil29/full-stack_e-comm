@@ -8,10 +8,10 @@ import { FaRegBell, FaRegUser } from "react-icons/fa";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { IoIosLogOut } from "react-icons/io";
-import { MyContext } from "../../App";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { fetchDataFromApi } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	"& .MuiBadge-badge": {
@@ -171,16 +171,15 @@ function Header() {
 								</div>
 							</MenuItem>
 							<Divider />
-
-							<MenuItem
-								onClick={handleCloseMyAcc}
-								className="flex items-center gap-3"
-							>
-								<FaRegUser className="text-[18px] " />
-								<Link to="/profile" className="text-[14px] ">
+							<Link to="/profile" className="text-[14px] ">
+								<MenuItem
+									onClick={handleCloseMyAcc}
+									className="flex items-center gap-3"
+								>
+									<FaRegUser className="text-[18px] " />
 									Profile
-								</Link>
-							</MenuItem>
+								</MenuItem>{" "}
+							</Link>
 
 							<Divider />
 

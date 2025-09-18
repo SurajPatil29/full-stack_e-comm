@@ -37,14 +37,13 @@ import toast, { Toaster } from "react-hot-toast";
 import { fetchDataFromApi } from "./utils/api";
 import { CircularProgress } from "@mui/material";
 import Profile from "./Pages/Profile";
+import MyContext from "./context/MyContext.jsx";
 
 // add product dilog
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 }); //this add product dilog transition
-
-const MyContext = createContext();
 
 function App() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true); // this is used for the sidebar open close
@@ -67,17 +66,20 @@ function App() {
 
 	useEffect(() => {
 		const token = localStorage.getItem("accessToken");
+		// console.log(token);
 
-		if (token !== undefined && token !== null && token !== "") {
+		if (token) {
+			// console.log(1);
 			setIsLogin(true);
-			// localStorage.setItem("userId", userData._id);
-			// console.log(userData);
 		} else {
+			// console.log(2);
+
 			setIsLogin(false);
 		}
 
-		setAuthChecked(true);
+		setAuthChecked(true); // Important: run immediately after checking token
 	}, []);
+	// console.log(authChecked, isLogin);
 	useEffect(() => {
 		if (isLogin && !userData?.name) {
 			fetchDataFromApi("/api/user/user-details")
@@ -120,13 +122,18 @@ function App() {
 	function PrivateRoutes({ children }) {
 		// privet route when login then only open route
 		if (!authChecked) {
+			// console.log(authChecked);
+
 			return (
 				<div>
+					{/* <h1>hii</h1> */}
 					<CircularProgress color="inherit" />
 				</div>
 			);
 		}
 		if (!isLogin) {
+			// console.log(isLogin);
+
 			return <Navigate to="/login" />;
 		}
 		return children;
@@ -323,4 +330,3 @@ function App() {
 }
 
 export default App;
-export { MyContext };

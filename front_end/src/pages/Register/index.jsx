@@ -5,9 +5,9 @@ import { MdVisibilityOff } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { postData } from "../../utils/api";
-import { MyContext } from "../../App";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
+import MyContext from "../../context/MyContext";
 
 function Register() {
 	const [isLoading, setIsLoading] = useState(false);

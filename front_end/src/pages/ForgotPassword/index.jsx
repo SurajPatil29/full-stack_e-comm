@@ -4,7 +4,7 @@ import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
-import { MyContext } from "../../App";
+import MyContext from "../../context/MyContext";
 
 function ForgotPassword() {
 	const email = localStorage.getItem("userEmail");

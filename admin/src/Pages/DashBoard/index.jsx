@@ -40,7 +40,7 @@ import {
 	Legend,
 	ResponsiveContainer,
 } from "recharts";
-import { MyContext } from "../../App";
+import MyContext from "../../context/MyContext";
 // here was 2 tooltip because i rename tooltip
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui

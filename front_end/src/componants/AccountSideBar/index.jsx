@@ -9,9 +9,9 @@ import {
 	fetchDataFromApi,
 	postFormData,
 } from "../../utils/api";
-import { MyContext } from "../../App";
 import { useContext, useState } from "react";
 import { MdOutlineDelete } from "react-icons/md";
+import MyContext from "../../context/MyContext";
 
 function AccountSideBar() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,7 @@ function AccountSideBar() {
 
 		const avatarUrl = context?.userData?.avatar;
 		const encodedUrl = encodeURIComponent(avatarUrl);
-		console.log(encodedUrl);
+		// console.log(encodedUrl);
 		setIsLoading(true);
 
 		const response = await deleteImagefromCloudi(
@@ -83,7 +83,7 @@ function AccountSideBar() {
 	};
 	return (
 		<div className="card bg-white shadow-md rounded-md  sticky top-10 ">
-			<div className="w-full p-5 flex item-center justify-center flex-col">
+			<div className="w-full p-5 flex items-center justify-center flex-col">
 				<div className="relative w-fit">
 					<div className="flex items-center justify-center w-[110px] aspect-square rounded-full overflow-hidden mb-4 relative group">
 						{!context?.userData?.avatar ? (

@@ -9,13 +9,13 @@ import { MdFavoriteBorder } from "react-icons/md";
 import Tooltip from "@mui/material/Tooltip";
 import { Navigation } from "./navigation";
 import { useContext, useState } from "react";
-import { MyContext } from "../../App";
 import { Button } from "@mui/material";
 import { FaRegHeart, FaRegUser } from "react-icons/fa";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { LuLogOut } from "react-icons/lu";
 import { fetchDataFromApi } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	//this is material ui componant shows the how many product in cart on symbol

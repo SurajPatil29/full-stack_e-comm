@@ -26,8 +26,8 @@ import MyAccount from "./pages/MyAccount";
 import MyList from "./pages/MyList";
 import Orders from "./pages/Orders";
 import { fetchDataFromApi } from "./utils/api";
+import MyContext from "./context/MyContext";
 
-const MyContext = createContext();
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
 	const [openCartPanel, setOpenCartPanel] = useState(false);
@@ -62,6 +62,7 @@ function App() {
 		}
 		setAuthChecked(true);
 	}, []);
+	// console.log(authChecked, isLogin);
 
 	useEffect(() => {
 		if (isLogin && !userData?.name) {
@@ -94,6 +95,8 @@ function App() {
 		// privet route when login then only open route
 		// console.log(isLogin)
 		if (!authChecked) {
+			console.log(authChecked);
+
 			return (
 				<div>
 					{" "}
@@ -221,4 +224,4 @@ function App() {
 	);
 }
 
-export { MyContext, App };
+export { App };

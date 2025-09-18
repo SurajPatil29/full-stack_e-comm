@@ -13,8 +13,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 function SignUp() {
 	//google state
 	const [loadingGoogle, setLoadingGoogle] = useState(false);

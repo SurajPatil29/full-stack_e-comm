@@ -6,8 +6,8 @@ import { IoLogInSharp } from "react-icons/io5";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { useContext } from "react";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function ChangePassword() {
 	const email = localStorage.getItem("userEmail");

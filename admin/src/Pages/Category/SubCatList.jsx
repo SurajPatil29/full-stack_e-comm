@@ -19,9 +19,9 @@ import TableRow from "@mui/material/TableRow";
 // use for category
 import { PiExport } from "react-icons/pi";
 import { TfiLayoutSliderAlt } from "react-icons/tfi";
-import { MyContext } from "../../App";
 
 import Chip from "@mui/material/Chip";
+import MyContext from "../../context/MyContext";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
 

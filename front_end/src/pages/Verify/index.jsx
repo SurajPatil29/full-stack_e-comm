@@ -3,8 +3,8 @@ import { useContext, useEffect, useState } from "react";
 import { Button, CircularProgress } from "@mui/material";
 import OtpBox from "../../componants/OtpBox";
 import { useNavigate } from "react-router-dom";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function Verify() {
 	const [otp, setOtp] = useState("");

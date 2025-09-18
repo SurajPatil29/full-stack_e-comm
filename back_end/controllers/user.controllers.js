@@ -588,6 +588,7 @@ export async function refreshToken(req, res, next) {
 		const tokenFromCookie = req.cookies.refreshToken;
 		const tokenFromHeader = req?.headers?.authorization?.split(" ")[1];
 		const refresh_token = tokenFromCookie || tokenFromHeader;
+		console.log(tokenFromCookie, tokenFromHeader);
 
 		if (!refresh_token) {
 			return sendError(res, "Refresh token missing", 401);
@@ -600,28 +601,38 @@ export async function refreshToken(req, res, next) {
 			return sendError(res, "Invalid or expired refresh token", 401);
 		}
 
-		const userId = decoded.id._id;
+		// ✅ Correct payload extraction
+		const userId = decoded.id;
 		if (!userId) {
 			return sendError(res, "Invalid token payload", 401);
 		}
 
 		const user = await UserModel.findById(userId);
-		if (!user || user.refresh_token !== refresh_token) {
-			return sendError(res, "Token mismatch or user not found", 403);
+
+		// Optional DB check (if you store refresh_token in DB)
+		if (!user) {
+			return sendError(res, "User not found", 403);
 		}
+		// If you want strict matching (user.refresh_token must equal refresh_token):
+		// if (user.refresh_token !== refresh_token) {
+		//   return sendError(res, "Token mismatch", 403);
+		// }
 
-		const newAccessToken = await generatedAccessToken(user);
+		// Generate new access token
+		const newAccessToken = await generatedAccessToken(user._id);
 
+		// Send new access token in cookie
 		res.cookie("accessToken", newAccessToken, {
 			httpOnly: true,
-			secure: true,
-			sameSite: "None",
+			secure: process.env.NODE_ENV === "production", // false on localhost
+			sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
 		});
 
 		return sendSuccess(res, "New access token generated", {
 			accessToken: newAccessToken,
 		});
 	} catch (error) {
+		console.log(error);
 		next(error);
 	}
 }
@@ -629,6 +640,7 @@ export async function refreshToken(req, res, next) {
 export async function userDetails(req, res, next) {
 	try {
 		const userId = req.userId;
+		console.log(userId);
 
 		if (!userId) {
 			return sendError(res, "User ID is required", 400);

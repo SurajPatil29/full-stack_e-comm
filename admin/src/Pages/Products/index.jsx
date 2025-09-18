@@ -24,7 +24,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { PiExport } from "react-icons/pi";
 import { RiProductHuntLine } from "react-icons/ri";
 import SearchBox from "../../Components/SearchBox";
-import { MyContext } from "../../App";
+import MyContext from "../../context/MyContext";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
 

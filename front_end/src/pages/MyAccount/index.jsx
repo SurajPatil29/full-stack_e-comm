@@ -8,8 +8,11 @@ import {
 import AccountSideBar from "../../componants/AccountSideBar";
 import { useState, useEffect, useContext } from "react";
 import { fetchDataFromApi, postData } from "../../utils/api";
-import { MyContext } from "../../App";
 import { FaEye, FaEyeSlash, FaRegEdit, FaCheck } from "react-icons/fa";
+
+import "react-international-phone/style.css";
+import { PhoneInput } from "react-international-phone";
+import MyContext from "../../context/MyContext";
 
 function MyAccount() {
 	const [userDetails, setUserDetails] = useState({
@@ -34,6 +37,7 @@ function MyAccount() {
 	const [message, setMessage] = useState("");
 	const context = useContext(MyContext);
 	const userId = localStorage.getItem("userId");
+	const [changePass, setChangePass] = useState(false);
 
 	useEffect(() => {
 		if (context.userData) {
@@ -82,6 +86,7 @@ function MyAccount() {
 		// Email change case → require old, new, confirm
 		if (emailChanged) {
 			if (!oldPassword || !newPassword || !confermPassword) {
+				setChangePass(true);
 				setMessage(
 					"❌ Old, new, and confirm password are required when changing email."
 				);
@@ -145,7 +150,15 @@ function MyAccount() {
 
 				<div className="col2 w-[50%]">
 					<div className="card bg-white p-5 shadow-md rounded-md">
-						<h2 className="pb-3">My Profile</h2>
+						<div className="flex justify-between ">
+							<h2 className="pb-3">My Profile</h2>
+							<Button
+								className="!text-[#ff5252] !hover:underline cursor-pointer"
+								onClick={() => setChangePass(!changePass)}
+							>
+								Change Password
+							</Button>
+						</div>
 						<hr />
 
 						<form className="mt-5" onSubmit={handleSave} autoComplete="off">
@@ -176,7 +189,10 @@ function MyAccount() {
 											readOnly: !editMode.name,
 											endAdornment: (
 												<InputAdornment position="end">
-													<IconButton onClick={() => toggleEdit("name")}>
+													<IconButton
+														onClick={() => toggleEdit("name")}
+														size="small"
+													>
 														{editMode.name ? <FaCheck /> : <FaRegEdit />}
 													</IconButton>
 												</InputAdornment>
@@ -184,27 +200,26 @@ function MyAccount() {
 										}}
 									/>
 								</div>
-
-								<div className="w-[50%]">
-									<TextField
-										label="Phone Number"
-										name="mobile"
+								<div className="w-[50%] relative">
+									{" "}
+									{/* make parent relative */}
+									<PhoneInput
+										defaultCountry="in"
 										value={userDetails.mobile}
-										onChange={onChangeInput}
-										variant="outlined"
-										size="small"
-										className="w-full"
-										InputProps={{
-											readOnly: !editMode.mobile,
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton onClick={() => toggleEdit("mobile")}>
-														{editMode.mobile ? <FaCheck /> : <FaRegEdit />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
+										onChange={(value) =>
+											onChangeInput({ target: { name: "mobile", value } })
+										}
+										disabled={!editMode.mobile} // editable only when true
+										inputClassName="w-full !h-10 !text-sm pr-10" // add padding so text doesn't clash with icon
 									/>
+									{/* Edit/Check button inside container */}
+									<IconButton
+										onClick={() => toggleEdit("mobile")}
+										className="!absolute right-1 top-1 z-50"
+										size="small"
+									>
+										{editMode.mobile ? <FaCheck /> : <FaRegEdit />}
+									</IconButton>
 								</div>
 							</div>
 
@@ -222,7 +237,10 @@ function MyAccount() {
 										readOnly: !editMode.email,
 										endAdornment: (
 											<InputAdornment position="end">
-												<IconButton onClick={() => toggleEdit("email")}>
+												<IconButton
+													onClick={() => toggleEdit("email")}
+													size="small"
+												>
 													{editMode.email ? <FaCheck /> : <FaRegEdit />}
 												</IconButton>
 											</InputAdornment>
@@ -230,86 +248,95 @@ function MyAccount() {
 									}}
 								/>
 							</div>
+							{changePass && (
+								<div>
+									<h4 className="text-[13px] mt-5">Change Password</h4>
 
-							<h4 className="text-[13px] mt-5">Change Password</h4>
-
-							<div className="flex items-center gap-5 mt-4">
-								<div className="w-[33%]">
-									<TextField
-										label="Old Password"
-										type={showPassword.old ? "text" : "password"}
-										name="oldPassword"
-										value={userDetails.oldPassword}
-										onChange={onChangeInput}
-										variant="outlined"
-										autoComplete="off"
-										size="small"
-										className="w-full"
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														onClick={() => togglePasswordVisibility("old")}
-														edge="end"
-													>
-														{showPassword.old ? <FaEyeSlash /> : <FaEye />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-									/>
+									<div className="flex items-center gap-5 mt-4">
+										<div className="w-[33%]">
+											<TextField
+												label="Old Password"
+												type={showPassword.old ? "text" : "password"}
+												name="oldPassword"
+												value={userDetails.oldPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() => togglePasswordVisibility("old")}
+																edge="end"
+															>
+																{showPassword.old ? <FaEyeSlash /> : <FaEye />}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
+										</div>
+										<div className="w-[33%]">
+											<TextField
+												label="New Password"
+												type={showPassword.new ? "text" : "password"}
+												name="newPassword"
+												value={userDetails.newPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() => togglePasswordVisibility("new")}
+																edge="end"
+															>
+																{showPassword.new ? <FaEyeSlash /> : <FaEye />}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
+										</div>
+										<div className="w-[33%]">
+											<TextField
+												label="Confirm Password"
+												type={showPassword.confirm ? "text" : "password"}
+												name="confermPassword"
+												value={userDetails.confermPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() =>
+																	togglePasswordVisibility("confirm")
+																}
+																edge="end"
+															>
+																{showPassword.confirm ? (
+																	<FaEyeSlash />
+																) : (
+																	<FaEye />
+																)}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
+										</div>
+									</div>
 								</div>
-								<div className="w-[33%]">
-									<TextField
-										label="New Password"
-										type={showPassword.new ? "text" : "password"}
-										name="newPassword"
-										value={userDetails.newPassword}
-										onChange={onChangeInput}
-										variant="outlined"
-										autoComplete="off"
-										size="small"
-										className="w-full"
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														onClick={() => togglePasswordVisibility("new")}
-														edge="end"
-													>
-														{showPassword.new ? <FaEyeSlash /> : <FaEye />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-									/>
-								</div>
-								<div className="w-[33%]">
-									<TextField
-										label="Confirm Password"
-										type={showPassword.confirm ? "text" : "password"}
-										name="confermPassword"
-										value={userDetails.confermPassword}
-										onChange={onChangeInput}
-										variant="outlined"
-										autoComplete="off"
-										size="small"
-										className="w-full"
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														onClick={() => togglePasswordVisibility("confirm")}
-														edge="end"
-													>
-														{showPassword.confirm ? <FaEyeSlash /> : <FaEye />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-									/>
-								</div>
-							</div>
+							)}
 
 							<br />
 							{message && (

@@ -5,8 +5,8 @@ import { IoLogInSharp } from "react-icons/io5";
 
 import { useState } from "react";
 import { useContext } from "react";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function ForgotPassword() {
 	const [isLoading, setIsLoading] = useState(false);

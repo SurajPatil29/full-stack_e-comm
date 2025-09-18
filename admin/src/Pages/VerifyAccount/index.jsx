@@ -6,8 +6,8 @@ import { Button, CircularProgress } from "@mui/material";
 import { BiSolidUserAccount } from "react-icons/bi";
 import { IoLogInSharp } from "react-icons/io5";
 import OtpBox from "../../Components/OtpBox";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function VerifyAccount() {
 	const [otp, setOtp] = useState("");

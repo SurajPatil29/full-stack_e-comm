@@ -7,7 +7,7 @@ import { MdZoomOutMap } from "react-icons/md";
 import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
-import { MyContext } from "../../App";
+import MyContext from "../../context/MyContext";
 
 function ProductItem() {
 	// this componant use for shocase product info on home page

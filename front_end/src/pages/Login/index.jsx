@@ -4,8 +4,8 @@ import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function Login() {
 	const [isLoading, setIsLoading] = useState(false);

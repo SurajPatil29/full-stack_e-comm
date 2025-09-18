@@ -17,14 +17,21 @@ const auth = (req, res, next) => {
 		if (!decoded || !decoded.id) {
 			return sendError(res, "Invalid token", 401);
 		}
-		// console.log(decoded.id);
-		req.userId = decoded.id;
-		// req.user = decoded.id
 
+		req.userId = decoded.id;
 		next();
 	} catch (error) {
 		console.error("Auth middleware error:", error.message);
-		return sendError(res, "Unauthorized - Invalid or expired token", 401);
+
+		if (error.name === "TokenExpiredError") {
+			return sendError(res, "TOKEN_EXPIRED", 401); // 🔥 Clear, machine-friendly message
+		} else if (error.name === "JsonWebTokenError") {
+			return sendError(res, "INVALID_TOKEN", 401);
+		} else if (error.name === "NotBeforeError") {
+			return sendError(res, "TOKEN_NOT_ACTIVE", 401);
+		}
+
+		return sendError(res, "UNAUTHORIZED", 401);
 	}
 };
 

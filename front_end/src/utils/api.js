@@ -1,7 +1,14 @@
 import axios from "axios";
+import { refreshToken } from "./refreshToken";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const getToken = () => localStorage.getItem("accessToken");
+
+const handleLogout = () => {
+	localStorage.removeItem("accessToken");
+	localStorage.removeItem("userId");
+	window.location.href = "/login";
+};
 
 export const postData = async (url, formData) => {
 	try {
@@ -45,18 +52,58 @@ export const postFormData = async (url, formData) => {
 
 export const fetchDataFromApi = async (url) => {
 	try {
-		const { data } = await axios.get(apiUrl + url, {
+		const response = await fetch(`${apiUrl}${url}`, {
 			headers: {
 				Authorization: `Bearer ${getToken()}`,
 				"Content-Type": "application/json",
 			},
-			// withCredentials: true,
+			// credentials: "include", // 🔥 required if cookies involved
 		});
+
+		const data = await response.json();
+
+		// Check if token expired
+		if (response.status === 401 && data.message === "TOKEN_EXPIRED") {
+			console.warn("Access token expired. Trying refresh...");
+
+			const refreshResponse = await refreshToken("/api/user/refresh-token");
+			// console.log(refreshResponse);
+			if (refreshResponse.error) {
+				// Refresh failed → logout
+				// console.log(refreshResponse.error);
+				handleLogout();
+				return {
+					error: true,
+					message: "Session expired. Please log in again.",
+				};
+			}
+
+			// Retry with new access token
+			const newAccessToken = localStorage.getItem("accessToken");
+			const retryResponse = await fetch(`${apiUrl}${url}`, {
+				headers: {
+					Authorization: `Bearer ${newAccessToken}`,
+					"Content-Type": "application/json",
+				},
+				// credentials: "include",
+			});
+
+			const retryData = await retryResponse.json();
+			if (!retryResponse.ok) {
+				return { error: true, message: retryData.message || "Retry failed" };
+			}
+			return retryData;
+		}
+
+		// Normal error
+		if (!response.ok) {
+			return { error: true, message: data.message || "Request failed" };
+		}
 
 		return data;
 	} catch (error) {
-		console.log(error);
-		return { error: true, message: "Fetch error" };
+		console.error("API error:", error);
+		return { error: true, message: "Network error" };
 	}
 };
 

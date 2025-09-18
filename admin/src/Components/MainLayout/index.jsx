@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { MyContext } from "../../App";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
+import MyContext from "../../context/MyContext";
 
 export default function MainLayout() {
 	const { isSidebarOpen } = useContext(MyContext);
