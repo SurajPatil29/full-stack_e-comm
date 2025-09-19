@@ -640,15 +640,15 @@ export async function refreshToken(req, res, next) {
 export async function userDetails(req, res, next) {
 	try {
 		const userId = req.userId;
-		console.log(userId);
+		// console.log(userId);
 
 		if (!userId) {
 			return sendError(res, "User ID is required", 400);
 		}
 
-		const user = await UserModel.findById(userId).select(
-			"-password -refresh_token"
-		);
+		const user = await UserModel.findById(userId)
+			.select("-password -refresh_token")
+			.populate("address_details");
 
 		if (!user) {
 			return sendError(res, "User not found", 404);

@@ -17,11 +17,11 @@ const addressSchema = mongoose.Schema(
 		pincode: {
 			type: Number,
 		},
-		contry: {
+		country: {
 			type: String,
 		},
 		mobile: {
-			type: Number,
+			type: String,
 			default: null,
 		},
 		status: {

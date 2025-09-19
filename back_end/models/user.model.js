@@ -49,12 +49,11 @@ const userSchema = mongoose.Schema(
 			enum: ["Active", "Inactive", "Suspended"],
 			default: "Active",
 		},
-		address_details: [
-			{
-				type: mongoose.Schema.ObjectId,
-				ref: "address",
-			},
-		],
+		address_details: {
+			type: mongoose.Schema.ObjectId,
+			ref: "address",
+		},
+
 		shopping_cart: [
 			{
 				type: mongoose.Schema.ObjectId,

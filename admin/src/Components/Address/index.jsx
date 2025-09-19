@@ -9,7 +9,7 @@ import {
 	CircularProgress,
 	Button,
 } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaCheck, FaRegEdit } from "react-icons/fa";
 import { PhoneInput } from "react-international-phone";
 import MyContext from "../../context/MyContext";
@@ -39,6 +39,21 @@ function Address() {
 
 	const [isLoading, setIsLoading] = useState(false);
 	const context = useContext(MyContext);
+
+	useEffect(() => {
+		if (context.userData?.address_details) {
+			setAddressDetails((prev) => ({
+				...prev,
+				address_line: context.userData?.address_details.address_line || "",
+				city: context.userData?.address_details.city || "",
+				state: context.userData?.address_details.state || "",
+				pincode: context.userData?.address_details.pincode || "",
+				country: context.userData?.address_details.country || "",
+				mobile: context.userData?.address_details.mobile || "",
+				status: context.userData?.address_details.status ?? false,
+			}));
+		}
+	}, [context.userData]);
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -114,6 +129,9 @@ function Address() {
 	};
 	return (
 		<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white px-5 pb-5 w-[80%]">
+			<div className="">
+				<h3>Address Details Edit</h3>
+			</div>
 			<form className="space-y-6" onSubmit={handleSubmit}>
 				{/* Row 1 - Address + City */}
 				<div className="flex items-center gap-5">
