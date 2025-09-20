@@ -27,6 +27,7 @@ import MyList from "./pages/MyList";
 import Orders from "./pages/Orders";
 import { fetchDataFromApi } from "./utils/api";
 import MyContext from "./context/MyContext";
+import Address from "./pages/Address";
 
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
@@ -168,6 +169,15 @@ function App() {
 						element={
 							<PrivateRoutes>
 								<Orders />
+							</PrivateRoutes>
+						}
+					/>
+					<Route
+						path={"/address"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<Address />
 							</PrivateRoutes>
 						}
 					/>

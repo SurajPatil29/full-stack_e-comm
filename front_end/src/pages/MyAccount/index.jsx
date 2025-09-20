@@ -8,7 +8,14 @@ import {
 import AccountSideBar from "../../componants/AccountSideBar";
 import { useState, useEffect, useContext } from "react";
 import { fetchDataFromApi, postData } from "../../utils/api";
-import { FaEye, FaEyeSlash, FaRegEdit, FaCheck } from "react-icons/fa";
+import {
+	FaEye,
+	FaEyeSlash,
+	FaRegEdit,
+	FaCheck,
+	FaChevronUp,
+	FaChevronDown,
+} from "react-icons/fa";
 
 import "react-international-phone/style.css";
 import { PhoneInput } from "react-international-phone";
@@ -38,6 +45,9 @@ function MyAccount() {
 	const context = useContext(MyContext);
 	const userId = localStorage.getItem("userId");
 	const [changePass, setChangePass] = useState(false);
+
+	const [showMore, setShowMore] = useState(false);
+	const address = context?.userData?.address_details;
 
 	useEffect(() => {
 		if (context.userData) {
@@ -247,6 +257,46 @@ function MyAccount() {
 										),
 									}}
 								/>
+							</div>
+							<div className="mt-6 border rounded-lg bg-gray-50 p-4 shadow-sm">
+								<div className="flex justify-between items-center">
+									<h2 className="text-base font-medium text-gray-700">
+										Address Details
+									</h2>
+									<button
+										type="button"
+										onClick={() => setShowMore(!showMore)}
+										className="text-gray-500 hover:text-gray-700 transition"
+									>
+										{showMore ? <FaChevronUp /> : <FaChevronDown />}
+									</button>
+								</div>
+
+								{/* Always visible */}
+								<p className="text-sm text-gray-700 mt-2">
+									<strong>Address:</strong> {address?.address_line}
+								</p>
+
+								{/* Toggle section */}
+								{showMore && (
+									<div className="mt-2 space-y-1 text-sm">
+										<p className="text-gray-700">
+											<strong>City:</strong> {address?.city}
+										</p>
+										<p className="text-gray-700">
+											<strong>State:</strong> {address?.state}
+										</p>
+										<p className="text-gray-700">
+											<strong>Pincode:</strong> {address?.pincode}
+										</p>
+										<p className="text-gray-700">
+											<strong>Country:</strong> {address?.country}
+										</p>
+										<p className="text-gray-700">
+											<strong>Mobile:</strong> {address?.mobile}
+										</p>
+									</div>
+								)}
 							</div>
 							{changePass && (
 								<div>

@@ -1,7 +1,7 @@
 import { Button, CircularProgress } from "@mui/material";
 import { FaRegHeart, FaRegUser } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
-import { IoBagCheckOutline } from "react-icons/io5";
+import { IoBagCheckOutline, IoLocationOutline } from "react-icons/io5";
 import { LuLogOut } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 import {
@@ -137,6 +137,20 @@ function AccountSideBar() {
 					>
 						<Button className="w-full !text-left !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2">
 							<FaRegUser className="text-[15px]" /> My Profile
+						</Button>
+					</NavLink>
+				</li>
+
+				<li className="w-full">
+					<NavLink
+						to="/address"
+						className={({ isActive }) =>
+							`w-full block ${isActive ? "bg-white isActive" : ""}`
+						}
+					>
+						<Button className="w-full !text-left !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2">
+							<IoLocationOutline className="text-[15px] " />
+							Address
 						</Button>
 					</NavLink>
 				</li>

@@ -97,3 +97,59 @@ export const getAddressController = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const deleteAddressController = async (req, res, next) => {
+	try {
+		const userId = req.userId; // assuming this comes from auth middleware
+		const { _id } = req.body; // address id
+
+		if (!_id) {
+			return res.status(400).json({
+				message: "Provide _id",
+				error: true,
+				success: false,
+			});
+		}
+
+		// Find user
+		const user = await UserModel.findById(userId);
+		if (!user) {
+			return res.status(404).json({
+				message: "User not found",
+				error: true,
+				success: false,
+			});
+		}
+
+		// Check if this address actually belongs to the user
+		if (String(user.address_details) !== String(_id)) {
+			return res.status(403).json({
+				message: "This address does not belong to the user",
+				error: true,
+				success: false,
+			});
+		}
+
+		// Delete address document
+		const deleteItem = await AddressModel.findOneAndDelete({ _id, userId });
+		if (!deleteItem) {
+			return res.status(404).json({
+				message: "Address not found in database",
+				error: true,
+				success: false,
+			});
+		}
+
+		// Remove reference from user
+		user.address_details = null;
+		await user.save();
+
+		return res.status(200).json({
+			message: "Address deleted successfully",
+			error: false,
+			success: true,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
