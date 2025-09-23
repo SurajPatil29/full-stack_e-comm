@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -16,28 +16,25 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
-// use for category
 import { PiExport } from "react-icons/pi";
 import { TfiLayoutSliderAlt } from "react-icons/tfi";
 import MyContext from "../../context/MyContext";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 
-const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
+const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
-// this is use for material ui table
 const columns = [
 	{ id: "image", label: "IMAGE", minWidth: 150 },
 	{ id: "catName", label: "CATEGORY NAME", minWidth: 150 },
 	{ id: "action", label: "ACTION", minWidth: 100 },
 ];
 
-// this is use for material ui table
-
 function CategoryList() {
-	const context = useContext(MyContext); //use globle context here
+	const context = useContext(MyContext);
 
-	// this for mui table functions
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [catData, setCatData] = useState([]); // keep array, not object
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -47,7 +44,32 @@ function CategoryList() {
 		setRowsPerPage(+event.target.value);
 		setPage(0);
 	};
-	// this for mui table functions
+	const handleDeleteCategory = async (id) => {
+		if (!id) return;
+		if (!window.confirm("Are you sure you want to delete this category?"))
+			return;
+
+		const res = await deleteData(`/api/category/${id}`);
+		if (res.success) {
+			setCatData((prev) => prev.filter((cat) => cat._id !== id));
+		} else {
+			alert(res.message || "Failed to delete category");
+		}
+	};
+
+	useEffect(() => {
+		fetchDataFromApi("/api/category/categories")
+			.then((res) => {
+				if (res?.success && Array.isArray(res.data)) {
+					setCatData(res.data); // only store array
+				} else {
+					console.warn("Categories not found", res);
+				}
+			})
+			.catch((err) => {
+				console.error("Failed to fetch categories", err);
+			});
+	}, []);
 
 	return (
 		<>
@@ -56,7 +78,6 @@ function CategoryList() {
 
 				<div className="col w-[30%] ml-auto flex items-center justify-end gap-3 ">
 					<Button className="btn-sm !bg-green-600 !text-white gap-2 flex items-center">
-						{" "}
 						<PiExport className="text-white text-[20px] " />
 						Export
 					</Button>
@@ -69,19 +90,17 @@ function CategoryList() {
 							})
 						}
 					>
-						<TfiLayoutSliderAlt className="text-white text-[20px]   " />
+						<TfiLayoutSliderAlt className="text-white text-[20px]" />
 						Add New Category
 					</Button>
 				</div>
 			</div>
 
-			{/* this is material ui table v2 */}
-
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white ">
 				<TableContainer sx={{ maxHeight: 440 }}>
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead className="!bg-gray-50">
-							<TableRow className="">
+							<TableRow>
 								<TableCell width={60}>
 									<Checkbox {...label} size="small" />
 								</TableCell>
@@ -97,308 +116,73 @@ function CategoryList() {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
+							{catData
+								.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+								.map((cat) => (
+									<TableRow key={cat._id}>
+										<TableCell>
+											<Checkbox {...label} size="small" />
+										</TableCell>
 
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
+										{/* Image */}
+										<TableCell width={100}>
+											<div className="w-[80px] flex items-center gap-4">
+												<div className="img w-full rounded-md overflow-hidden group">
+													<img
+														src={cat.images?.[0] || "/placeholder.png"}
+														alt={cat.name}
+														className="w-full group-hover:scale-105 transition-all"
+													/>
+												</div>
+											</div>
+										</TableCell>
 
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
+										{/* Category Name */}
+										<TableCell width={100}>{cat.name}</TableCell>
 
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
+										{/* Actions */}
+										<TableCell width={100}>
+											<div className="flex items-center gap-2">
+												<Tooltip title="Edit Category" placement="top">
+													<Button
+														className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)]"
+														onClick={() =>
+															context.setIsOpenFullScreenPanel({
+																open: true,
+																model: "Edit Category",
+																id: cat?._id,
+															})
+														}
+													>
+														<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
+													</Button>
+												</Tooltip>
 
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell width={100}>
-									<div className="w-[80px] flex items-center gap-4">
-										<div className="img w-full rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734685760/catimg4_hthaeb.png"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell width={100}>Fashion</TableCell>
-								<TableCell width={100}>
-									{" "}
-									<div className="flex items-center gap-2">
-										<Tooltip title="Edit Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="View Product Detail" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<FaRegEye className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-
-										<Tooltip title="Remove Product" placement="top">
-											<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)] active:!bg-[rgba(0,0,0,0.1)] focus:bg-[rgba(0,0,0,0.1)]">
-												<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
-											</Button>
-										</Tooltip>
-									</div>
-								</TableCell>
-							</TableRow>
+												<Tooltip title="Delete Category" placement="top">
+													<Button
+														className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)]"
+														onClick={() => handleDeleteCategory(cat._id)}
+													>
+														<MdOutlineDelete className="text-[18px] text-[rgba(0,0,0,0.8)]" />
+													</Button>
+												</Tooltip>
+											</div>
+										</TableCell>
+									</TableRow>
+								))}
 						</TableBody>
 					</Table>
 				</TableContainer>
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"
-					count={10}
+					count={catData.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
 				/>
 			</div>
-
-			{/* this is material ui table v2 */}
 		</>
 	);
 }

@@ -392,26 +392,26 @@ function Profile() {
 
 						{/* Always visible */}
 						<p className="text-sm text-gray-700 mt-2">
-							<strong>Address:</strong> {address.address_line}
+							<strong>Address:</strong> {address?.address_line}
 						</p>
 
 						{/* Toggle section */}
 						{showMore && (
 							<div className="mt-2 space-y-1 text-sm">
 								<p className="text-gray-700">
-									<strong>City:</strong> {address.city}
+									<strong>City:</strong> {address?.city}
 								</p>
 								<p className="text-gray-700">
-									<strong>State:</strong> {address.state}
+									<strong>State:</strong> {address?.state}
 								</p>
 								<p className="text-gray-700">
-									<strong>Pincode:</strong> {address.pincode}
+									<strong>Pincode:</strong> {address?.pincode}
 								</p>
 								<p className="text-gray-700">
-									<strong>Country:</strong> {address.country}
+									<strong>Country:</strong> {address?.country}
 								</p>
 								<p className="text-gray-700">
-									<strong>Mobile:</strong> {address.mobile}
+									<strong>Mobile:</strong> {address?.mobile}
 								</p>
 							</div>
 						)}

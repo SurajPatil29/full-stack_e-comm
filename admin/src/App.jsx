@@ -38,6 +38,7 @@ import { fetchDataFromApi } from "./utils/api";
 import { CircularProgress } from "@mui/material";
 import Profile from "./Pages/Profile";
 import MyContext from "./context/MyContext.jsx";
+import EditCategory from "./Pages/Category/EditCategory.jsx";
 
 // add product dilog
 
@@ -51,6 +52,7 @@ function App() {
 	const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
 		open: false,
 		model: "",
+		id: "",
 	}); //this use for open dilog for add product
 	const [userData, setUserData] = useState(null);
 	const [authChecked, setAuthChecked] = useState(false);
@@ -117,9 +119,13 @@ function App() {
 		openAlertBox,
 		userData: userData,
 		setUserData: setUserData,
+		authChecked, // ✅ include here
+		setAuthChecked,
 	};
 
 	function PrivateRoutes({ children }) {
+		const { isLogin, authChecked } = React.useContext(MyContext);
+
 		// privet route when login then only open route
 		if (!authChecked) {
 			// console.log(authChecked);
@@ -322,6 +328,7 @@ function App() {
 					{isOpenFullScreenPanel?.model === "Add New Sub Category" && (
 						<AddSubCategory />
 					)}
+					{isOpenFullScreenPanel?.model === "Edit Category" && <EditCategory />}
 				</Dialog>
 			</MyContext.Provider>
 			<Toaster />

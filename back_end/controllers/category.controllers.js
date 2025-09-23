@@ -21,45 +21,61 @@ async function uploadToCloudinary(files, folder) {
 	return uploadedUrls;
 }
 
-// Controller: Upload category images
+// Upload category images
 export async function uploadImage(req, res, next) {
 	try {
-		const imageFiles = req.files;
-
-		if (!imageFiles || imageFiles.length === 0) {
+		if (!req.files || req.files.length === 0) {
 			return sendError(res, "No images provided", 400);
 		}
 
+		// Optional: Validate file types
+		const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+		for (const file of req.files) {
+			if (!allowedTypes.includes(file.mimetype)) {
+				return sendError(res, "Invalid file type. Only images allowed", 400);
+			}
+		}
+
 		const images = await uploadToCloudinary(
-			imageFiles,
+			req.files,
 			"classyshop/categoryimg"
 		);
 		return sendSuccess(res, "Images uploaded successfully", { images });
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
-// Controller: Create a category
+// Create category
 export async function createCategory(req, res, next) {
 	try {
-		const { name, parentId, parentCatName, images } = req.body;
-
-		if (!name || !images?.length) {
+		const { name, parentId, parentCatName, image } = req.body;
+		if (!name?.trim() || !image?.length) {
 			return sendError(res, "Category name and images are required", 400);
 		}
 
+		// Prevent duplicate category names
+		const exists = await CategoryModel.findOne({ name });
+		if (exists) return sendError(res, "Category already exists", 409);
+
+		// Optional: Verify parentId exists
+		let parent = null;
+		if (parentId) {
+			parent = await CategoryModel.findById(parentId);
+			if (!parent) return sendError(res, "Parent category not found", 404);
+		}
+
 		const category = new CategoryModel({
-			name,
-			images,
-			parentId: parentId || null,
-			parentCatName: parentCatName || null,
+			name: name.trim(),
+			images: image,
+			parentId: parent ? parent._id : null,
+			parentCatName: parent ? parent.name : null,
 		});
 
 		await category.save();
 		return sendSuccess(res, "Category created successfully", { category });
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
@@ -89,7 +105,7 @@ export async function getCategories(req, res, next) {
 			data: rootCategories,
 		});
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
@@ -102,7 +118,7 @@ export async function getCategoriesCount(req, res, next) {
 
 		return sendSuccess(res, "Top-level categories count", { categoryCount });
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
@@ -124,7 +140,7 @@ export async function getSubCategoriesCount(req, res, next) {
 			});
 		}
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
@@ -142,7 +158,7 @@ export async function getCategory(req, res, next) {
 
 		return sendSuccess(res, "Category fetched successfully", { category });
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
@@ -189,14 +205,14 @@ export async function removeImageFromCloudinary(req, res, next) {
 		});
 	} catch (error) {
 		console.error("Cloudinary deletion error:", error);
-		next();
+		next(error);
 	}
 }
 
 export async function deleteCategory(req, res, next) {
 	try {
 		const category = await CategoryModel.findById(req.params.id);
-
+		console.log(category);
 		if (!category) {
 			return sendError(res, "Category not found!", 404);
 		}
@@ -224,13 +240,14 @@ export async function deleteCategory(req, res, next) {
 
 		return sendSuccess(res, "Category and all nested categories deleted!");
 	} catch (error) {
-		next();
+		next(error);
 	}
 }
 
 export async function updateCategory(req, res, next) {
 	try {
 		const { name, images, parentId, parentCatName } = req.body;
+		// console.log(name, images, parentId, parentCatName);
 
 		if (!name || !images?.length) {
 			return sendError(res, "Name and images are required", 400);
@@ -253,6 +270,6 @@ export async function updateCategory(req, res, next) {
 
 		return sendSuccess(res, "Category updated successfully", { category });
 	} catch (error) {
-		next();
+		next(error);
 	}
 }

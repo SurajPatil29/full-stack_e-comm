@@ -1,24 +1,28 @@
-import React, { useState } from "react";
-import UploadBox from "../../Components/UploadBox";
-import { IoMdCloseCircle } from "react-icons/io";
+import React from "react";
+import MyContext from "../../context/MyContext";
+import { useContext } from "react";
+import { useState } from "react";
+import {
+	deleteImagefromCloudi,
+	fetchDataFromApi,
+	postData,
+} from "../../utils/api";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
+import UploadBox from "../../Components/UploadBox";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { Button } from "@mui/material";
-import { deleteImagefromCloudi, postData } from "../../utils/api";
-import { useContext } from "react";
-import MyContext from "../../context/MyContext";
+import { useEffect } from "react";
+import { IoMdCloseCircle } from "react-icons/io";
 
-function AddCategory() {
+function EditCategory() {
 	const context = useContext(MyContext);
 	const [formFields, setFormFields] = useState({
 		name: "",
-		image: "", // store only 1 image url for category
+		image: "",
 	});
 	const [isLoading, setIsLoading] = useState(false);
 	const [message, setMessage] = useState("");
 
-	// Handle category name input
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
 		setFormFields((prev) => ({
@@ -27,7 +31,14 @@ function AddCategory() {
 		}));
 	};
 
-	// Delete uploaded image
+	useEffect(() => {
+		const id = context.isOpenFullScreenPanel.id;
+		fetchDataFromApi(`/api/category/${id}`).then((res) => {
+			const category = res.category;
+			setFormFields({ name: category.name, image: category.images });
+		});
+	}, []);
+
 	const handleDeleteCatImg = async () => {
 		if (!formFields.image) return;
 		try {
@@ -37,22 +48,22 @@ function AddCategory() {
 				formFields.image
 			);
 			setFormFields((prev) => ({ ...prev, image: "" }));
-		} catch (err) {
-			console.error(err);
+		} catch (error) {
+			console.error(error);
 			setMessage("❌ Failed to delete image. Try again.");
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	// Save category
 	const handleSave = async (e) => {
 		e.preventDefault();
 		setMessage("");
+		const id = context.isOpenFullScreenPanel.id;
 
-		// Extra safety: validate again inside
 		const isFormValidNow =
-			formFields.name.trim().length > 0 && formFields.image.trim().length > 0;
+			formFields.name.trim().length > 0 &&
+			String(formFields.image).trim().length > 0;
 
 		if (!isFormValidNow) {
 			setMessage("❌ Category name and image are required");
@@ -61,18 +72,18 @@ function AddCategory() {
 
 		try {
 			setIsLoading(true);
-			const result = await postData(`/api/category/create`, formFields);
+			const result = await postData(`/api/category/${id}`, {
+				name: formFields.name,
+				images: formFields.image,
+			});
 			if (result.success) {
-				setMessage("✅ Category created successfully");
+				setMessage("✅ Category updated successfully");
 				setFormFields({ name: "", image: "" });
 				setTimeout(() => {
-					context.setIsOpenFullScreenPanel(
-						{
-							open: false,
-						},
-						3000
-					);
-				});
+					context.setIsOpenFullScreenPanel({
+						open: false,
+					});
+				}, 3000);
 			} else {
 				setMessage(result.message || "❌ Something went wrong");
 			}
@@ -83,22 +94,19 @@ function AddCategory() {
 			setIsLoading(false);
 		}
 	};
-
-	const isFormValid = formFields.name.trim() && formFields.image;
-
+	const isFormValid = Boolean(formFields.name.trim() && formFields.image);
 	return (
-		<section className="p-2 bg-gray-50">
+		<section className="p-2 bggray-50">
 			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll">
-					{/* Category Name */}
+				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll ">
 					<div className="mb-3">
-						<h3 className="text-[14px] font-[500] mb-1 text-black">
-							Product Category Name
+						<h3 className="text-[14px] font-[500] mb-1 text-black ">
+							Product Category name
 						</h3>
+
 						<input
 							type="text"
-							className="w-[25%] h-[40px] border border-gray-300 focus:outline-none 
-							focus:border-gray-500 rounded-sm p-3 text-sm"
+							className="w-[25%] h-[40%] border border-gray-300 focus:outline-none focus:border-gray-500 rounded-sm p-3 text-sm "
 							name="name"
 							onChange={onChangeInput}
 							value={formFields.name}
@@ -106,10 +114,8 @@ function AddCategory() {
 							required
 						/>
 					</div>
-
-					{/* Category Image */}
 					<div className="px-5">
-						<h3 className="font-[700] text-[18px] mb-3">Category Image</h3>
+						<h3 className="font-[700] text-[18px] mb-3 ">category Image</h3>
 						<div className="grid grid-cols-7 gap-4">
 							{formFields.image ? (
 								<div className="relative">
@@ -117,17 +123,13 @@ function AddCategory() {
 										type="button"
 										onClick={handleDeleteCatImg}
 										disabled={isLoading}
-										className="absolute w-[20px] h-[25px] rounded-full overflow-hidden 
-										-top-[5px] -right-[5px] z-50 cursor-pointer disabled:opacity-50"
+										className="absolute w-[20px] h-[25px] rounded-full overflow-hidden -top-[5px] -right-[5px] z-50 cursor-pointer disabled:opacity-50 "
 									>
-										<IoMdCloseCircle className="text-red-700 text-[20px]" />
+										<IoMdCloseCircle className="text-red-700 text-[20px] " />
 									</button>
-									<div
-										className="uploadBox p-0 rounded-md overflow-hidden border 
-									border-dashed border-gray-400 h-[150px] w-full bg-gray-100 flex items-center justify-center"
-									>
+									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-gray-400 h-[150px] w-full bg-gray-100 flex items-center justify-center ">
 										<LazyLoadImage
-											className="w-full h-full object-cover"
+											className="w-full h-full object-cover "
 											alt="Category"
 											src={formFields.image}
 											effect="blur"
@@ -145,8 +147,6 @@ function AddCategory() {
 						</div>
 					</div>
 				</div>
-
-				{/* Error/Success Message */}
 				{message && (
 					<p
 						className={`text-sm mt-3 ${
@@ -175,4 +175,4 @@ function AddCategory() {
 	);
 }
 
-export default AddCategory;
+export default EditCategory;

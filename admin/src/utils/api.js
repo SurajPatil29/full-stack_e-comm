@@ -128,6 +128,27 @@ export const deleteImagefromCloudi = async (url, query) => {
 	}
 };
 
+export const deleteData = async (url) => {
+	try {
+		const response = await fetch(apiUrl + url, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${getToken()}`,
+			},
+		});
+
+		if (!response.ok) {
+			return { success: false, message: `HTTP error ${response.status}` };
+		}
+
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Error", error);
+		return { success: false, message: "Network error", error: true };
+	}
+};
 // export const refreshToken = async (url) => {
 // 	try {
 // 		const response = await fetch(`${apiUrl}${url}`, {
