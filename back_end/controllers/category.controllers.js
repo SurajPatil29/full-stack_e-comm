@@ -50,12 +50,19 @@ export async function uploadImage(req, res, next) {
 export async function createCategory(req, res, next) {
 	try {
 		const { name, parentId, parentCatName, image } = req.body;
-		if (!name?.trim() || !image?.length) {
-			return sendError(res, "Category name and images are required", 400);
+		if (!name?.trim()) {
+			return sendError(res, "Category name is required", 400);
+		}
+
+		if (!parentId && (!image || !image.length)) {
+			return sendError(res, "Main Category requred image", 400);
 		}
 
 		// Prevent duplicate category names
-		const exists = await CategoryModel.findOne({ name });
+		const exists = await CategoryModel.findOne({
+			name: name.trim(),
+			parentId: parentId || null,
+		});
 		if (exists) return sendError(res, "Category already exists", 409);
 
 		// Optional: Verify parentId exists

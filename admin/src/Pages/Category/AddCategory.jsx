@@ -66,13 +66,10 @@ function AddCategory() {
 				setMessage("✅ Category created successfully");
 				setFormFields({ name: "", image: "" });
 				setTimeout(() => {
-					context.setIsOpenFullScreenPanel(
-						{
-							open: false,
-						},
-						3000
-					);
-				});
+					context.setIsOpenFullScreenPanel({
+						open: false,
+					});
+				}, 3000);
 			} else {
 				setMessage(result.message || "❌ Something went wrong");
 			}

@@ -1,65 +1,273 @@
-import React, { useState } from "react";
-import "react-lazy-load-image-component/src/effects/blur.css"; //css for lasyload img
+import React, { useState, useEffect, useContext } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { Button, MenuItem, Select } from "@mui/material";
+import {
+	Button,
+	CircularProgress,
+	MenuItem,
+	Select,
+	Divider,
+	Paper,
+	Typography,
+	TextField,
+} from "@mui/material";
+import { fetchDataFromApi, postData } from "../../utils/api";
+import MyContext from "../../context/MyContext";
 
 function AddSubCategory() {
-	// this for product catagory
-	const [productCat, setProductCat] = useState("");
+	const [categories, setCategories] = useState([]);
+	const [message, setMessage] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const context = useContext(MyContext);
 
-	const handleChangeProductCat = (event) => {
-		setProductCat(event.target.value);
+	const [subCatForm, setSubCatForm] = useState({
+		parentId: "",
+		parentCatName: "",
+		name: "",
+	});
+
+	const [thirdCatForm, setThirdCatForm] = useState({
+		mainCatId: "",
+		subCatId: "",
+		name: "",
+	});
+	const [subCategories, setSubCategories] = useState([]);
+
+	// Fetch categories
+	useEffect(() => {
+		fetchDataFromApi("/api/category/categories").then((res) => {
+			if (res?.data) setCategories(res.data);
+		});
+	}, []);
+
+	// ------------ Subcategory Handlers ------------
+	const handleSubCatChange = (e) => {
+		const selectedId = e.target.value;
+		const parent = categories.find((cat) => cat._id === selectedId);
+		setSubCatForm((prev) => ({
+			...prev,
+			parentId: parent?._id || "",
+			parentCatName: parent?.name || "",
+		}));
 	};
-	// this for product catagory
+
+	const handleSubCatInput = (e) =>
+		setSubCatForm((prev) => ({ ...prev, name: e.target.value }));
+
+	const handleSubmitSubCat = async (e) => {
+		e.preventDefault();
+		setMessage("");
+
+		if (!subCatForm.parentId) return setMessage("⚠️ Select a main category");
+		if (!subCatForm.name.trim()) return setMessage("⚠️ Enter subcategory name");
+
+		try {
+			setIsLoading(true);
+			const result = await postData("/api/category/create", {
+				parentId: subCatForm.parentId,
+				parentCatName: subCatForm.parentCatName,
+				name: subCatForm.name.trim(),
+			});
+			if (result.success) {
+				setMessage("✅ Subcategory created successfully");
+				setSubCatForm({ parentId: "", parentCatName: "", name: "" });
+				setTimeout(() => {
+					context.setIsOpenFullScreenPanel({ open: false });
+				}, 2000);
+			} else {
+				setMessage(`❌ ${result.message}`);
+			}
+		} catch (error) {
+			console.error(error);
+			setMessage("❌ Server error. Try again.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// ------------ Third Level Handlers ------------
+	const handleMainCatChange = (e) => {
+		const mainId = e.target.value;
+		const parent = categories.find((cat) => cat._id === mainId);
+		setThirdCatForm((prev) => ({
+			...prev,
+			mainCatId: parent?._id || "",
+			subCatId: "",
+		}));
+		setSubCategories(parent?.children || []);
+	};
+
+	const handleSubCatSelect = (e) =>
+		setThirdCatForm((prev) => ({ ...prev, subCatId: e.target.value }));
+
+	const handleThirdCatInput = (e) =>
+		setThirdCatForm((prev) => ({ ...prev, name: e.target.value }));
+
+	const handleSubmitThirdCat = async (e) => {
+		e.preventDefault();
+		setMessage("");
+
+		if (!thirdCatForm.mainCatId) return setMessage("⚠️ Select a main category");
+		if (!thirdCatForm.subCatId) return setMessage("⚠️ Select a subcategory");
+		if (!thirdCatForm.name.trim())
+			return setMessage("⚠️ Enter third level category name");
+
+		try {
+			setIsLoading(true);
+			const result = await postData("/api/category/create", {
+				parentId: thirdCatForm.subCatId,
+				name: thirdCatForm.name.trim(),
+			});
+			if (result.success) {
+				setMessage("✅ Third level category created successfully");
+				setThirdCatForm({ mainCatId: "", subCatId: "", name: "" });
+				setSubCategories([]);
+				setTimeout(() => {
+					context.setIsOpenFullScreenPanel({ open: false });
+				}, 2000);
+			} else {
+				setMessage(`❌ ${result.message}`);
+			}
+		} catch (error) {
+			console.error(error);
+			setMessage("❌ Server error. Try again.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
-		<section className="p-2 bg-gray-50">
-			<form className="form py-3 p-2  ">
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll ">
-					<div className="grid grid-cols-4 mb-3 gap-5">
-						<div className="col  ">
-							<h3 className="text-[14px] font-[500] mb-1 text-black ">
-								Product Category
-							</h3>
-							<Select
-								className="w-full bg-white"
-								size="small"
-								labelId="demo-simple-select-helper-label"
-								id="productCatDrop"
-								value={productCat}
-								displayEmpty
-								inputProps={{ "aria-label": "Without label" }}
-								onChange={handleChangeProductCat}
-							>
-								<MenuItem value="">
-									<em>None</em>
-								</MenuItem>
-								<MenuItem value="Fashion">Fashion</MenuItem>
-								<MenuItem value="Beauty">Beauty</MenuItem>
-								<MenuItem value="Wellness">Wellness</MenuItem>
-							</Select>
-						</div>
-						<div className="col">
-							<h3 className="text-[14px] font-[500] mb-1 text-black ">
-								Sub Category Name
-							</h3>
-							<input
-								type="text"
-								className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none focus:border-[rgba(0,0,0,0.5)] rounded-sm p-3 text-sm "
-							/>
-						</div>
-					</div>
-				</div>
-				<br />
-				<hr />
-				<br />
-				<div className="w-[250px] ">
-					<Button type="button" className="btn-blue btn-lg w-full gap-2">
-						<FaCloudUploadAlt className="text-[20px] " />
-						Publish & View
-					</Button>
-				</div>
+		<Paper elevation={2} className="p-6 bg-white rounded-xl space-y-8">
+			{/* ---------- FORM 1 ---------- */}
+			<form onSubmit={handleSubmitSubCat} className="space-y-4">
+				<Typography variant="h6" fontWeight="bold" color="primary">
+					Add Subcategory
+				</Typography>
+
+				<Select
+					fullWidth
+					size="small"
+					value={subCatForm.parentId}
+					onChange={handleSubCatChange}
+					displayEmpty
+				>
+					<MenuItem value="">
+						<em>Select Main Category</em>
+					</MenuItem>
+					{categories.map((cat) => (
+						<MenuItem key={cat._id} value={cat._id}>
+							{cat.name}
+						</MenuItem>
+					))}
+				</Select>
+
+				<TextField
+					fullWidth
+					size="small"
+					variant="outlined"
+					value={subCatForm.name}
+					onChange={handleSubCatInput}
+					placeholder="Enter subcategory name"
+				/>
+
+				<Button
+					type="submit"
+					variant="contained"
+					fullWidth
+					disabled={isLoading}
+					startIcon={!isLoading && <FaCloudUploadAlt />}
+				>
+					{isLoading ? (
+						<CircularProgress size={20} color="inherit" />
+					) : (
+						"Publish Subcategory"
+					)}
+				</Button>
 			</form>
-		</section>
+
+			<Divider />
+
+			{/* ---------- FORM 2 ---------- */}
+			<form onSubmit={handleSubmitThirdCat} className="space-y-4">
+				<Typography variant="h6" fontWeight="bold" color="primary">
+					Add Third Level Category
+				</Typography>
+
+				<Select
+					fullWidth
+					size="small"
+					value={thirdCatForm.mainCatId}
+					onChange={handleMainCatChange}
+					displayEmpty
+				>
+					<MenuItem value="">
+						<em>Select Main Category</em>
+					</MenuItem>
+					{categories.map((cat) => (
+						<MenuItem key={cat._id} value={cat._id}>
+							{cat.name}
+						</MenuItem>
+					))}
+				</Select>
+
+				{subCategories.length > 0 && (
+					<Select
+						fullWidth
+						size="small"
+						value={thirdCatForm.subCatId}
+						onChange={handleSubCatSelect}
+						displayEmpty
+					>
+						<MenuItem value="">
+							<em>Select Subcategory</em>
+						</MenuItem>
+						{subCategories.map((sub) => (
+							<MenuItem key={sub._id} value={sub._id}>
+								{sub.name}
+							</MenuItem>
+						))}
+					</Select>
+				)}
+
+				<TextField
+					fullWidth
+					size="small"
+					variant="outlined"
+					value={thirdCatForm.name}
+					onChange={handleThirdCatInput}
+					placeholder="Enter third level category name"
+				/>
+
+				<Button
+					type="submit"
+					variant="contained"
+					fullWidth
+					disabled={isLoading}
+					startIcon={!isLoading && <FaCloudUploadAlt />}
+				>
+					{isLoading ? (
+						<CircularProgress size={20} color="inherit" />
+					) : (
+						"Publish Third Level Category"
+					)}
+				</Button>
+			</form>
+
+			{/* ---------- MESSAGE ---------- */}
+			{message && (
+				<Typography
+					variant="body2"
+					className={`pt-2 ${
+						message.startsWith("✅")
+							? "text-green-600"
+							: message.startsWith("⚠️")
+							? "text-yellow-600"
+							: "text-red-600"
+					}`}
+				>
+					{message}
+				</Typography>
+			)}
+		</Paper>
 	);
 }
 

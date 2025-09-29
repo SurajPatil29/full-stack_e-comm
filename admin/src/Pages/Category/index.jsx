@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Chip } from "@mui/material";
 import React, { useContext, useState, useEffect } from "react";
 
 import Checkbox from "@mui/material/Checkbox";
@@ -32,6 +32,7 @@ const columns = [
 function CategoryList() {
 	const context = useContext(MyContext);
 
+	const [selected, setSelected] = useState([]);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [catData, setCatData] = useState([]); // keep array, not object
@@ -57,19 +58,38 @@ function CategoryList() {
 		}
 	};
 
+	// Toggle one
+	const handleSelect = (id) => {
+		setSelected((prev) =>
+			prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+		);
+	};
+
+	// Toggle all
+	const handleSelectAll = (event) => {
+		if (event.target.checked) {
+			setSelected(catData.map((cat) => cat._id));
+		} else {
+			setSelected([]);
+		}
+	};
+
+	const getCategories = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/category/categories");
+			if (res?.success && Array.isArray(res.data)) {
+				setCatData(res.data);
+			} else {
+				console.warn("Categories not found", res);
+			}
+		} catch (err) {
+			console.error("Failed to fetch categories", err);
+		}
+	};
+
 	useEffect(() => {
-		fetchDataFromApi("/api/category/categories")
-			.then((res) => {
-				if (res?.success && Array.isArray(res.data)) {
-					setCatData(res.data); // only store array
-				} else {
-					console.warn("Categories not found", res);
-				}
-			})
-			.catch((err) => {
-				console.error("Failed to fetch categories", err);
-			});
-	}, []);
+		getCategories();
+	}, [context.isOpenFullScreenPanel.open]);
 
 	return (
 		<>
@@ -101,9 +121,21 @@ function CategoryList() {
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead className="!bg-gray-50">
 							<TableRow>
-								<TableCell width={60}>
-									<Checkbox {...label} size="small" />
+								{/* Header Checkbox */}
+								<TableCell width={50} align="center">
+									<Checkbox
+										{...label}
+										size="small"
+										indeterminate={
+											selected.length > 0 && selected.length < catData.length
+										}
+										checked={
+											catData.length > 0 && selected.length === catData.length
+										}
+										onChange={handleSelectAll}
+									/>
 								</TableCell>
+
 								{columns.map((column) => (
 									<TableCell
 										width={column.minWidth}
@@ -115,15 +147,20 @@ function CategoryList() {
 								))}
 							</TableRow>
 						</TableHead>
+
 						<TableBody>
 							{catData
 								.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 								.map((cat) => (
 									<TableRow key={cat._id}>
-										<TableCell>
-											<Checkbox {...label} size="small" />
+										<TableCell width={50} align="center">
+											<Checkbox
+												{...label}
+												size="small"
+												checked={selected.includes(cat._id)}
+												onChange={() => handleSelect(cat._id)}
+											/>
 										</TableCell>
-
 										{/* Image */}
 										<TableCell width={100}>
 											<div className="w-[80px] flex items-center gap-4">
@@ -136,10 +173,10 @@ function CategoryList() {
 												</div>
 											</div>
 										</TableCell>
-
 										{/* Category Name */}
-										<TableCell width={100}>{cat.name}</TableCell>
-
+										<TableCell width={100}>
+											<Chip label={cat.name} />
+										</TableCell>
 										{/* Actions */}
 										<TableCell width={100}>
 											<div className="flex items-center gap-2">
@@ -157,7 +194,6 @@ function CategoryList() {
 														<AiOutlineEdit className="text-[18px] text-[rgba(0,0,0,0.8)]" />
 													</Button>
 												</Tooltip>
-
 												<Tooltip title="Delete Category" placement="top">
 													<Button
 														className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full bg-[#f1f1f1] !border !border-[rgba(0,0,0,0.8)] hover:bg-[rgba(0,0,0,0.05)]"
