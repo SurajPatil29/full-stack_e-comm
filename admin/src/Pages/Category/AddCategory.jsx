@@ -137,6 +137,7 @@ function AddCategory() {
 									setImg={(url) =>
 										setFormFields((prev) => ({ ...prev, image: url }))
 									}
+									url="/api/category/uploadImages"
 								/>
 							)}
 						</div>

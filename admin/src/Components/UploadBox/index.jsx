@@ -4,18 +4,20 @@ import { CircularProgress } from "@mui/material";
 import MyContext from "../../context/MyContext";
 import { postFormData } from "../../utils/api";
 
-function UploadBox({ multiple = false, setImg }) {
+function UploadBox({ multiple = false, setImg, url }) {
 	const context = useContext(MyContext);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleFileChange = async (e) => {
-		const file = e.target.files?.[0];
-		if (!file) {
+		const files = Array.from(e.target.files || []);
+		if (!files.length) {
 			context.openAlertBox("error", "No file selected");
 			return;
 		}
 
-		if (!file.type.startsWith("image/")) {
+		// validate all files are images
+		const invalidFile = files.find((file) => !file.type.startsWith("image/"));
+		if (invalidFile) {
 			context.openAlertBox("error", "Only image files allowed");
 			return;
 		}
@@ -23,16 +25,23 @@ function UploadBox({ multiple = false, setImg }) {
 		try {
 			setIsLoading(true);
 			const formData = new FormData();
-			formData.append("images", file);
+			files.forEach((file) => {
+				formData.append("images", file);
+			});
 
-			const res = await postFormData("/api/category/uploadImages", formData);
-			// console.log(res);
+			const res = await postFormData(url, formData);
 
 			if (!res.success) {
 				context.openAlertBox("error", `Upload failed: ${res.message}`);
 			} else {
-				setImg(res.images[0]); // Pass uploaded URL to parent
-				context.openAlertBox("success", "Image uploaded successfully");
+				if (multiple) {
+					// send array of urls back
+					setImg((prev) => [...(prev || []), ...res.images]); // ✅ append mode
+				} else {
+					// send only single url back
+					setImg(res.images[0]);
+				}
+				context.openAlertBox("success", "Image(s) uploaded successfully");
 			}
 		} catch (err) {
 			context.openAlertBox("error", "Upload error. Try again.");
@@ -49,7 +58,7 @@ function UploadBox({ multiple = false, setImg }) {
 		>
 			<GrGallery className="text-[50px] text-gray-400 pointer-events-none" />
 			<h4 className="text-[14px] text-gray-400 text-center pointer-events-none">
-				Image Upload
+				{multiple ? "Upload Images" : "Upload Image"}
 			</h4>
 
 			{isLoading ? (

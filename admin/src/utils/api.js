@@ -31,6 +31,7 @@ export const postData = async (url, formData) => {
 	}
 };
 
+//this used for img upload
 export const postFormData = async (url, formData) => {
 	try {
 		// console.log(apiUrl + url);
@@ -136,6 +137,51 @@ export const deleteData = async (url) => {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${getToken()}`,
 			},
+		});
+
+		if (!response.ok) {
+			return { success: false, message: `HTTP error ${response.status}` };
+		}
+
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Error", error);
+		return { success: false, message: "Network error", error: true };
+	}
+};
+
+export const putData = async (url, formData) => {
+	try {
+		// console.log(apiUrl + url);
+		const response = await fetch(apiUrl + url, {
+			method: "put",
+			headers: {
+				Authorization: `Bearer ${getToken()}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(formData),
+			withCredentials: true,
+		});
+
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.log("Error", error);
+		return { error: true, message: "Network error" };
+	}
+};
+
+export const deleteMultiple = async (url, formData) => {
+	try {
+		// console.log(`${apiUrl}${url}`, formData);
+		const response = await fetch(apiUrl + url, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${getToken()}`,
+			},
+			body: JSON.stringify(formData),
 		});
 
 		if (!response.ok) {

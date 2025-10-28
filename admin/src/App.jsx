@@ -39,6 +39,7 @@ import { CircularProgress } from "@mui/material";
 import Profile from "./Pages/Profile";
 import MyContext from "./context/MyContext.jsx";
 import EditCategory from "./Pages/Category/EditCategory.jsx";
+import EditProduct from "./Pages/Products/EditProduct.jsx";
 
 // add product dilog
 
@@ -329,6 +330,7 @@ function App() {
 						<AddSubCategory />
 					)}
 					{isOpenFullScreenPanel?.model === "Edit Category" && <EditCategory />}
+					{isOpenFullScreenPanel?.model === "Edit Product" && <EditProduct />}
 				</Dialog>
 			</MyContext.Provider>
 			<Toaster />
