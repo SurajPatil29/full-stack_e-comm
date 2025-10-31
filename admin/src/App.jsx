@@ -40,6 +40,7 @@ import Profile from "./Pages/Profile";
 import MyContext from "./context/MyContext.jsx";
 import EditCategory from "./Pages/Category/EditCategory.jsx";
 import EditProduct from "./Pages/Products/EditProduct.jsx";
+import ProductDetails from "./Pages/Products/productDetails.jsx";
 
 // add product dilog
 
@@ -262,6 +263,20 @@ function App() {
 				{
 					index: true,
 					element: <Profile />,
+				},
+			],
+		},
+		{
+			path: "/productDetails/:id",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <ProductDetails />,
 				},
 			],
 		},

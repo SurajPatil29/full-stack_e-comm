@@ -15,6 +15,7 @@ import {
 	getAllProductsByThirdLevelCatId,
 	getAllProductsByThirdLevelCatName,
 	getFeaturesProducts,
+	getFilteredProducts,
 	getProduct,
 	getProductsCount,
 	removeImageFromCloudinary,
@@ -39,6 +40,7 @@ productRouter.get(
 	"/getAllProductsByThirdLevelCatName",
 	getAllProductsByThirdLevelCatName
 );
+productRouter.get("/filter", getFilteredProducts);
 productRouter.get("/getAllProductsByPrice", getAllProductsByPrice);
 productRouter.get("/getAllProductByRating", getAllProductsByRating);
 productRouter.get("/getAllProductCount", getProductsCount);

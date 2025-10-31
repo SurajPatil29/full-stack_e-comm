@@ -131,6 +131,25 @@ export async function getAllProductsByCatId(req, res, next) {
 	}
 }
 
+// controllers/product.controller.js
+export async function getFilteredProducts(req, res, next) {
+	try {
+		const { catId, subCatId, thirdsubCatId } = req.query;
+		console.log(thirdsubCatId);
+
+		const query = {
+			...(catId && { catId }),
+			...(subCatId && { subCatId }),
+			...(thirdsubCatId && { thirdsubCatId }),
+		};
+
+		const products = await ProductModel.find(query);
+		return sendSuccess(res, "Filtered products fetched", { products });
+	} catch (error) {
+		next(error);
+	}
+}
+
 export async function getAllProductsByCatName(req, res, next) {
 	try {
 		const products = await ProductModel.find({ catName: req.query.catName });
