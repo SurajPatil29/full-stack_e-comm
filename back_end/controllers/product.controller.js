@@ -6,6 +6,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { buildProductQuery } from "../utils/filterQuery.js";
 import { extractPublicIdFromUrl } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import productRAMsModel from "../models/productRams.model.js";
 import { error } from "console";
 
 // Helper: Upload to Cloudinary
@@ -76,15 +77,23 @@ export async function createProduct(req, res, next) {
 			return sendError(res, "Name, description, and price are required", 422);
 		}
 
+		// ✅ Upload images if present
 		let uploadedImages = [];
 		if (req.files && req.files.length > 0) {
 			uploadedImages = await uploadToCloudinary(req.files);
 		}
 
+		// ✅ Normalize string → array
+		const parseToArray = (val) => {
+			if (!val) return [];
+			if (Array.isArray(val)) return val;
+			return val.split(",").map((v) => v.trim());
+		};
+
 		const product = new ProductModel({
 			name,
 			description,
-			images: images || uploadedImages,
+			images: images?.length ? images : uploadedImages,
 			brand: brand || "",
 			price,
 			oldPrice: oldPrice || null,
@@ -94,13 +103,15 @@ export async function createProduct(req, res, next) {
 			subCat: subCat || "",
 			thirdsubCatId: thirdsubCatId || null,
 			thirdsubCat: thirdsubCat || "",
-			stock: countInStock || 0,
+			countInStock: countInStock || 0,
 			rating: rating || 0,
 			isFeatured: isFeatured || false,
 			discount: discount || 0,
-			productRam: productRam || "",
-			size: size || "",
-			productWeight: productWeight || "",
+
+			// ✅ Arrays
+			productRam: parseToArray(productRam),
+			size: parseToArray(size),
+			productWeight: parseToArray(productWeight),
 		});
 
 		await product.save();
@@ -347,18 +358,41 @@ export async function getProduct(req, res, next) {
 // ✅ Update Product
 export async function updateProduct(req, res, next) {
 	try {
-		if (!mongoose.Types.ObjectId.isValid(req.params.id))
+		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
 			return sendError(res, "Invalid product ID", 400);
+		}
 
-		const updateFields = { ...req.body };
+		const updateData = { ...req.body };
+
+		// ✅ If frontend sends string like "4GB,8GB" → convert to array
+		const parseToArray = (val) => {
+			if (!val) return [];
+			if (Array.isArray(val)) return val;
+			return val.split(",").map((v) => v.trim());
+		};
+
+		if (updateData.productRam)
+			updateData.productRam = parseToArray(updateData.productRam);
+		if (updateData.size) updateData.size = parseToArray(updateData.size);
+		if (updateData.productWeight)
+			updateData.productWeight = parseToArray(updateData.productWeight);
+
+		// ✅ Handle file uploads if any new images
+		if (req.files && req.files.length > 0) {
+			const uploadedImages = await uploadToCloudinary(req.files);
+			updateData.images = uploadedImages;
+		}
+
 		const updated = await ProductModel.findByIdAndUpdate(
 			req.params.id,
-			updateFields,
+			updateData,
 			{ new: true }
 		);
 
 		if (!updated) return sendError(res, "Product not updated", 404);
-		return sendSuccess(res, "Product updated", { product: updated });
+		return sendSuccess(res, "Product updated successfully", {
+			product: updated,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -387,6 +421,155 @@ export async function removeImageFromCloudinary(req, res, next) {
 		return sendSuccess(res, "Image removed successfully", {
 			cloudinary: result,
 			db: updated,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Create Product RAM
+export async function createProductRAMs(req, res, next) {
+	try {
+		const { name } = req.body;
+
+		// Validate input
+		if (!name || name.trim() === "") {
+			return sendError(res, "RAM name is required", 400);
+		}
+
+		// Check for duplicate
+		const existingRAM = await productRAMsModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+		});
+		if (existingRAM) {
+			return sendError(res, "RAM with this name already exists", 400);
+		}
+
+		// Create new RAM
+		const productRAMs = await productRAMsModel.create({ name });
+
+		// Send success response
+		return sendSuccess(res, "Product RAM created successfully", {
+			productRAMs,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete single Product RAM
+export async function deleteProductRAMs(req, res, next) {
+	try {
+		// Validate ObjectId
+		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+			return sendError(res, "Invalid RAM ID", 400);
+		}
+
+		// Find RAM entry
+		const productRAM = await productRAMsModel.findById(req.params.id);
+		if (!productRAM) {
+			return sendError(res, "Product RAM not found", 404);
+		}
+
+		// Delete from DB
+		await productRAM.deleteOne();
+
+		// Send success response
+		return sendSuccess(res, "Product RAM deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete multiple Product RAMs
+export async function deleteMultipleProductRAMs(req, res, next) {
+	try {
+		const ids = req.body;
+		// Validate input
+		if (!ids || !Array.isArray(ids) || ids.length === 0) {
+			return sendError(res, "Invalid input: Expected array of IDs", 400);
+		}
+
+		// Optional: validate each ID
+		const invalidIds = ids.filter((id) => !mongoose.Types.ObjectId.isValid(id));
+		if (invalidIds.length > 0) {
+			return sendError(
+				res,
+				`Invalid Object IDs: ${invalidIds.join(", ")}`,
+				400
+			);
+		}
+
+		// Check if RAMs exist before deletion
+		const existing = await productRAMsModel.find({ _id: { $in: ids } });
+		if (existing.length === 0) {
+			return sendError(res, "No Product RAMs found for the given IDs", 404);
+		}
+
+		// Delete from DB
+		await productRAMsModel.deleteMany({ _id: { $in: ids } });
+
+		return sendSuccess(res, "Product RAMs deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Update Product RAM
+export async function updateProductRAMs(req, res, next) {
+	try {
+		const { name } = req.body;
+		const { id } = req.params;
+
+		// ✅ Validate ID
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return sendError(res, "Invalid RAM ID", 400);
+		}
+
+		// ✅ Validate name
+		if (!name || name.trim() === "") {
+			return sendError(res, "RAM name is required", 400);
+		}
+
+		// ✅ Check if another RAM with the same name already exists
+		const existingRAM = await productRAMsModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+			_id: { $ne: id }, // exclude current record
+		});
+
+		if (existingRAM) {
+			return sendError(res, "A RAM with this name already exists", 400);
+		}
+
+		// ✅ Update the record
+		const updatedRAM = await productRAMsModel.findByIdAndUpdate(
+			id,
+			{ name },
+			{ new: true }
+		);
+
+		if (!updatedRAM) {
+			return sendError(res, "Product RAM not found or update failed", 404);
+		}
+
+		return sendSuccess(res, "Product RAM updated successfully", { updatedRAM });
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Get all Product RAMs
+export async function getProductRAMs(req, res, next) {
+	try {
+		const productRAMs = await productRAMsModel.find().sort({ createdAt: -1 });
+
+		// ✅ Check if empty
+		if (!productRAMs || productRAMs.length === 0) {
+			return sendError(res, "No Product RAMs found", 404);
+		}
+
+		return sendSuccess(res, "Product RAMs fetched successfully", {
+			productRAMs,
 		});
 	} catch (error) {
 		next(error);

@@ -705,7 +705,14 @@
 
 // export default Products;
 
-import { Button, Checkbox, MenuItem, Select, Tooltip } from "@mui/material";
+import {
+	Button,
+	Checkbox,
+	CircularProgress,
+	MenuItem,
+	Select,
+	Tooltip,
+} from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { AiOutlineEdit } from "react-icons/ai";
@@ -742,6 +749,7 @@ function Products() {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [products, setProducts] = useState([]);
 	const [selected, setSelected] = useState([]);
+	const [loading, setLoading] = useState(false);
 
 	// ========================= CATEGORY FILTER STATES =========================
 	const [catData, setCatData] = useState([]);
@@ -755,16 +763,23 @@ function Products() {
 	// ========================= FETCH CATEGORY DATA =========================
 	const getCategoryData = async () => {
 		try {
+			setLoading(true);
 			const res = await fetchDataFromApi("/api/category/categories");
-			setCatData(res.data || []);
+
+			setTimeout(() => {
+				setCatData(res.data || []);
+				setLoading(false); // ✅ move inside timeout
+			}, 1000);
 		} catch (error) {
 			context.openAlertBox("error", "Failed to fetch categories");
+			setLoading(false); // ✅ ensure fallback in case of error
 		}
 	};
 
 	// Fetch products dynamically based on selection
 	const fetchFilteredProducts = async () => {
 		try {
+			setLoading(true);
 			const params = new URLSearchParams();
 			if (categoryValue) params.append("catId", categoryValue);
 			if (subCategoryValue) params.append("subCatId", subCategoryValue);
@@ -774,10 +789,14 @@ function Products() {
 			const res = await fetchDataFromApi(
 				`/api/product/filter?${params.toString()}`
 			);
-			setProducts(res.products || []);
+			setTimeout(() => {
+				setProducts(res.products || []);
+				setLoading(false);
+			}, 1000);
 		} catch (error) {
 			console.log(error);
 			context.openAlertBox("error", "Failed to fetch products");
+			setLoading(false);
 		}
 	};
 
@@ -822,9 +841,19 @@ function Products() {
 
 	// ========================= FETCH PRODUCTS =========================
 	const getAllProducts = () => {
-		fetchDataFromApi("/api/product/getAllProducts").then((res) => {
-			if (res.success) setProducts(res.products);
-		});
+		try {
+			setLoading(true);
+			fetchDataFromApi("/api/product/getAllProducts").then((res) => {
+				setTimeout(() => {
+					if (res.success) setProducts(res.products);
+					setLoading(false);
+				}, 1000);
+			});
+		} catch (error) {
+			console.log(error);
+			context.openAlertBox("error", "Failed to fetch products");
+			setLoading(false);
+		}
 	};
 	// useEffect(() => {
 	// 	getAllProducts();
@@ -854,29 +883,40 @@ function Products() {
 
 	const deleteProduct = async (id) => {
 		try {
+			setLoading(true);
 			const response = await deleteData(`/api/product/${id}`);
-			setProducts((prevProducts) =>
-				prevProducts.filter((product) => product._id !== id)
-			);
+			setTimeout(() => {
+				setProducts((prevProducts) =>
+					prevProducts.filter((product) => product._id !== id)
+				);
+				setLoading(false);
+			}, 1000);
 		} catch (error) {
 			console.error("Error deleting product:", error);
+			setLoading(false);
 		}
 	};
 
 	const deleteMultipleProducts = () => {
 		try {
+			setLoading(true);
 			deleteMultiple(`/api/product/deleteMultiple`, { ids: selected }).then(
 				(res) => {
 					if (res.success) {
-						setProducts((prev) =>
-							prev.filter((p) => !selected.includes(p._id))
-						);
-						context.openAlertBox("success", "Products deleted");
+						setTimeout(() => {
+							setProducts((prev) =>
+								prev.filter((p) => !selected.includes(p._id))
+							);
+							context.openAlertBox("success", "Products deleted");
+							setLoading(false);
+						}, 1000);
 					}
 				}
 			);
 		} catch (error) {
+			console.log(error);
 			context.openAlertBox("error", "Error deleting items");
+			setLoading(false);
 		}
 	};
 
@@ -1015,113 +1055,138 @@ function Products() {
 						</TableHead>
 
 						<TableBody>
-							{products
-								.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-								.map((product) => (
-									<TableRow key={product._id} hover>
-										<TableCell>
-											<Checkbox
-												size="small"
-												checked={selected.includes(product._id)}
-												onChange={() => handleSelectOne(product._id)}
-											/>
-										</TableCell>
+							{/* ✅ Show loading spinner while fetching */}
+							{console.log(loading)}
+							{loading ? (
+								<TableRow>
+									<TableCell colSpan={8}>
+										<div className="flex items-center justify-center w-full min-h-[400px]">
+											<CircularProgress color="inherit" />
+										</div>
+									</TableCell>
+								</TableRow>
+							) : products.length === 0 ? (
+								// ✅ Show “No products found” when empty
+								<TableRow>
+									<TableCell colSpan={8}>
+										<div className="flex items-center justify-center w-full min-h-[400px] text-gray-500 font-medium">
+											No products found
+										</div>
+									</TableCell>
+								</TableRow>
+							) : (
+								// ✅ Show product rows when data is available
+								products
+									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+									.map((product) => (
+										<TableRow key={product._id} hover>
+											<TableCell>
+												<Checkbox
+													size="small"
+													checked={selected.includes(product._id)}
+													onChange={() => handleSelectOne(product._id)}
+												/>
+											</TableCell>
 
-										{/* PRODUCT */}
-										<TableCell>
-											<div className="flex items-center gap-4">
-												<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-													<Link to={`/product/${product._id}`}>
-														<img
-															src={
-																product.images?.[0] ||
-																"https://via.placeholder.com/65"
-															}
-															alt={product.name}
-															className="w-full h-full object-cover group-hover:scale-105 transition-all"
-														/>
-													</Link>
-												</div>
-												<div>
-													<h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
+											{/* PRODUCT */}
+											<TableCell>
+												<div className="flex items-center gap-4">
+													<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
 														<Link to={`/product/${product._id}`}>
-															{product.name}
+															<img
+																src={
+																	product.images?.[0] ||
+																	"https://via.placeholder.com/65"
+																}
+																alt={product.name}
+																className="w-full h-full object-cover group-hover:scale-105 transition-all"
+															/>
 														</Link>
-													</h3>
-													<p className="text-[12px]">{product.brand}</p>
+													</div>
+													<div>
+														<h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
+															<Link to={`/product/${product._id}`}>
+																{product.name}
+															</Link>
+														</h3>
+														<p className="text-[12px]">{product.brand}</p>
+													</div>
 												</div>
-											</div>
-										</TableCell>
+											</TableCell>
 
-										<TableCell>{product.catName || "—"}</TableCell>
-										<TableCell>{product.subCat || "—"}</TableCell>
+											<TableCell>{product.catName || "—"}</TableCell>
+											<TableCell>{product.subCat || "—"}</TableCell>
 
-										<TableCell>
-											<div className="flex flex-col gap-1">
-												{product.oldPrice && (
-													<span className="line-through text-green-500 text-[13px]">
-														₹{product.oldPrice}
+											<TableCell>
+												<div className="flex flex-col gap-1">
+													{product.oldPrice && (
+														<span className="line-through text-green-500 text-[13px]">
+															₹{product.oldPrice}
+														</span>
+													)}
+													<span className="text-[#3872fa] font-[600] text-[13px]">
+														₹{product.price}
 													</span>
-												)}
-												<span className="text-[#3872fa] font-[600] text-[13px]">
-													₹{product.price}
-												</span>
-											</div>
-										</TableCell>
+												</div>
+											</TableCell>
 
-										<TableCell>
-											<div className="text-[14px] w-[100px]">
-												{product.sale || 0}{" "}
-												<span className="font-[600]">sale</span>
-												<Progress value={product.sale} type="warning" />
-											</div>
-										</TableCell>
+											<TableCell>
+												<div className="text-[14px] w-[100px]">
+													{product.sale || 0}{" "}
+													<span className="font-[600]">sale</span>
+													<Progress value={product.sale} type="warning" />
+												</div>
+											</TableCell>
 
-										<TableCell>
-											<div className="flex items-center gap-2">
-												<Tooltip title="Edit Product" placement="top">
-													<Button
-														className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
-														onClick={() =>
-															context.setIsOpenFullScreenPanel({
-																open: true,
-																model: "Edit Product",
-																id: product._id,
-															})
-														}
-													>
-														<AiOutlineEdit className="text-[18px]" />
-													</Button>
-												</Tooltip>
-
-												<Link to={`/productDetails/${product?._id}`}>
-													<Tooltip title="View Product Detail" placement="top">
-														<Button className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100">
-															<FaRegEye className="text-[18px]" />
+											<TableCell>
+												<div className="flex items-center gap-2">
+													<Tooltip title="Edit Product" placement="top">
+														<Button
+															className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
+															onClick={() =>
+																context.setIsOpenFullScreenPanel({
+																	open: true,
+																	model: "Edit Product",
+																	id: product._id,
+																})
+															}
+														>
+															<AiOutlineEdit className="text-[18px]" />
 														</Button>
 													</Tooltip>
-												</Link>
 
-												<Tooltip title="Remove Product" placement="top">
-													<Button
-														className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
-														onClick={() => {
-															if (
-																window.confirm(
-																	"Are you sure you want to delete this product?"
-																)
-															) {
-																deleteProduct(product._id);
-															}
-														}}
-													>
-														<MdOutlineDelete className="text-[18px]" />
-													</Button>
-												</Tooltip>
-											</div>
-										</TableCell>
-									</TableRow>
-								))}
+													<Link to={`/productDetails/${product._id}`}>
+														<Tooltip
+															title="View Product Detail"
+															placement="top"
+														>
+															<Button className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100">
+																<FaRegEye className="text-[18px]" />
+															</Button>
+														</Tooltip>
+													</Link>
+
+													<Tooltip title="Remove Product" placement="top">
+														<Button
+															className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
+															onClick={() => {
+																if (
+																	window.confirm(
+																		"Are you sure you want to delete this product?"
+																	)
+																) {
+																	deleteProduct(product._id);
+																}
+															}}
+														>
+															<MdOutlineDelete className="text-[18px]" />
+														</Button>
+													</Tooltip>
+												</div>
+											</TableCell>
+										</TableRow>
+									))
+							)}
 						</TableBody>
 					</Table>
 				</TableContainer>

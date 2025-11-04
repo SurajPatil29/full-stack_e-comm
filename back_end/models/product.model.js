@@ -52,14 +52,9 @@ const productSchema = mongoose.Schema(
 			type: String,
 			default: "",
 		},
-		// category: {
-		// 	type: mongoose.Schema.Types.ObjectId,
-		// 	ref: "Category",
-		// 	required: true,
-		// },
 		countInStock: {
 			type: Number,
-			requred: true,
+			required: true,
 		},
 		rating: {
 			type: Number,
@@ -77,18 +72,30 @@ const productSchema = mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		productRam: {
-			type: String,
-			default: "",
-		},
-		size: {
-			type: String,
-			default: "",
-		},
-		productWeight: {
-			type: String,
-			default: "",
-		},
+
+		// ✅ Allow multiple RAM options
+		productRam: [
+			{
+				type: String,
+				default: "",
+			},
+		],
+
+		// ✅ Allow multiple size options
+		size: [
+			{
+				type: String,
+				default: "",
+			},
+		],
+
+		// ✅ Allow multiple weight options
+		productWeight: [
+			{
+				type: String,
+				default: "",
+			},
+		],
 
 		dateCreated: {
 			type: Date,

@@ -45,7 +45,6 @@ const SelectBox = ({
 	disabled,
 	required,
 }) => {
-	// Ensure value is in options, else fallback to ""
 	const validValues = options?.map((opt) =>
 		typeof opt === "string" ? opt : opt._id
 	);
@@ -103,9 +102,9 @@ function EditProduct() {
 		rating: 0,
 		isFeatured: false,
 		discount: "",
-		productRam: "",
-		size: "",
-		productWeight: "",
+		productRam: [], // ✅ now array
+		size: [], // ✅ now array
+		productWeight: [], // ✅ now array
 	});
 
 	const [catData, setCatData] = useState([]);
@@ -131,7 +130,25 @@ function EditProduct() {
 		try {
 			const res = await fetchDataFromApi(`/api/product/${productId}`);
 			if (res.success) {
-				setFormFields(res.data);
+				// ✅ Ensure arrays are arrays
+				setFormFields({
+					...res.data,
+					productRam: Array.isArray(res.data.productRam)
+						? res.data.productRam
+						: res.data.productRam
+						? [res.data.productRam]
+						: [],
+					size: Array.isArray(res.data.size)
+						? res.data.size
+						: res.data.size
+						? [res.data.size]
+						: [],
+					productWeight: Array.isArray(res.data.productWeight)
+						? res.data.productWeight
+						: res.data.productWeight
+						? [res.data.productWeight]
+						: [],
+				});
 			} else {
 				context.openAlertBox("error", res.message || "Failed to load product");
 			}
@@ -140,7 +157,7 @@ function EditProduct() {
 		}
 	};
 
-	// ✅ Populate sub and third categories when product data + categories loaded
+	// ✅ Populate sub and third categories
 	useEffect(() => {
 		if (catData.length && formFields.catId) {
 			const cat = catData.find((c) => c._id === formFields.catId);
@@ -166,7 +183,7 @@ function EditProduct() {
 		setFormFields((prev) => ({ ...prev, [name]: value }));
 	};
 
-	// ✅ Category Change
+	// ✅ Category Changes
 	const handleChangeProductCat = (e) => {
 		const selectedId = e.target.value;
 		const selectedCategory = catData.find((cat) => cat._id === selectedId);
@@ -235,7 +252,6 @@ function EditProduct() {
 	const handleSubmitForm = async (e) => {
 		e.preventDefault();
 		setLoading(true);
-
 		try {
 			const res = await putData(
 				`/api/product/updateProduct/${productId}`,
@@ -247,7 +263,7 @@ function EditProduct() {
 					context?.setIsOpenFullScreenPanel({
 						model: "Edit Product",
 						open: false,
-					}); // 👈 Close the panel
+					});
 				}, 2000);
 			} else {
 				context.openAlertBox("error", res.message || "Update failed");
@@ -263,7 +279,6 @@ function EditProduct() {
 		<section className="p-5 bg-gray-50">
 			<form className="form py-3 p-8" onSubmit={handleSubmitForm}>
 				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll">
-					{/* Product Name */}
 					<InputBox
 						label="Product Name"
 						name="name"
@@ -271,8 +286,6 @@ function EditProduct() {
 						onChange={handleInputChange}
 						required
 					/>
-
-					{/* Description */}
 					<div className="mb-3">
 						<h3 className="text-[14px] font-[500] mb-1">Product Description</h3>
 						<textarea
@@ -284,7 +297,7 @@ function EditProduct() {
 						/>
 					</div>
 
-					{/* Categories */}
+					{/* ✅ Category selectors same as before */}
 					<div className="grid grid-cols-4 gap-4 mb-3">
 						<SelectBox
 							label="Product Category"
@@ -305,77 +318,79 @@ function EditProduct() {
 							onChange={handleChangeProductThirdLevelCat}
 							options={thirdCatData}
 						/>
+					</div>
+
+					{/* ✅ Product specs updated */}
+					<div className="grid grid-cols-4 gap-4 mb-3">
 						<div>
-							<h3 className="text-[14px] font-[500] mb-1">Is Featured?</h3>
+							<h3 className="text-[14px] font-[500] mb-1">Product RAM</h3>
 							<Select
+								multiple
 								size="small"
-								value={formFields.isFeatured ? "true" : "false"}
+								value={formFields.productRam}
 								onChange={(e) =>
 									setFormFields((prev) => ({
 										...prev,
-										isFeatured: e.target.value === "true",
+										productRam: e.target.value,
 									}))
 								}
 								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
 							>
-								<MenuItem value="true">True</MenuItem>
-								<MenuItem value="false">False</MenuItem>
+								{["4GB", "6GB", "8GB", "12GB", "16GB"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
 							</Select>
 						</div>
-					</div>
 
-					{/* Price & Details */}
-					<div className="grid grid-cols-4 gap-4 mb-3">
-						<InputBox
-							label="Product Price"
-							name="price"
-							value={formFields.price}
-							onChange={handleInputChange}
-							required
-						/>
-						<InputBox
-							label="Old Price"
-							name="oldPrice"
-							value={formFields.oldPrice}
-							onChange={handleInputChange}
-						/>
-						<InputBox
-							label="Brand"
-							name="brand"
-							value={formFields.brand}
-							onChange={handleInputChange}
-						/>
-						<InputBox
-							label="Discount"
-							name="discount"
-							value={formFields.discount}
-							onChange={handleInputChange}
-						/>
-					</div>
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Product Weight</h3>
+							<Select
+								multiple
+								size="small"
+								value={formFields.productWeight}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										productWeight: e.target.value,
+									}))
+								}
+								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
+							>
+								{["1KG", "2KG", "3KG", "4KG", "5KG"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
+							</Select>
+						</div>
 
-					{/* Specs */}
-					<div className="grid grid-cols-4 gap-4 mb-3">
-						<SelectBox
-							label="Product RAM"
-							value={formFields.productRam}
-							onChange={handleInputChange}
-							options={["4GB", "6GB", "8GB"]}
-							name="productRam"
-						/>
-						<SelectBox
-							label="Product Weight"
-							value={formFields.productWeight}
-							onChange={handleInputChange}
-							options={["2KG", "4KG", "5KG"]}
-							name="productWeight"
-						/>
-						<SelectBox
-							label="Size"
-							value={formFields.size}
-							onChange={handleInputChange}
-							options={["S", "M", "L"]}
-							name="size"
-						/>
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Product Size</h3>
+							<Select
+								multiple
+								size="small"
+								value={formFields.size}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										size: e.target.value,
+									}))
+								}
+								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
+							>
+								{["S", "M", "L", "XL", "XXL"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
+							</Select>
+						</div>
+
 						<InputBox
 							label="Stock"
 							name="countInStock"
@@ -385,7 +400,7 @@ function EditProduct() {
 						/>
 					</div>
 
-					{/* Rating */}
+					{/* ✅ rest same */}
 					<div className="mb-3">
 						<h3 className="text-[14px] font-[500] mb-1">Rating</h3>
 						<Rating
@@ -398,7 +413,7 @@ function EditProduct() {
 						/>
 					</div>
 
-					{/* Images */}
+					{/* ✅ Image section same */}
 					<div className="p-5">
 						<h3 className="font-[700] text-[18px] mb-3">Media & Images</h3>
 						<div className="grid grid-cols-7 gap-4">

@@ -37,7 +37,7 @@ function Sidebar() {
 	};
 	return (
 		<>
-			<div className="sidebar fixed top-0 left-0 bg-[#fff] w-[18%] h-full border-r border-[rgba(0,0,0,0.1)] py-2 px-2 ">
+			<div className="sidebar fixed top-0 left-0 bg-[#fff] w-[18%] h-full border-r border-[rgba(0,0,0,0.1)] py-2 px-2 z-50">
 				<div className="py-2  w-full">
 					<Link to="/">
 						<img
@@ -150,6 +150,14 @@ function Sidebar() {
 												<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
 												Product Upload
 											</Button>
+										</li>
+										<li className="w-full">
+											<Link to="/product/addRAMs">
+												<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
+													<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+													Add Product RAMs
+												</Button>
+											</Link>
 										</li>
 									</ul>
 								</Collapse>

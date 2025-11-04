@@ -93,9 +93,9 @@ function AddProduct() {
 		rating: 0,
 		isFeatured: false,
 		discount: "",
-		productRam: "",
-		size: "",
-		productWeight: "",
+		productRam: [],
+		size: [],
+		productWeight: [],
 	});
 
 	const [loading, setLoading] = useState(false); // for form submit
@@ -416,27 +416,78 @@ function AddProduct() {
 
 					{/* RAM, Weight, Size, Stock */}
 					<div className="grid grid-cols-4 gap-4 mb-3">
-						<SelectBox
-							label="Product RAM"
-							value={formFields.productRam}
-							onChange={handleInputChange}
-							options={["4GB", "6GB", "8GB"]}
-							name="productRam"
-						/>
-						<SelectBox
-							label="Product Weight"
-							value={formFields.productWeight}
-							onChange={handleInputChange}
-							options={["2KG", "4KG", "5KG"]}
-							name="productWeight"
-						/>
-						<SelectBox
-							label="Size"
-							value={formFields.size}
-							onChange={handleInputChange}
-							options={["S", "M", "L"]}
-							name="size"
-						/>
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Product RAM</h3>
+							<Select
+								multiple
+								size="small"
+								name="productRam"
+								value={formFields.productRam}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										productRam: e.target.value,
+									}))
+								}
+								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
+							>
+								{["4GB", "6GB", "8GB", "12GB", "16GB"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
+							</Select>
+						</div>
+
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Product Weight</h3>
+							<Select
+								multiple
+								size="small"
+								name="productWeight"
+								value={formFields.productWeight}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										productWeight: e.target.value,
+									}))
+								}
+								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
+							>
+								{["1KG", "2KG", "3KG", "4KG", "5KG"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
+							</Select>
+						</div>
+
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Product Size</h3>
+							<Select
+								multiple
+								size="small"
+								name="size"
+								value={formFields.size}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										size: e.target.value,
+									}))
+								}
+								className="w-full bg-white"
+								renderValue={(selected) => selected.join(", ")}
+							>
+								{["S", "M", "L", "XL", "XXL"].map((opt) => (
+									<MenuItem key={opt} value={opt}>
+										{opt}
+									</MenuItem>
+								))}
+							</Select>
+						</div>
+
 						<InputBox
 							label="Stock"
 							name="countInStock"

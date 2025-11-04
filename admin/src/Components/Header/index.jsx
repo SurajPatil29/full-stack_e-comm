@@ -51,7 +51,7 @@ function Header() {
 		<header
 			className={`w-full bg-white h-[auto] py-2 ${
 				context.isSidebarOpen ? "pl-[19%]" : "pl-2 "
-			} pr-7 shadow-md flex items-center justify-between`}
+			} pr-7 shadow-md flex items-center justify-between sticky top-0 z-50`}
 		>
 			<div className="flex items-center gap-2 w-[50%]">
 				{!context.isSidebarOpen && (

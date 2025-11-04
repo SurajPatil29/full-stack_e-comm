@@ -41,6 +41,7 @@ import MyContext from "./context/MyContext.jsx";
 import EditCategory from "./Pages/Category/EditCategory.jsx";
 import EditProduct from "./Pages/Products/EditProduct.jsx";
 import ProductDetails from "./Pages/Products/productDetails.jsx";
+import AddRAMs from "./Pages/Products/AddRAMs.jsx";
 
 // add product dilog
 
@@ -277,6 +278,20 @@ function App() {
 				{
 					index: true,
 					element: <ProductDetails />,
+				},
+			],
+		},
+		{
+			path: "/product/addRAMs",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <AddRAMs />,
 				},
 			],
 		},
