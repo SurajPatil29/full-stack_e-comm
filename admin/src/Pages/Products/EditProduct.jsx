@@ -113,6 +113,10 @@ function EditProduct() {
 	const [deletingImg, setDeletingImg] = useState(null);
 	const [loading, setLoading] = useState(false);
 
+	const [productRAMsData, setProductRAMsData] = useState([]);
+	const [productSizeData, setProductSizeData] = useState([]);
+	const [productWeightData, setProductWeightData] = useState([]);
+
 	const productId = context?.isOpenFullScreenPanel?.id;
 
 	// ✅ Fetch categories
@@ -157,6 +161,33 @@ function EditProduct() {
 		}
 	};
 
+	const getProductRAMSData = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/product/getAllProductsRAMs");
+			setProductRAMsData(res?.productRAMs || []);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const getProductSizeData = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/product/getAllProductsSizes");
+			setProductSizeData(res?.productSizes || []);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const getProductWeightData = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/product/getAllProductsWeights");
+			setProductWeightData(res?.productWeights || []);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	// ✅ Populate sub and third categories
 	useEffect(() => {
 		if (catData.length && formFields.catId) {
@@ -174,6 +205,9 @@ function EditProduct() {
 		(async () => {
 			await getCategoryData();
 			await getProductData();
+			await getProductRAMSData();
+			await getProductSizeData();
+			await getProductWeightData();
 		})();
 	}, []);
 
@@ -322,74 +356,80 @@ function EditProduct() {
 
 					{/* ✅ Product specs updated */}
 					<div className="grid grid-cols-4 gap-4 mb-3">
-						<div>
-							<h3 className="text-[14px] font-[500] mb-1">Product RAM</h3>
-							<Select
-								multiple
-								size="small"
-								value={formFields.productRam}
-								onChange={(e) =>
-									setFormFields((prev) => ({
-										...prev,
-										productRam: e.target.value,
-									}))
-								}
-								className="w-full bg-white"
-								renderValue={(selected) => selected.join(", ")}
-							>
-								{["4GB", "6GB", "8GB", "12GB", "16GB"].map((opt) => (
-									<MenuItem key={opt} value={opt}>
-										{opt}
-									</MenuItem>
-								))}
-							</Select>
-						</div>
+						{productRAMsData.length > 0 && (
+							<div>
+								<h3 className="text-[14px] font-[500] mb-1">Product RAM</h3>
+								<Select
+									multiple
+									size="small"
+									value={formFields.productRam}
+									onChange={(e) =>
+										setFormFields((prev) => ({
+											...prev,
+											productRam: e.target.value,
+										}))
+									}
+									className="w-full bg-white"
+									renderValue={(selected) => selected.join(", ")}
+								>
+									{productRAMsData.map((opt, i) => (
+										<MenuItem key={i} value={opt.name}>
+											{opt.name}
+										</MenuItem>
+									))}
+								</Select>
+							</div>
+						)}
 
-						<div>
-							<h3 className="text-[14px] font-[500] mb-1">Product Weight</h3>
-							<Select
-								multiple
-								size="small"
-								value={formFields.productWeight}
-								onChange={(e) =>
-									setFormFields((prev) => ({
-										...prev,
-										productWeight: e.target.value,
-									}))
-								}
-								className="w-full bg-white"
-								renderValue={(selected) => selected.join(", ")}
-							>
-								{["1KG", "2KG", "3KG", "4KG", "5KG"].map((opt) => (
-									<MenuItem key={opt} value={opt}>
-										{opt}
-									</MenuItem>
-								))}
-							</Select>
-						</div>
+						{productWeightData.length > 0 && (
+							<div>
+								<h3 className="text-[14px] font-[500] mb-1">Product Weight</h3>
+								<Select
+									multiple
+									size="small"
+									value={formFields.productWeight}
+									onChange={(e) =>
+										setFormFields((prev) => ({
+											...prev,
+											productWeight: e.target.value,
+										}))
+									}
+									className="w-full bg-white"
+									renderValue={(selected) => selected.join(", ")}
+								>
+									{productWeightData.map((opt, i) => (
+										<MenuItem key={i} value={opt.name}>
+											{opt.name}
+										</MenuItem>
+									))}
+								</Select>
+							</div>
+						)}
 
-						<div>
-							<h3 className="text-[14px] font-[500] mb-1">Product Size</h3>
-							<Select
-								multiple
-								size="small"
-								value={formFields.size}
-								onChange={(e) =>
-									setFormFields((prev) => ({
-										...prev,
-										size: e.target.value,
-									}))
-								}
-								className="w-full bg-white"
-								renderValue={(selected) => selected.join(", ")}
-							>
-								{["S", "M", "L", "XL", "XXL"].map((opt) => (
-									<MenuItem key={opt} value={opt}>
-										{opt}
-									</MenuItem>
-								))}
-							</Select>
-						</div>
+						{productSizeData.length > 0 && (
+							<div>
+								<h3 className="text-[14px] font-[500] mb-1">Product Size</h3>
+								<Select
+									multiple
+									size="small"
+									value={formFields.size}
+									onChange={(e) =>
+										setFormFields((prev) => ({
+											...prev,
+											size: e.target.value,
+										}))
+									}
+									className="w-full bg-white"
+									renderValue={(selected) => selected.join(", ")}
+								>
+									{productSizeData.map((opt, i) => (
+										<MenuItem key={i} value={opt.name}>
+											{opt.name}
+										</MenuItem>
+									))}
+								</Select>
+							</div>
+						)}
 
 						<InputBox
 							label="Stock"

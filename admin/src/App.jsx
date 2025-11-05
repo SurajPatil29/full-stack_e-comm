@@ -42,6 +42,8 @@ import EditCategory from "./Pages/Category/EditCategory.jsx";
 import EditProduct from "./Pages/Products/EditProduct.jsx";
 import ProductDetails from "./Pages/Products/productDetails.jsx";
 import AddRAMs from "./Pages/Products/AddRAMs.jsx";
+import AddWeight from "./Pages/Products/AddWeight.jsx";
+import AddSize from "./Pages/Products/AddSize.jsx";
 
 // add product dilog
 
@@ -292,6 +294,34 @@ function App() {
 				{
 					index: true,
 					element: <AddRAMs />,
+				},
+			],
+		},
+		{
+			path: "/product/addWeight",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <AddWeight />,
+				},
+			],
+		},
+		{
+			path: "/product/addSize",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <AddSize />,
 				},
 			],
 		},

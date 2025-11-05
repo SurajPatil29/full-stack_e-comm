@@ -7,7 +7,8 @@ import { buildProductQuery } from "../utils/filterQuery.js";
 import { extractPublicIdFromUrl } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 import productRAMsModel from "../models/productRams.model.js";
-import { error } from "console";
+import productSizesModel from "../models/produtsSize.model.js";
+import productWeightsModel from "../models/productWeight.model.js";
 
 // Helper: Upload to Cloudinary
 const uploadToCloudinary = async (
@@ -570,6 +571,265 @@ export async function getProductRAMs(req, res, next) {
 
 		return sendSuccess(res, "Product RAMs fetched successfully", {
 			productRAMs,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Create Product Size
+export async function createProductSize(req, res, next) {
+	try {
+		const { name } = req.body;
+
+		if (!name || name.trim() === "") {
+			return sendError(res, "Size name is required", 400);
+		}
+
+		const existingSize = await productSizesModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+		});
+		if (existingSize) {
+			return sendError(res, "Size with this name already exists", 400);
+		}
+
+		const productSize = await productSizesModel.create({ name });
+		return sendSuccess(res, "Product Size created successfully", {
+			productSize,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete single Product Size
+export async function deleteProductSize(req, res, next) {
+	try {
+		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+			return sendError(res, "Invalid Size ID", 400);
+		}
+
+		const productSize = await productSizesModel.findById(req.params.id);
+		if (!productSize) {
+			return sendError(res, "Product Size not found", 404);
+		}
+
+		await productSize.deleteOne();
+		return sendSuccess(res, "Product Size deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete multiple Product Sizes
+export async function deleteMultipleProductSizes(req, res, next) {
+	try {
+		const ids = req.body;
+		if (!ids || !Array.isArray(ids) || ids.length === 0) {
+			return sendError(res, "Invalid input: Expected array of IDs", 400);
+		}
+
+		const invalidIds = ids.filter((id) => !mongoose.Types.ObjectId.isValid(id));
+		if (invalidIds.length > 0) {
+			return sendError(
+				res,
+				`Invalid Object IDs: ${invalidIds.join(", ")}`,
+				400
+			);
+		}
+
+		const existing = await productSizesModel.find({ _id: { $in: ids } });
+		if (existing.length === 0) {
+			return sendError(res, "No Product Sizes found for the given IDs", 404);
+		}
+
+		await productSizesModel.deleteMany({ _id: { $in: ids } });
+		return sendSuccess(res, "Product Sizes deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Update Product Size
+export async function updateProductSize(req, res, next) {
+	try {
+		const { name } = req.body;
+		const { id } = req.params;
+
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return sendError(res, "Invalid Size ID", 400);
+		}
+		if (!name || name.trim() === "") {
+			return sendError(res, "Size name is required", 400);
+		}
+
+		const existingSize = await productSizesModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+			_id: { $ne: id },
+		});
+		if (existingSize) {
+			return sendError(res, "A Size with this name already exists", 400);
+		}
+
+		const updatedSize = await productSizesModel.findByIdAndUpdate(
+			id,
+			{ name },
+			{ new: true }
+		);
+		if (!updatedSize) {
+			return sendError(res, "Product Size not found or update failed", 404);
+		}
+
+		return sendSuccess(res, "Product Size updated successfully", {
+			updatedSize,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Get all Product Sizes
+export async function getProductSizes(req, res, next) {
+	try {
+		const productSizes = await productSizesModel.find().sort({ createdAt: -1 });
+
+		if (!productSizes || productSizes.length === 0) {
+			return sendError(res, "No Product Sizes found", 404);
+		}
+
+		return sendSuccess(res, "Product Sizes fetched successfully", {
+			productSizes,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Create Product Weight
+export async function createProductWeight(req, res, next) {
+	try {
+		const { name } = req.body;
+
+		if (!name || name.trim() === "") {
+			return sendError(res, "Weight name is required", 400);
+		}
+
+		const existingWeight = await productWeightsModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+		});
+		if (existingWeight) {
+			return sendError(res, "Weight with this name already exists", 400);
+		}
+
+		const productWeight = await productWeightsModel.create({ name });
+		return sendSuccess(res, "Product Weight created successfully", {
+			productWeight,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete single Product Weight
+export async function deleteProductWeight(req, res, next) {
+	try {
+		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+			return sendError(res, "Invalid Weight ID", 400);
+		}
+
+		const productWeight = await productWeightsModel.findById(req.params.id);
+		if (!productWeight) {
+			return sendError(res, "Product Weight not found", 404);
+		}
+
+		await productWeight.deleteOne();
+		return sendSuccess(res, "Product Weight deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete multiple Product Weights
+export async function deleteMultipleProductWeights(req, res, next) {
+	try {
+		const ids = req.body;
+		if (!ids || !Array.isArray(ids) || ids.length === 0) {
+			return sendError(res, "Invalid input: Expected array of IDs", 400);
+		}
+
+		const invalidIds = ids.filter((id) => !mongoose.Types.ObjectId.isValid(id));
+		if (invalidIds.length > 0) {
+			return sendError(
+				res,
+				`Invalid Object IDs: ${invalidIds.join(", ")}`,
+				400
+			);
+		}
+
+		const existing = await productWeightsModel.find({ _id: { $in: ids } });
+		if (existing.length === 0) {
+			return sendError(res, "No Product Weights found for the given IDs", 404);
+		}
+
+		await productWeightsModel.deleteMany({ _id: { $in: ids } });
+		return sendSuccess(res, "Product Weights deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Update Product Weight
+export async function updateProductWeight(req, res, next) {
+	try {
+		const { name } = req.body;
+		const { id } = req.params;
+
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return sendError(res, "Invalid Weight ID", 400);
+		}
+		if (!name || name.trim() === "") {
+			return sendError(res, "Weight name is required", 400);
+		}
+
+		const existingWeight = await productWeightsModel.findOne({
+			name: { $regex: new RegExp(`^${name}$`, "i") },
+			_id: { $ne: id },
+		});
+		if (existingWeight) {
+			return sendError(res, "A Weight with this name already exists", 400);
+		}
+
+		const updatedWeight = await productWeightsModel.findByIdAndUpdate(
+			id,
+			{ name },
+			{ new: true }
+		);
+		if (!updatedWeight) {
+			return sendError(res, "Product Weight not found or update failed", 404);
+		}
+
+		return sendSuccess(res, "Product Weight updated successfully", {
+			updatedWeight,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Get all Product Weights
+export async function getProductWeights(req, res, next) {
+	console.log("controller get");
+	try {
+		const productWeights = await productWeightsModel
+			.find()
+			.sort({ createdAt: -1 });
+
+		if (!productWeights || productWeights.length === 0) {
+			return sendError(res, "No Product Weights found", 404);
+		}
+
+		return sendSuccess(res, "Product Weights fetched successfully", {
+			productWeights,
 		});
 	} catch (error) {
 		next(error);
