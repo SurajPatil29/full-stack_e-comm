@@ -14,6 +14,7 @@ import cartRouter from "./route/cart.route.js";
 import myListRouter from "./route/myList.route.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import addressRouter from "./route/address.route.js";
+import bannerRouter from "./route/addBanner.route.js";
 
 // Load env variables
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/myList", myListRouter);
 app.use("/api/address", addressRouter);
+app.use("/api/banner", bannerRouter);
 
 // app.use("*", (req, res) => {
 // 	res.status(404).json({ success: false, message: "Route not found" });

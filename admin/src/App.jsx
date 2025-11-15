@@ -44,6 +44,7 @@ import ProductDetails from "./Pages/Products/productDetails.jsx";
 import AddRAMs from "./Pages/Products/AddRAMs.jsx";
 import AddWeight from "./Pages/Products/AddWeight.jsx";
 import AddSize from "./Pages/Products/AddSize.jsx";
+import EditBanner from "./Pages/HomeSliderBanners/EditBanner.jsx";
 
 // add product dilog
 
@@ -391,6 +392,7 @@ function App() {
 					)}
 					{isOpenFullScreenPanel?.model === "Edit Category" && <EditCategory />}
 					{isOpenFullScreenPanel?.model === "Edit Product" && <EditProduct />}
+					{isOpenFullScreenPanel?.model === "Edit Banner" && <EditBanner />}
 				</Dialog>
 			</MyContext.Provider>
 			<Toaster />

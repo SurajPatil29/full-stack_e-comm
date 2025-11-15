@@ -280,3 +280,46 @@ export async function updateCategory(req, res, next) {
 		next(error);
 	}
 }
+
+export async function deleteMultipleCategories(req, res, next) {
+	try {
+		const { ids } = req.body; // expect: { ids: ["id1", "id2", "id3"] }
+
+		if (!ids || !Array.isArray(ids) || ids.length === 0) {
+			return sendError(res, "No category IDs provided", 400);
+		}
+
+		for (const id of ids) {
+			const category = await CategoryModel.findById(id);
+			if (!category) continue;
+
+			// Delete all images from Cloudinary
+			const deleteImagePromises = category.images.map(async (imgUrl) => {
+				const match = imgUrl.match(
+					/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
+				);
+				if (match && match[1]) {
+					await cloudinary.uploader.destroy(match[1]);
+				}
+			});
+			await Promise.all(deleteImagePromises);
+
+			// Delete all subcategories and third-level categories
+			const subCategories = await CategoryModel.find({ parentId: id });
+			for (const sub of subCategories) {
+				await CategoryModel.deleteMany({ parentId: sub._id }); // delete third-level
+				await CategoryModel.findByIdAndDelete(sub._id); // delete second-level
+			}
+
+			// Delete main category
+			await CategoryModel.findByIdAndDelete(id);
+		}
+
+		return sendSuccess(
+			res,
+			"Selected categories and their nested categories deleted!"
+		);
+	} catch (error) {
+		next(error);
+	}
+}

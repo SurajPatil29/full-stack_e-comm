@@ -18,7 +18,7 @@ import { PiExport } from "react-icons/pi";
 import { TfiLayoutSliderAlt } from "react-icons/tfi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import MyContext from "../../context/MyContext";
-import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { deleteData, fetchDataFromApi, deleteMultiple } from "../../utils/api";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -28,8 +28,7 @@ const columns = [
 	{ id: "subCatName", label: "SUB & THIRD-LEVEL CATEGORIES", minWidth: 400 },
 ];
 
-// 🔹 Component for Sub + Third-level Categories
-// 🔹 Improved NestedCategories Component
+// 🔹 NestedCategories Component
 const NestedCategories = ({ children = [], onDeleteSub, onDeleteThird }) => {
 	const [expanded, setExpanded] = useState({});
 
@@ -118,7 +117,7 @@ function SubCatList() {
 		getCategories();
 	}, [getCategories, context.isOpenFullScreenPanel.open]);
 
-	// 🔹 Delete Sub Category
+	// 🔹 Delete Single Sub Category
 	const handleDeleteSub = async (id) => {
 		if (!id || !window.confirm("Delete this subcategory?")) return;
 		const res = await deleteData(`/api/category/${id}`);
@@ -129,7 +128,7 @@ function SubCatList() {
 		}
 	};
 
-	// 🔹 Delete Third Category
+	// 🔹 Delete Single Third Category
 	const handleDeleteThird = async (id) => {
 		if (!id || !window.confirm("Delete this third-level category?")) return;
 		const res = await deleteData(`/api/category/${id}`);
@@ -137,6 +136,30 @@ function SubCatList() {
 			getCategories();
 		} else {
 			alert(res.message || "Failed to delete third category");
+		}
+	};
+
+	// 🔹 Multi Delete Subcategories
+	const handleDeleteSelected = async () => {
+		if (selected.length === 0) return;
+		if (!window.confirm(`Delete ${selected.length} selected subcategories?`))
+			return;
+
+		try {
+			const res = await deleteMultiple(`/api/category/deleteMultiCat`, {
+				ids: selected,
+			});
+
+			if (res.success) {
+				setCatData((prev) => prev.filter((cat) => !selected.includes(cat._id)));
+				setSelected([]);
+				alert("Selected subcategories deleted successfully!");
+			} else {
+				alert(res.message || "Failed to delete selected subcategories");
+			}
+		} catch (err) {
+			console.error("Error deleting subcategories:", err);
+			alert("Error deleting subcategories");
 		}
 	};
 
@@ -156,11 +179,24 @@ function SubCatList() {
 			{/* Header */}
 			<div className="flex items-center justify-between px-2 py-0">
 				<h2 className="text-[18px] font-[600]">Sub Category List</h2>
-				<div className="w-[30%] ml-auto flex items-center justify-end gap-3">
+
+				<div className="w-[40%] ml-auto flex items-center justify-end gap-3">
 					<Button className="btn-sm !bg-green-600 !text-white gap-2 flex items-center">
 						<PiExport className="text-white text-[20px]" />
 						Export
 					</Button>
+
+					{/* ✅ Delete Selected Button (only shows if selected) */}
+					{selected.length > 0 && (
+						<Button
+							onClick={handleDeleteSelected}
+							className="btn-sm !bg-red-600 !text-white gap-2 flex items-center"
+						>
+							<MdOutlineDelete className="text-white text-[20px]" />
+							Delete Selected ({selected.length})
+						</Button>
+					)}
+
 					<Button
 						className="btn-blue btn-sm !text-white gap-2 flex items-center"
 						onClick={() =>
@@ -202,12 +238,12 @@ function SubCatList() {
 								))}
 							</TableRow>
 						</TableHead>
+
 						<TableBody>
 							{catData
 								.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 								.map((cat) => (
 									<TableRow key={cat._id}>
-										{/* Select Checkbox */}
 										<TableCell width={50} align="center">
 											<Checkbox
 												{...label}
@@ -217,7 +253,6 @@ function SubCatList() {
 											/>
 										</TableCell>
 
-										{/* Image */}
 										<TableCell width={150}>
 											<img
 												src={cat.images?.[0] || "/no-image.png"}
@@ -226,12 +261,10 @@ function SubCatList() {
 											/>
 										</TableCell>
 
-										{/* Category Name */}
 										<TableCell width={200}>
 											<Chip label={cat.name} />
 										</TableCell>
 
-										{/* Sub + Third Level */}
 										<TableCell width={400}>
 											<NestedCategories
 												children={cat.children}
@@ -244,6 +277,7 @@ function SubCatList() {
 						</TableBody>
 					</Table>
 				</TableContainer>
+
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"

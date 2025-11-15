@@ -4,6 +4,7 @@ import upload from "../middlewares/multer.js";
 import {
 	createCategory,
 	deleteCategory,
+	deleteMultipleCategories,
 	getCategories,
 	getCategoriesCount,
 	getCategory,
@@ -21,6 +22,8 @@ categoryRouter.get("/categories", getCategories);
 categoryRouter.get("/get/count", getCategoriesCount);
 categoryRouter.get("/get/count/subCat", getSubCategoriesCount);
 categoryRouter.delete("/deleteImage", auth, removeImageFromCloudinary);
+categoryRouter.delete("/deleteMultiCat", auth, deleteMultipleCategories);
+
 categoryRouter.get("/:id", getCategory);
 categoryRouter.delete("/:id", auth, deleteCategory);
 categoryRouter.post("/:id", auth, updateCategory);
