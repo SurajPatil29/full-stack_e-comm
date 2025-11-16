@@ -802,6 +802,7 @@ function Products() {
 
 	useEffect(() => {
 		getCategoryData();
+		getAllProducts();
 	}, []);
 	useEffect(() => {
 		if (categoryValue || subCategoryValue || thirdCategoryValue) {

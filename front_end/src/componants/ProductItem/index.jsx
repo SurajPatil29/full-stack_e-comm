@@ -9,78 +9,108 @@ import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
 import MyContext from "../../context/MyContext";
 
-function ProductItem() {
+function ProductItem({ item }) {
 	// this componant use for shocase product info on home page
 	const { setOpenProductDetailsModel } = useContext(MyContext);
+
+	// Fallback images (if no images found)
+	const mainImg = item?.images?.[0] ?? "/placeholder.jpg";
+	const hoverImg = item?.images?.[1] ?? item?.images?.[0] ?? "/placeholder.jpg";
+
+	// Calculate discount dynamically
+	const oldPrice = item?.oldPrice || 0;
+	const newPrice = item?.price || 0;
+	const discount =
+		oldPrice > 0 ? Math.round(((oldPrice - newPrice) / oldPrice) * 100) : 0;
+
 	return (
 		<div className="productItem shadow-md rounded-md overflow-hidden border-2 border-[rgba(0,0,0,0.1)]">
-			{/* this div contain image , title of product, info of product rating in star, price   */}
+			{/* IMAGE */}
 			<div className="group imgWrapper w-[100%] overflow-hidden rounded-md relative">
-				<Link to="/productDetails/123">
+				<Link to={`/productDetails/${item?._id}`}>
 					<div className="img h-[220px] overflow-hidden">
-						{/* 2 image change when hover */}
 						<img
-							src="https://api.spicezgold.com/download/file_1734528821892_siril-georgette-brown-color-saree-with-blouse-piece-product-images-rvegeptjtj-1-202308161431.jpg"
-							alt="fashion"
-							className="w-full"
+							src={mainImg}
+							alt={item?.name}
+							className="w-full h-[220px] object-cover"
 						/>
 
 						<img
-							src="https://api.spicezgold.com/download/file_1734528821890_siril-georgette-brown-color-saree-with-blouse-piece-product-images-rvegeptjtj-0-202308161431.webp"
-							alt="fashion"
-							className="w-full transition-all duration-500 absolute top-0 left-0 opacity-0 group-hover:opacity-100"
+							src={hoverImg}
+							alt={item?.name}
+							className="w-full h-[220px] object-cover transition-all duration-500 absolute top-0 left-0 opacity-0 group-hover:opacity-100"
 						/>
 					</div>
 				</Link>
-				<span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
-					{/* this use for show discount on image */}
-					10%
-				</span>
+
+				{/* DISCOUNT BADGE */}
+				{discount > 0 && (
+					<span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
+						{discount}%
+					</span>
+				)}
+
+				{/* ACTION HOVER BUTTONS */}
 				<div className="actions absolute top-[-200px] right-[1px] z-50 flex items-center gap-4 flex-col w-[80px] transition-all duration-700 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
-					{/* 3 icons favorit, compair, cart when hover it show the icons */}
 					<Tooltip title="View" placement="left-start">
 						<Button
-							onClick={() => setOpenProductDetailsModel(true)}
+							onClick={() =>
+								setOpenProductDetailsModel({
+									open: true,
+									item: item,
+								})
+							}
 							className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group "
 						>
-							<MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white " />
+							<MdZoomOutMap className="text-[18px] !text-black group-hover:text-white" />
 						</Button>
 					</Tooltip>
 
 					<Tooltip title="Favourite" placement="left-start">
 						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
-							<FaRegHeart className="text-[18px] !text-black group-hover:text-white hover:!text-white " />
+							<FaRegHeart className="text-[18px] !text-black group-hover:text-white" />
 						</Button>
 					</Tooltip>
 
-					<Tooltip title="Compair" placement="left-start">
+					<Tooltip title="Compare" placement="left-start">
 						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
-							<IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white hover:!text-white " />
+							<IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white" />
 						</Button>
 					</Tooltip>
 				</div>
 			</div>
 
+			{/* PRODUCT INFO */}
 			<div className="info p-3 py-4 bg-[#f8f6f6]">
-				{/* info about product */}
 				<h5 className="text-[14px] !font-[400]">
-					<Link to="/" className="link transition-all ">
-						Soylent Green
+					<Link to={`/productDetails/${item?._id}`} className="link">
+						{item?.brand || "Brand"}
 					</Link>
 				</h5>
-				<h2 className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1 ">
-					<Link to="/" className="link transition-all">
-						Siril Georgette Pink Color Saree with Blouse piece
+
+				<h2 className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1">
+					<Link to={`/productDetails/${item?._id}`} className="link">
+						{item?.name}
 					</Link>
 				</h2>
-				<Rating name="read-only" value={3.5} size="small" readOnly />
 
+				{/* RATING */}
+				<Rating
+					name="read-only"
+					value={item?.rating || 0}
+					size="small"
+					readOnly
+				/>
+
+				{/* PRICE SECTION */}
 				<div className="flex items-center gap-4">
-					<span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
-						$58.00
-					</span>
-					<span className="newPrice  text-[#ff5151] text-[15px] font-[600]">
-						$50.00
+					{oldPrice > newPrice && (
+						<span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
+							₹{oldPrice.toLocaleString()}
+						</span>
+					)}
+					<span className="newPrice text-[#ff5151] text-[15px] font-[600]">
+						₹{newPrice.toLocaleString()}
 					</span>
 				</div>
 			</div>

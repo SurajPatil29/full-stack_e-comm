@@ -6,7 +6,7 @@ import { FaShippingFast } from "react-icons/fa";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProductsSlider from "../../componants/ProductsSlider";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,20 +17,63 @@ import { BlogItem } from "../../componants/BlogItem/index";
 import HomeBanner2 from "../../componants/HomeSliderV2";
 import BannerBoxV2 from "../../componants/BannerBoxV2";
 import AddBannerSliderV2 from "../../componants/AddBannerSliderv2";
+import { fetchDataFromApi } from "../../utils/api";
+import { HomeSlider } from "../../componants/HomeSlider";
+import MyContext from "../../context/MyContext";
 
 function Home() {
-	const [value, setValue] = useState(0);
+	const [value, setValue] = useState(null);
+	const [homeslideData, setHomeSlidesData] = useState([]);
+	const [popularProductsData, setPopularProductsData] = useState([]);
+	const [productsData, setProductsData] = useState([]);
+	const [FeaturedProductsData, setFeaturedProductsData] = useState([]);
+
+	const context = useContext(MyContext);
+
+	useEffect(() => {
+		fetchDataFromApi("/api/banner/all").then((res) => {
+			// console.log(res);
+			setHomeSlidesData(res.data);
+		});
+		fetchDataFromApi("/api/product/getAllProducts").then((res) => {
+			setProductsData(res.products);
+			// console.log(res);
+		});
+		fetchDataFromApi("/api/product/getAllFeaturedProduct").then((res) => {
+			setFeaturedProductsData(res.products);
+			// console.log(res);
+		});
+	}, []);
+	useEffect(() => {
+		if (context.catData.length > 0) {
+			const firstId = context.catData[0]._id;
+			setValue(firstId); // Set valid tab value
+			filterByCat(firstId); // Load products for first category
+		}
+	}, [context.catData]);
+
+	const filterByCat = (id) => {
+		fetchDataFromApi(`/api/product/getAllProductsByCatId/${id}`).then((res) => {
+			if (res.error === false) {
+				setPopularProductsData(res?.products);
+				// console.log(res.products);
+			}
+		});
+	};
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
+		filterByCat(newValue);
 	};
+
 	return (
 		<>
-			{/* <HomeSlider /> */}
 			{/* homeslider v1 */}
+			{homeslideData?.length !== 0 && <HomeSlider data={homeslideData} />}
 
-			<section className="py-6">
-				{/* homeslider v2 */}
+			{/* homeslider v2 */}
+			{/* <section className="py-6">
+				
 
 				<div className="container flex items-center">
 					<div className="part1 w-[70%]">
@@ -55,9 +98,12 @@ function Home() {
 						</div>
 					</div>
 				</div>
-			</section>
+			</section> */}
 
-			<HomeCatSlider />
+			{context?.catData.length !== 0 && (
+				<HomeCatSlider data={context.catData} />
+			)}
+
 			{/* catagory slider */}
 
 			<section className="bg-white py-8">
@@ -78,26 +124,29 @@ function Home() {
 									bgcolor: "background.paper",
 								}}
 							>
-								<Tabs
-									value={value}
-									onChange={handleChange}
-									variant="scrollable"
-									scrollButtons="auto"
-									aria-label="scrollable auto tabs example"
-								>
-									<Tab label="Fashion" />
-									<Tab label="Electronics" />
-									<Tab label="Bags" />
-									<Tab label="Footwear" />
-									<Tab label="Groceries" />
-									<Tab label="Beauty" />
-									<Tab label="Wellness" />
-									<Tab label="Jewellery" />
-								</Tabs>
+								{value && (
+									<Tabs
+										value={value}
+										onChange={handleChange}
+										variant="scrollable"
+										scrollButtons="auto"
+										aria-label="scrollable auto tabs example"
+									>
+										{context.catData.map((cat) => (
+											<Tab key={cat._id} label={cat.name} value={cat._id} />
+										))}
+									</Tabs>
+								)}
 							</Box>
 						</div>
 					</div>
-					<ProductsSlider items={5} />
+					{popularProductsData && popularProductsData.length > 0 ? (
+						<ProductsSlider items={5} data={popularProductsData} />
+					) : (
+						<p className="text-center text-gray-500">
+							No popular products found
+						</p>
+					)}
 					{/* product slider */}
 				</div>
 			</section>
@@ -133,9 +182,35 @@ function Home() {
 			<section className="py-5 bg-white">
 				<div className="container">
 					<h2 className="text-[20px]">Latest Products</h2>
-					<ProductsSlider items={5} />
+					{productsData?.length !== 0 ? (
+						<ProductsSlider items={5} data={productsData} />
+					) : (
+						<div className="w-full h-[200px] flex items-center justify-center ">
+							<p className="text-[rgba(0,0,0,0.7)]  ">
+								No Latest Products Found!
+							</p>
+						</div>
+					)}
 					{/* product slider */}
 					<AddBannerSlider items={3} />
+					{/* Ads slider */}
+				</div>
+			</section>
+
+			<section className="py-5 pt-0 bg-white">
+				<div className="container">
+					<h2 className="text-[20px] font-[600] ">Featured Products</h2>
+					{FeaturedProductsData?.length !== 0 ? (
+						<ProductsSlider items={6} data={FeaturedProductsData} />
+					) : (
+						<div className="w-full h-[200px] flex items-center justify-center ">
+							<p className="text-[rgba(0,0,0,0.7)]  ">
+								No Latest Products Found!
+							</p>
+						</div>
+					)}
+					{/* product slider */}
+					<AddBannerSlider items={4} />
 					{/* Ads slider */}
 				</div>
 			</section>

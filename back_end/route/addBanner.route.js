@@ -23,10 +23,10 @@ bannerRouter.post("/upload", auth, upload.array("images"), uploadImage);
 bannerRouter.post("/createBanner", auth, createBanner);
 
 // ✅ Get all banners
-bannerRouter.get("/all", auth, getAllBanners);
+bannerRouter.get("/all", getAllBanners);
 
 // ✅ Get single banner
-bannerRouter.get("/:id", auth, getBanner);
+bannerRouter.get("/:id", getBanner);
 
 // ✅ Update banner (replace old or add new images)
 bannerRouter.post("/:id", auth, updateBanner);

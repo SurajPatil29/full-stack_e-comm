@@ -352,6 +352,23 @@ function EditProduct() {
 							onChange={handleChangeProductThirdLevelCat}
 							options={thirdCatData}
 						/>
+						<div>
+							<h3 className="text-[14px] font-[500] mb-1">Is Featured?</h3>
+							<Select
+								size="small"
+								value={formFields.isFeatured ? "true" : "false"}
+								onChange={(e) =>
+									setFormFields((prev) => ({
+										...prev,
+										isFeatured: e.target.value === "true",
+									}))
+								}
+								className="w-full bg-white"
+							>
+								<MenuItem value="true">True</MenuItem>
+								<MenuItem value="false">False</MenuItem>
+							</Select>
+						</div>
 					</div>
 
 					{/* ✅ Product specs updated */}

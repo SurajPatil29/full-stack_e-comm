@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
-function HomeCatSlider() {
+function HomeCatSlider({ data }) {
 	// this slider create for catagory showcase on website
 	return (
 		<div className="homeCatSlider py-4 pb-8 text-black">
@@ -17,7 +17,21 @@ function HomeCatSlider() {
 					modules={[Navigation]}
 					className="mySwiper"
 				>
-					<SwiperSlide>
+					{data?.map((cat, i) => (
+						<SwiperSlide key={i}>
+							<Link to="/">
+								<div className="item py-7 px-3 bg-white rounded-[30px] text-center flex items-center justify-center flex-col">
+									<img
+										src={cat.images[0]}
+										alt="i1"
+										className="w-[60px] transition-all"
+									/>
+									<h3 className="text-[15px] font-[500] mt-3">{cat.name}</h3>
+								</div>
+							</Link>
+						</SwiperSlide>
+					))}
+					{/* <SwiperSlide>
 						<Link to="/">
 							<div className="item py-7 px-3 bg-white rounded-[30px] text-center flex items-center justify-center flex-col">
 								<img
@@ -112,7 +126,7 @@ function HomeCatSlider() {
 								<h3 className="text-[15px] font-[500] mt-3">Jewellery</h3>
 							</div>
 						</Link>
-					</SwiperSlide>
+					</SwiperSlide> */}
 				</Swiper>
 			</div>
 		</div>

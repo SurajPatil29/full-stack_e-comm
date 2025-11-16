@@ -1,196 +1,97 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
-import { AiOutlinePlusSquare } from "react-icons/ai";
-import { CiSquareMinus } from "react-icons/ci";
+import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { Link } from "react-router-dom";
 
-function CategoryCollapse() {
-	const [submenuindex, setSubmenuIndex] = useState(null);
-	const [innersubmenuindex, setInnerSubmenuIndex] = useState(null);
-	// both state use for the toggeling purpose open and close the catagory filters
+function CategoryCollapse({ data }) {
+	const [openMenu, setOpenMenu] = useState(null);
+	const [openSubMenu, setOpenSubMenu] = useState(null);
 
-	const openSubmenu = (index) => {
-		if (submenuindex === index) {
-			setSubmenuIndex(null);
-		} else {
-			setSubmenuIndex(index);
-		}
+	const toggleMenu = (i) => {
+		setOpenMenu(openMenu === i ? null : i);
+		setOpenSubMenu(null);
 	};
 
-	const openinnerSubmenu = (index) => {
-		if (innersubmenuindex === index) {
-			setInnerSubmenuIndex(null);
-		} else {
-			setInnerSubmenuIndex(index);
-		}
+	const toggleSub = (i) => {
+		setOpenSubMenu(openSubMenu === i ? null : i);
 	};
 
 	return (
-		<>
-			<div className="scorll">
-				{/* this div contain full drawer and filters */}
-				<ul className="w-full">
-					<li className="list-none flex items-center relative flex-col">
-						<Link className="w-full">
-							<Button className="w-full !text-left !justify-start px-3 !text-[rgba(0,0,0,0.8)]">
-								FASHION
-							</Button>
-						</Link>
-						{/* use condition rendering to show case the buttons according to open or close */}
-						{submenuindex === 0 ? (
-							<CiSquareMinus
-								className="absolute top-[10px] right-[15px] cursor-pointer"
-								onClick={() => openSubmenu(0)}
-							/>
-						) : (
-							<AiOutlinePlusSquare
-								className="absolute top-[10px] right-[15px] cursor-pointer"
-								onClick={() => openSubmenu(0)}
-							/>
-						)}
-						{/* this rendering use to show case the filter option acoording to condition */}
-						{submenuindex === 0 && (
-							<ul className="submenu w-full pl-4 ">
-								<li className="list-none relative ">
-									<Link className="w-full">
-										<Button className="w-full !text-left !justify-start !text-[rgba(0,0,0,0.8)]">
-											APPERAL
-										</Button>
-									</Link>
-									{/* redering for buttons */}
-									{innersubmenuindex === 0 ? (
-										<CiSquareMinus
-											className="absolute top-[10px] right-[15px] cursor-pointer"
-											onClick={() => openinnerSubmenu(0)}
-										/>
-									) : (
-										<AiOutlinePlusSquare
-											className="absolute top-[10px] right-[15px] cursor-pointer"
-											onClick={() => openinnerSubmenu(0)}
-										/>
-									)}
-									{/* rendering for menu / filters */}
-									{innersubmenuindex == 0 && (
-										<ul className="inner_submenu w-full pl-8 ">
-											<li className="list-none relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Smart Tablet
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Crepe T-Shirt
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Leather Watch
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Rolling Dimond
-												</Link>
-											</li>
-										</ul>
-									)}
-								</li>
-							</ul>
-						)}
-					</li>
-					{/* this is same as above but state is chane */}
-					<li className="list-none flex items-center relative flex-col">
-						<Link className="w-full">
-							<Button className="w-full !text-left !justify-start px-3 !text-[rgba(0,0,0,0.8)]">
-								FASHION
-							</Button>
-						</Link>
-						{submenuindex === 1 ? (
-							<CiSquareMinus
-								className="absolute top-[10px] right-[15px] cursor-pointer"
-								onClick={() => openSubmenu(1)}
-							/>
-						) : (
-							<AiOutlinePlusSquare
-								className="absolute top-[10px] right-[15px] cursor-pointer"
-								onClick={() => openSubmenu(1)}
-							/>
-						)}
+		<div className="w-full overflow-y-auto py-4 pr-2">
+			<ul className="w-full space-y-2">
+				{data.map((cat, i) => (
+					<li key={cat._id} className="relative">
+						{/* Main Category Button */}
+						<div
+							onClick={() => toggleMenu(i)}
+							className="flex justify-between items-center px-3 py-3 cursor-pointer
+							 bg-white hover:bg-gray-100 rounded-md shadow-sm border 
+							 transition-all duration-200"
+						>
+							<span className="font-medium text-[15px] text-gray-800">
+								{cat.name}
+							</span>
 
-						{submenuindex === 1 && (
-							<ul className="submenu w-full pl-4 ">
-								<li className="list-none relative ">
-									<Link className="w-full">
-										<Button className="w-full !text-left !justify-start !text-[rgba(0,0,0,0.8)]">
-											APPERAL
-										</Button>
-									</Link>
-									{innersubmenuindex === 1 ? (
-										<CiSquareMinus
-											className="absolute top-[10px] right-[15px] cursor-pointer"
-											onClick={() => openinnerSubmenu(1)}
-										/>
-									) : (
-										<AiOutlinePlusSquare
-											className="absolute top-[10px] right-[15px] cursor-pointer"
-											onClick={() => openinnerSubmenu(1)}
-										/>
-									)}
-									{innersubmenuindex == 1 && (
-										<ul className="inner_submenu w-full pl-8 ">
-											<li className="list-none relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Smart Tablet
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Crepe T-Shirt
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Leather Watch
-												</Link>
-											</li>
-											<li className="list-none flex items-center relative py-1">
-												<Link
-													to="/"
-													className="w-full link !text-left !justify-start transition text-[14px] "
-												>
-													Rolling Dimond
-												</Link>
-											</li>
-										</ul>
-									)}
-								</li>
+							<div className="transition-transform duration-300">
+								{openMenu === i ? (
+									<AiOutlineMinus className="text-gray-600" />
+								) : (
+									<AiOutlinePlus className="text-gray-600" />
+								)}
+							</div>
+						</div>
+
+						{/* Submenu (Second level) */}
+						{openMenu === i && cat.children?.length > 0 && (
+							<ul
+								className="ml-3 mt-2 border-l border-gray-300 pl-3 space-y-2
+								 transition-all duration-300"
+							>
+								{cat.children.map((sub, j) => (
+									<li key={sub._id} className="relative">
+										<div
+											onClick={() => toggleSub(j)}
+											className="flex justify-between items-center py-2 cursor-pointer
+											 hover:bg-gray-100 rounded px-2 transition"
+										>
+											<span className="text-[14px] text-gray-700 font-normal">
+												{sub.name}
+											</span>
+
+											{sub.children?.length > 0 && (
+												<div className="transition-transform duration-300">
+													{openSubMenu === j ? (
+														<AiOutlineMinus className="text-gray-600" />
+													) : (
+														<AiOutlinePlus className="text-gray-600" />
+													)}
+												</div>
+											)}
+										</div>
+
+										{/* Third level */}
+										{openSubMenu === j && sub.children?.length > 0 && (
+											<ul className="ml-4 border-l border-gray-200 pl-3 space-y-1">
+												{sub.children.map((inner) => (
+													<li key={inner._id}>
+														<Link
+															to={`/products/${inner._id}`}
+															className="block py-1 text-[14px] text-gray-600 hover:text-primary hover:font-medium transition"
+														>
+															{inner.name}
+														</Link>
+													</li>
+												))}
+											</ul>
+										)}
+									</li>
+								))}
 							</ul>
 						)}
 					</li>
-				</ul>
-			</div>
-		</>
+				))}
+			</ul>
+		</div>
 	);
 }
 

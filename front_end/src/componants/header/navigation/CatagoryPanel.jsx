@@ -7,7 +7,7 @@ import { IoMdClose } from "react-icons/io";
 import "../navigation/style.css";
 import CategoryCollapse from "../../CategoryCollapse";
 
-function CatagoryPanel({ toggleDrawer, open }) {
+function CatagoryPanel({ toggleDrawer, open, data }) {
 	// above both funcuction use to chane the state
 
 	const DrawerList = (
@@ -24,7 +24,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 				</Button>
 			</div>
 			<Divider />
-			<CategoryCollapse />
+			{data?.length !== 0 && <CategoryCollapse data={data} />}
 		</Box>
 	);
 	return (
@@ -39,6 +39,7 @@ function CatagoryPanel({ toggleDrawer, open }) {
 CatagoryPanel.propTypes = {
 	toggleDrawer: PropTypes.func.isRequired,
 	open: PropTypes.bool.isRequired,
+	// catData: PropTypes.array.isRequired,
 };
 
 export { CatagoryPanel };

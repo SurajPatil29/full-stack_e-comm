@@ -30,18 +30,25 @@ import MyContext from "./context/MyContext";
 import Address from "./pages/Address";
 
 function App() {
-	const [openProductDetailsModel, setOpenProductDetailsModel] = useState(false);
+	const [openProductDetailsModel, setOpenProductDetailsModel] = useState({
+		open: false,
+		item: {},
+	});
 	const [openCartPanel, setOpenCartPanel] = useState(false);
 	const [isLogin, setIsLogin] = useState(false);
 	const [userData, setUserData] = useState(null);
 	const [authChecked, setAuthChecked] = useState(false);
+	const [catData, setCatData] = useState([]);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
 	};
 
 	const handleCloseProductDetailsModel = () => {
-		setOpenProductDetailsModel(false);
+		setOpenProductDetailsModel({
+			open: false,
+			item: {},
+		});
 	};
 
 	const openAlertBox = (status, msg) => {
@@ -82,6 +89,14 @@ function App() {
 		}
 	}, [isLogin]);
 
+	useEffect(() => {
+		fetchDataFromApi("/api/category/categories").then((res) => {
+			if (res?.error === false) {
+				setCatData(res?.data);
+			}
+		});
+	}, []);
+
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
 		setOpenCartPanel: setOpenCartPanel,
@@ -90,6 +105,8 @@ function App() {
 		setIsLogin: setIsLogin,
 		userData: userData,
 		setUserData: setUserData,
+		setCatData: setCatData,
+		catData: catData,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -188,7 +205,7 @@ function App() {
 			{/* toast from hot tost npm */}
 			<Toaster />
 			<Dialog
-				open={openProductDetailsModel}
+				open={openProductDetailsModel.open}
 				onClose={handleCloseProductDetailsModel}
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
@@ -205,10 +222,10 @@ function App() {
 							<IoMdClose className="!text-[18px]  " />
 						</Button>
 						<div className="col1 w-[43%] ">
-							<ProductZoom />
+							<ProductZoom images={openProductDetailsModel.item.images} />
 						</div>
 						<div className="col2 productContent w-[57%] px-5 ">
-							<ProductDetailsComponant />
+							<ProductDetailsComponant item={openProductDetailsModel.item} />
 						</div>
 					</div>
 				</DialogContent>

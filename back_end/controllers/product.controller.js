@@ -136,7 +136,8 @@ export async function getAllProducts(req, res, next) {
 // ✅ Get Products by Category / SubCategory / ThirdLevel
 export async function getAllProductsByCatId(req, res, next) {
 	try {
-		const products = await ProductModel.find({ catId: req.params.id });
+		// console.log(req.params.Id);
+		const products = await ProductModel.find({ catId: req.params.Id });
 		return sendSuccess(res, "Products by Category ID fetched", { products });
 	} catch (error) {
 		next(error);
@@ -147,7 +148,7 @@ export async function getAllProductsByCatId(req, res, next) {
 export async function getFilteredProducts(req, res, next) {
 	try {
 		const { catId, subCatId, thirdsubCatId } = req.query;
-		console.log(thirdsubCatId);
+		// console.log(thirdsubCatId);
 
 		const query = {
 			...(catId && { catId }),
@@ -173,7 +174,7 @@ export async function getAllProductsByCatName(req, res, next) {
 
 export async function getAllProductsBySubCatId(req, res, next) {
 	try {
-		const products = await ProductModel.find({ subCatId: req.params.id });
+		const products = await ProductModel.find({ subCatId: req.params.Id });
 		return sendSuccess(res, "Products by SubCategory ID fetched", { products });
 	} catch (error) {
 		next(error);
@@ -193,7 +194,7 @@ export async function getAllProductsBySubCatName(req, res, next) {
 
 export async function getAllProductsByThirdLevelCatId(req, res, next) {
 	try {
-		const products = await ProductModel.find({ thirdsubCatId: req.params.id });
+		const products = await ProductModel.find({ thirdsubCatId: req.params.Id });
 		return sendSuccess(res, "Products by Third-Level SubCategory ID fetched", {
 			products,
 		});

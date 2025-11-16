@@ -70,10 +70,10 @@ function ProductDetails() {
 				<div className="lg:w-[45%] flex flex-col sm:flex-row gap-4">
 					{product.images && product.images.length > 0 ? (
 						<>
-							{/* Thumbnail Slider with Top & Bottom Navigation */}
+							{/* Thumbnail Slider */}
 							<div className="relative w-[18%] hidden sm:block">
-								{/* 🔼 Top Button */}
-								<div className="swiper-button-prev-sml absolute -top-5 left-1/2 -translate-x-1/2 z-10 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all cursor-pointer">
+								{/* Top Nav */}
+								<div className="swiper-button-prev-sml absolute -top-5 left-1/2 -translate-x-1/2 z-10 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-800 cursor-pointer">
 									<i className="fa-solid fa-chevron-up text-xs"></i>
 								</div>
 
@@ -94,39 +94,47 @@ function ProductDetails() {
 										<SwiperSlide key={i}>
 											<div
 												onClick={() => goto(i)}
-												className={`cursor-pointer rounded-md overflow-hidden transition-all border ${
+												className={`cursor-pointer rounded-md overflow-hidden border ${
 													sliderIndex === i
 														? "border-blue-500 opacity-100"
 														: "border-gray-200 opacity-40 hover:opacity-80"
-												}`}
+												} aspect-square`}
 											>
 												<img
 													src={img}
 													alt={`product-thumb-${i}`}
-													className="w-full h-[100px] object-contain bg-gray-50 p-1"
+													className="w-full h-full object-cover"
 												/>
 											</div>
 										</SwiperSlide>
 									))}
 								</Swiper>
 
-								{/* 🔽 Bottom Button */}
-								<div className="swiper-button-next-sml absolute -bottom-5 left-1/2 -translate-x-1/2 z-10 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all cursor-pointer">
+								{/* Bottom Nav */}
+								<div className="swiper-button-next-sml absolute -bottom-5 left-1/2 -translate-x-1/2 z-10 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-800 cursor-pointer">
 									<i className="fa-solid fa-chevron-down text-xs"></i>
 								</div>
 							</div>
 
-							{/* Main Image Zoom */}
+							{/* Main Image */}
 							<div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl h-[500px] overflow-hidden">
 								<Swiper ref={zoomSliderBig} slidesPerView={1} spaceBetween={0}>
 									{product.images.map((img, i) => (
-										<SwiperSlide key={i}>
-											<InnerImageZoom
-												src={img}
-												zoomType="hover"
-												zoomScale={1.2}
-												className="max-h-full max-w-full object-contain"
-											/>
+										<SwiperSlide key={i} className="w-full h-full">
+											<div className="w-full h-full relative">
+												<InnerImageZoom
+													src={img}
+													zoomType="hover"
+													zoomScale={1.2}
+													zoomSrc={img}
+													style={{
+														width: "100%",
+														height: "100%",
+														objectFit: "cover", // ensures image fills container
+														objectPosition: "center", // center the image
+													}}
+												/>
+											</div>
 										</SwiperSlide>
 									))}
 								</Swiper>

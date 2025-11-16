@@ -8,7 +8,7 @@ import { Autoplay, Navigation } from "swiper/modules"; //moduls from swiper slid
 
 import "./style.css";
 
-function HomeSlider() {
+function HomeSlider({ data }) {
 	return (
 		<div className="homeSlider py-4">
 			<div className="container">
@@ -25,70 +25,19 @@ function HomeSlider() {
 					modules={[Autoplay, Navigation]} //use of  moduls
 					className="sliderHome"
 				>
-					<SwiperSlide>
-						{/* this use to place slider details */}
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581212/s5_wjefxg.jpg"
-								alt="s2"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581213/s6_coktvw.jpg"
-								alt="s1"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581210/s3_rnbruc.jpg"
-								alt="s3"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581209/s1_dywytc.jpg"
-								alt="s4"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581211/s7_ioieeu.jpg"
-								alt="s5"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581209/s4_k0awzz.jpg"
-								alt="s6"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
-					<SwiperSlide>
-						<div className="item rounded-[20px] overflow-hidden">
-							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734581210/s2_rlnnvm.jpg"
-								alt="s7"
-								className="w-full"
-							/>
-						</div>
-					</SwiperSlide>
+					{data?.length !== 0 &&
+						data?.map((item, i) => (
+							<SwiperSlide key={i}>
+								{/* this use to place slider details */}
+								<div className="item rounded-[20px] overflow-hidden">
+									<img
+										src={item.images[0]}
+										alt={`banner-${i}`}
+										className="w-full"
+									/>
+								</div>
+							</SwiperSlide>
+						))}
 				</Swiper>
 			</div>
 		</div>

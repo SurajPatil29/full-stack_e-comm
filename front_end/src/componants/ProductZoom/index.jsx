@@ -6,7 +6,7 @@ import "swiper/css/navigation";
 import { Mousewheel, Navigation } from "swiper/modules";
 import { useRef, useState } from "react";
 
-function ProductZoom() {
+function ProductZoom({ images = [] }) {
 	const [sliderIndex, setSliderIndex] = useState(0);
 	const zoomSliderBig = useRef();
 	const zoomSliderSml = useRef();
@@ -18,100 +18,46 @@ function ProductZoom() {
 	};
 
 	return (
-		<>
-			<div className="flex gap-3 ">
-				<div className="slider w-[15%]">
-					<Swiper
-						ref={zoomSliderSml}
-						direction={"vertical"}
-						slidesPerView={4}
-						mousewheel={true}
-						spaceBetween={10}
-						navigation={true}
-						modules={[Mousewheel, Navigation]}
-						className="zoomProductSliderThumbs h-[500px] overflow-hidden "
-					>
-						<SwiperSlide>
+		<div className="flex gap-3">
+			<div className="slider w-[15%]">
+				<Swiper
+					ref={zoomSliderSml}
+					direction={"vertical"}
+					slidesPerView={4}
+					mousewheel={true}
+					spaceBetween={10}
+					navigation={true}
+					modules={[Mousewheel, Navigation]}
+					className="zoomProductSliderThumbs h-[500px] overflow-hidden"
+				>
+					{images.map((img, index) => (
+						<SwiperSlide key={index}>
 							<div
-								onClick={() => goto(0)}
+								onClick={() => goto(index)}
 								className={`item rounded-md overflow-hidden cursor-pointer group ${
-									sliderIndex === 0 ? "opacity-1" : "opacity-30"
+									sliderIndex === index ? "opacity-100" : "opacity-30"
 								}`}
 							>
 								<img
 									className="w-full transition-all group-hover:scale-105"
-									src="https://api.spicezgold.com/download/file_1734529297930_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-1-202307260626.jpg"
+									src={img}
 								/>
 							</div>
 						</SwiperSlide>
-						<SwiperSlide>
-							<div
-								onClick={() => goto(1)}
-								className={`item rounded-md overflow-hidden cursor-pointer group ${
-									sliderIndex === 1 ? "opacity-1" : "opacity-30"
-								}`}
-							>
-								<img
-									className="w-full transition-all group-hover:scale-105"
-									src="https://api.spicezgold.com/download/file_1734529297929_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-0-202307260626.jpg"
-								/>
-							</div>
-						</SwiperSlide>
-						<SwiperSlide>
-							<div
-								onClick={() => goto(2)}
-								className={`item rounded-md overflow-hidden cursor-pointer group ${
-									sliderIndex === 2 ? "opacity-1" : "opacity-30"
-								}`}
-							>
-								<img
-									className="w-full transition-all group-hover:scale-105"
-									src="https://api.spicezgold.com/download/file_1734529297930_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-2-202307260626.jpg"
-								/>
-							</div>
-						</SwiperSlide>
-					</Swiper>
-				</div>
-
-				<div className="w-[85%] h-[500px] overflow-hidden rounded-xl ">
-					<Swiper
-						ref={zoomSliderBig}
-						slidesPerView={1}
-						spaceBetween={0}
-						navigation={false}
-					>
-						<SwiperSlide>
-							<InnerImageZoom
-								zoomType="hover"
-								zoomScale={1}
-								src={
-									"https://api.spicezgold.com/download/file_1734529297930_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-1-202307260626.jpg"
-								}
-							/>
-						</SwiperSlide>
-						<SwiperSlide>
-							<InnerImageZoom
-								zoomType="hover"
-								zoomScale={1}
-								src={
-									"https://api.spicezgold.com/download/file_1734529297929_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-0-202307260626.jpg"
-								}
-							/>
-						</SwiperSlide>
-
-						<SwiperSlide>
-							<InnerImageZoom
-								zoomType="hover"
-								zoomScale={1}
-								src={
-									"https://api.spicezgold.com/download/file_1734529297930_fiorra-women-s-teapot-blue-pure-cotton-a-line-kurta-with-sharara-and-dupatta-product-images-rvo9n8udfg-2-202307260626.jpg"
-								}
-							/>
-						</SwiperSlide>
-					</Swiper>
-				</div>
+					))}
+				</Swiper>
 			</div>
-		</>
+
+			<div className="w-[85%] h-[500px] overflow-hidden rounded-xl">
+				<Swiper ref={zoomSliderBig} slidesPerView={1} spaceBetween={0}>
+					{images.map((img, idx) => (
+						<SwiperSlide key={idx}>
+							<InnerImageZoom zoomType="hover" zoomScale={1} src={img} />
+						</SwiperSlide>
+					))}
+				</Swiper>
+			</div>
+		</div>
 	);
 }
 

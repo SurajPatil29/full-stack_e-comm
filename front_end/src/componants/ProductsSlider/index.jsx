@@ -4,51 +4,23 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import ProductItem from "../ProductItem";
-function ProductsSlider(props) {
+function ProductsSlider({ items, data }) {
 	// product slider show products
 	return (
 		<div className="productsSlider py-4 smlBtn">
 			<Swiper
-				slidesPerView={props.items}
-				loop={true}
+				slidesPerView={items}
+				loop={data?.length >= items * 2}
 				spaceBetween={40}
 				navigation={true}
 				modules={[Navigation]}
 				className="mySwiper"
 			>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
-				<SwiperSlide>
-					<ProductItem />
-				</SwiperSlide>
+				{data?.map((item, i) => (
+					<SwiperSlide key={i}>
+						<ProductItem item={item} />
+					</SwiperSlide>
+				))}
 			</Swiper>
 		</div>
 	);
