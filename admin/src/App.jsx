@@ -45,6 +45,9 @@ import AddRAMs from "./Pages/Products/AddRAMs.jsx";
 import AddWeight from "./Pages/Products/AddWeight.jsx";
 import AddSize from "./Pages/Products/AddSize.jsx";
 import EditBanner from "./Pages/HomeSliderBanners/EditBanner.jsx";
+import AddHomeSliderV2 from "./Pages/HomeSliderBannersV2/AddHomeSliderV2.jsx";
+import EditBannerV2 from "./Pages/HomeSliderBannersV2/EditBannerV2.jsx";
+import HomeSliderBannersV2 from "./Pages/HomeSliderBannersV2/index.jsx";
 
 // add product dilog
 
@@ -197,6 +200,20 @@ function App() {
 				{
 					index: true,
 					element: <HomeSliderBanners />,
+				},
+			],
+		},
+		{
+			path: "/homesliderV2/list",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <HomeSliderBannersV2 />,
 				},
 			],
 		},
@@ -393,6 +410,11 @@ function App() {
 					{isOpenFullScreenPanel?.model === "Edit Category" && <EditCategory />}
 					{isOpenFullScreenPanel?.model === "Edit Product" && <EditProduct />}
 					{isOpenFullScreenPanel?.model === "Edit Banner" && <EditBanner />}
+
+					{isOpenFullScreenPanel?.model === "Add BannerV2" && (
+						<AddHomeSliderV2 />
+					)}
+					{isOpenFullScreenPanel?.model === "Edit BannerV2" && <EditBannerV2 />}
 				</Dialog>
 			</MyContext.Provider>
 			<Toaster />

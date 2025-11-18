@@ -6,6 +6,19 @@ import { Navigation } from "swiper/modules";
 
 function HomeCatSlider({ data }) {
 	// this slider create for catagory showcase on website
+	if (!data || data.length === 0) {
+		return (
+			<div className="homeCatSlider py-4 pb-8">
+				<div className="container">
+					<div className="w-full py-10 bg-[#f3f3f3] rounded-[20px] border border-gray-300 flex items-center justify-center">
+						<p className="text-gray-500 text-lg font-medium">
+							No categories found
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
 	return (
 		<div className="homeCatSlider py-4 pb-8 text-black">
 			<div className="container">

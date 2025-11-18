@@ -11,37 +11,37 @@ import {
 	deleteMultipleBanners,
 	uploadImage,
 	isActiveBanner,
-} from "../controllers/addBanner.controller.js";
+} from "../controllers/sliderBannerV2.controller.js";
 
-const bannerRouter = Router();
+const bannerRouterV2 = Router();
 
 /* -------------------------- Banner Routes -------------------------- */
 
 // ✅ Upload images separately (optional)
-bannerRouter.post("/upload", auth, upload.array("images"), uploadImage);
+bannerRouterV2.post("/upload", auth, upload.array("images"), uploadImage);
 
 // ✅ Create banner (single or multiple images)
-bannerRouter.post("/createBanner", auth, createBanner);
+bannerRouterV2.post("/createBanner", auth, createBanner);
 
 // ✅ Get all banners
-bannerRouter.get("/all", getAllBanners);
+bannerRouterV2.get("/all", getAllBanners);
 
 // ✅ Get single banner
-bannerRouter.get("/:id", getBanner);
+bannerRouterV2.get("/:id", getBanner);
 
 // ✅ Update banner (replace old or add new images)
-bannerRouter.post("/:id", auth, updateBanner);
+bannerRouterV2.post("/:id", auth, updateBanner);
 
 // ✅ isActive banner
-bannerRouter.put("/:id", auth, isActiveBanner);
+bannerRouterV2.put("/:id", auth, isActiveBanner);
 
 // ✅ Remove single image from banner
-bannerRouter.delete("/remove-image", auth, removeBannerImage);
+bannerRouterV2.delete("/remove-image", auth, removeBannerImage);
 
 // ✅ Delete multiple banners
-bannerRouter.delete("/delete-multiple", auth, deleteMultipleBanners);
+bannerRouterV2.delete("/delete-multiple", auth, deleteMultipleBanners);
 
 // ✅ Delete single banner
-bannerRouter.delete("/:id", auth, deleteBanner);
+bannerRouterV2.delete("/:id", auth, deleteBanner);
 
-export default bannerRouter;
+export default bannerRouterV2;

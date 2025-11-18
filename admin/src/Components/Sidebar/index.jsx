@@ -100,6 +100,30 @@ function Sidebar() {
 												Add Home Banner Slide
 											</Button>
 										</li>
+										<li className="w-full">
+											<Link to="/homesliderV2/list">
+												<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
+													{" "}
+													<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+													Home BannerV2 List
+												</Button>
+											</Link>
+										</li>
+
+										<li className="w-full">
+											<Button
+												className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 "
+												onClick={() =>
+													context.setIsOpenFullScreenPanel({
+														open: true,
+														model: "Add BannerV2",
+													})
+												}
+											>
+												<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+												Add Home BannerV2 Slide
+											</Button>
+										</li>
 									</ul>
 								</Collapse>
 							</li>

@@ -20,29 +20,120 @@ import AddBannerSliderV2 from "../../componants/AddBannerSliderv2";
 import { fetchDataFromApi } from "../../utils/api";
 import { HomeSlider } from "../../componants/HomeSlider";
 import MyContext from "../../context/MyContext";
+import HomeSliderSkeleton from "../../componants/HomeSlider/HomeSliderSkeleton";
+import HomeCatSliderSkeleton from "../../componants/HomeCatSlider/HomeCatSliderSkeleton";
+import HomeBanner2Skeleton from "../../componants/HomeSliderV2/HomeBanner2Skeleton";
 
 function Home() {
 	const [value, setValue] = useState(null);
 	const [homeslideData, setHomeSlidesData] = useState([]);
+	const [homeslideDataV2, setHomeSlidesDataV2] = useState([]);
 	const [popularProductsData, setPopularProductsData] = useState([]);
 	const [productsData, setProductsData] = useState([]);
 	const [FeaturedProductsData, setFeaturedProductsData] = useState([]);
+	const [isLodingProductItem, setIsLoadingProductItem] = useState(false);
+	const [isLatestProductLoading, setIsLatestProductLoading] = useState(false);
+	const [isBannerLoading, setIsBannerLoading] = useState(false);
+	const [isBannerLoadingV2, setIsBannerLoadingV2] = useState(false);
+	const [isFeaturedProductLoading, setIsFeaturedProductLoading] =
+		useState(false);
+	const [isCatLoading, setIsCatLoading] = useState(false);
+	const [catData, setCatData] = useState([]);
 
 	const context = useContext(MyContext);
 
 	useEffect(() => {
-		fetchDataFromApi("/api/banner/all").then((res) => {
-			// console.log(res);
-			setHomeSlidesData(res.data);
-		});
-		fetchDataFromApi("/api/product/getAllProducts").then((res) => {
-			setProductsData(res.products);
-			// console.log(res);
-		});
-		fetchDataFromApi("/api/product/getAllFeaturedProduct").then((res) => {
-			setFeaturedProductsData(res.products);
-			// console.log(res);
-		});
+		if (context?.catData) {
+			setIsCatLoading(true);
+
+			// Keep loader for 2 seconds
+			setTimeout(() => {
+				setCatData(context.catData); // by now context data is loaded correctly
+				setIsCatLoading(false);
+			}, 2000);
+		}
+	}, [context.catData]);
+
+	useEffect(() => {
+		const loadHomeData = async () => {
+			setIsBannerLoading(true);
+			setIsBannerLoadingV2(true);
+			setIsLatestProductLoading(true);
+			setIsFeaturedProductLoading(true);
+
+			try {
+				const [bannersRes, bannersV2Res, latestRes, featuredRes] =
+					await Promise.all([
+						fetchDataFromApi("/api/banner/all"),
+						fetchDataFromApi("/api/bannerv2/all"),
+
+						fetchDataFromApi("/api/product/getAllProducts"),
+						fetchDataFromApi("/api/product/getAllFeaturedProduct"),
+					]);
+
+				// Banners
+				if (bannersRes?.error === false) {
+					setHomeSlidesData(bannersRes.data);
+				} else {
+					console.log("Banner API error:", bannersRes?.message);
+				}
+				setTimeout(() => {
+					setIsBannerLoading(false);
+				}, 2000);
+
+				// BannersV2
+				if (bannersV2Res?.error === false) {
+					setHomeSlidesDataV2(bannersV2Res.data);
+				} else {
+					console.log("Banner API error:", bannersV2Res?.message);
+				}
+				setTimeout(() => {
+					setIsBannerLoadingV2(false);
+				}, 2000);
+
+				// LATEST PRODUCTS ----------------
+				if (latestRes?.error === false) {
+					setProductsData(latestRes.products);
+				} else {
+					console.log("Latest Product API error:", latestRes?.message);
+				}
+				setTimeout(() => {
+					setIsLatestProductLoading(false);
+				}, 2000);
+
+				// FEATURED PRODUCTS --------------
+				if (featuredRes?.error === false) {
+					setFeaturedProductsData(featuredRes.products);
+				} else {
+					console.log("Featured Product API error:", featuredRes?.message);
+				}
+				setTimeout(() => {
+					setIsFeaturedProductLoading(false);
+				}, 2000);
+			} catch (error) {
+				console.log("Home Page API error:", error);
+
+				// Stop all loaders even on error
+				setTimeout(() => {
+					setIsBannerLoading(false);
+					setIsLatestProductLoading(false);
+					setIsFeaturedProductLoading(false);
+				}, 2000);
+			}
+		};
+		loadHomeData();
+		// fetchDataFromApi("/api/banner/all").then((res) => {
+		// 	// console.log(res);
+		// 	setHomeSlidesData(res.data);
+		// });
+		// fetchDataFromApi("/api/product/getAllProducts").then((res) => {
+		// 	setProductsData(res.products);
+		// 	// console.log(res);
+		// });
+		// fetchDataFromApi("/api/product/getAllFeaturedProduct").then((res) => {
+		// 	setFeaturedProductsData(res.products);
+		// 	// console.log(res);
+		// });
 	}, []);
 	useEffect(() => {
 		if (context.catData.length > 0) {
@@ -52,13 +143,34 @@ function Home() {
 		}
 	}, [context.catData]);
 
-	const filterByCat = (id) => {
-		fetchDataFromApi(`/api/product/getAllProductsByCatId/${id}`).then((res) => {
-			if (res.error === false) {
+	const filterByCat = async (id) => {
+		try {
+			setIsLoadingProductItem(true);
+
+			const res = await fetchDataFromApi(
+				`/api/product/getAllProductsByCatId/${id}`
+			);
+
+			if (res?.error === false) {
 				setPopularProductsData(res?.products);
-				// console.log(res.products);
+			} else {
+				setPopularProductsData([]);
+				console.log("API error:", res?.message);
 			}
-		});
+
+			// 🔥 Force loader to stay at least 2 seconds
+			setTimeout(() => {
+				setIsLoadingProductItem(false);
+			}, 2000);
+		} catch (error) {
+			console.log("API error:", error);
+			setPopularProductsData([]);
+
+			// 🔥 Loader still hides after 2 sec even in error
+			setTimeout(() => {
+				setIsLoadingProductItem(false);
+			}, 2000);
+		}
 	};
 
 	const handleChange = (event, newValue) => {
@@ -69,39 +181,20 @@ function Home() {
 	return (
 		<>
 			{/* homeslider v1 */}
-			{homeslideData?.length !== 0 && <HomeSlider data={homeslideData} />}
+			{isBannerLoading ? (
+				<HomeSliderSkeleton />
+			) : homeslideData?.length > 0 ? (
+				<HomeSlider data={homeslideData} />
+			) : (
+				<HomeSlider data={[]} /> // this will use fallback template
+			)}
 
-			{/* homeslider v2 */}
-			{/* <section className="py-6">
-				
-
-				<div className="container flex items-center">
-					<div className="part1 w-[70%]">
-						<HomeBanner2 />
-					</div>
-					<div className="part2 w-[30%] flex items-center justify-between flex-col gap-5">
-						<div className="mx-[10%]">
-							<BannerBoxV2
-								info="left"
-								image={
-									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965948/sub-banner-1_kky0b0.jpg"
-								}
-							/>
-						</div>
-						<div className="mx-[10%] ">
-							<BannerBoxV2
-								info="right"
-								image={
-									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965945/sub-banner-2_sduheq.jpg"
-								}
-							/>
-						</div>
-					</div>
-				</div>
-			</section> */}
-
-			{context?.catData.length !== 0 && (
-				<HomeCatSlider data={context.catData} />
+			{isCatLoading ? (
+				<HomeCatSliderSkeleton />
+			) : catData?.length > 0 ? (
+				<HomeCatSlider data={catData} />
+			) : (
+				<HomeCatSlider data={[]} /> // fallback template
 			)}
 
 			{/* catagory slider */}
@@ -140,14 +233,53 @@ function Home() {
 							</Box>
 						</div>
 					</div>
-					{popularProductsData && popularProductsData.length > 0 ? (
-						<ProductsSlider items={5} data={popularProductsData} />
+					{isLodingProductItem ? (
+						<ProductsSlider items={5} loading={true} />
+					) : popularProductsData && popularProductsData.length > 0 ? (
+						<ProductsSlider
+							items={5}
+							data={popularProductsData}
+							loading={false}
+						/>
 					) : (
-						<p className="text-center text-gray-500">
+						<p className="text-center text-gray-500 ">
 							No popular products found
 						</p>
 					)}
 					{/* product slider */}
+				</div>
+			</section>
+
+			{/* homeslider v2 */}
+			<section className="py-6">
+				<div className="container flex items-center">
+					<div className="part1 w-[70%]">
+						{isBannerLoadingV2 ? (
+							<HomeBanner2Skeleton />
+						) : homeslideDataV2?.length > 0 ? (
+							<HomeBanner2 data={homeslideDataV2} />
+						) : (
+							<HomeBanner2 data={[]} /> // this will use fallback template
+						)}
+					</div>
+					<div className="part2 w-[30%] flex items-center justify-between flex-col gap-5">
+						<div className="mx-[10%]">
+							<BannerBoxV2
+								info="left"
+								image={
+									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965948/sub-banner-1_kky0b0.jpg"
+								}
+							/>
+						</div>
+						<div className="mx-[10%] ">
+							<BannerBoxV2
+								info="right"
+								image={
+									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965945/sub-banner-2_sduheq.jpg"
+								}
+							/>
+						</div>
+					</div>
 				</div>
 			</section>
 
@@ -182,8 +314,10 @@ function Home() {
 			<section className="py-5 bg-white">
 				<div className="container">
 					<h2 className="text-[20px]">Latest Products</h2>
-					{productsData?.length !== 0 ? (
-						<ProductsSlider items={5} data={productsData} />
+					{isLatestProductLoading ? (
+						<ProductsSlider items={5} loading={true} />
+					) : productsData?.length !== 0 ? (
+						<ProductsSlider items={5} data={productsData} loading={false} />
 					) : (
 						<div className="w-full h-[200px] flex items-center justify-center ">
 							<p className="text-[rgba(0,0,0,0.7)]  ">
@@ -200,7 +334,9 @@ function Home() {
 			<section className="py-5 pt-0 bg-white">
 				<div className="container">
 					<h2 className="text-[20px] font-[600] ">Featured Products</h2>
-					{FeaturedProductsData?.length !== 0 ? (
+					{isFeaturedProductLoading ? (
+						<ProductsSlider items={6} loading={true} />
+					) : FeaturedProductsData?.length !== 0 ? (
 						<ProductsSlider items={6} data={FeaturedProductsData} />
 					) : (
 						<div className="w-full h-[200px] flex items-center justify-center ">

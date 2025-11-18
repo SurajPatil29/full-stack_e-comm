@@ -90,7 +90,7 @@ function ProductItem({ item }) {
 
 				<h2 className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1">
 					<Link to={`/productDetails/${item?._id}`} className="link">
-						{item?.name}
+						{item?.name?.substr(0, 40) + "..."}
 					</Link>
 				</h2>
 

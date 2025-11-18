@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import fs from "fs";
 import cloudinary from "../config/cloudinary.js";
-import AddBannerModel from "../models/addBannner.model.js";
-import { sendSuccess, sendError } from "../utils/response.js"; // assuming you have these helpers
+import { sendSuccess, sendError } from "../utils/response.js";
+import SliderBannerV2 from "../models/sliderBannerV2.model.js";
 
 // ✅ Upload to Cloudinary helper
 const uploadToCloudinary = async (
 	files = [],
-	folder = "classyshop/bannerimg"
+	folder = "classyshop/bannerimgV2"
 ) => {
 	const uploadedImages = [];
 	const validMimeTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -46,26 +46,21 @@ export async function uploadImage(req, res, next) {
 // ✅ Create Banner (single or multiple images)
 export async function createBanner(req, res, next) {
 	try {
-		const { images, title } = req.body;
+		const { images, title, price } = req.body;
 
 		if (!images) {
 			return sendError(res, "Images are required", 422);
 		}
 
-		// ✅ Upload images if present
-		let uploadedImages = [];
-		if (req.files && req.files.length > 0) {
-			uploadedImages = await uploadToCloudinary(req.files);
-		}
-
-		const banner = new AddBannerModel({
-			images: images?.length ? images : uploadedImages,
-			title: title || "Banner",
+		const banner = new SliderBannerV2({
+			images: images,
+			title: title || "BannerV2",
+			price: price,
 		});
 
 		await banner.save();
 
-		return sendSuccess(res, "Banner Added successfully", { banner });
+		return sendSuccess(res, "Banner Added successfully", { data: banner });
 	} catch (error) {
 		next(error);
 	}
@@ -74,7 +69,7 @@ export async function createBanner(req, res, next) {
 // ✅ Get All Banners
 export async function getAllBanners(req, res, next) {
 	try {
-		const banners = await AddBannerModel.find().sort({ createdAt: -1 });
+		const banners = await SliderBannerV2.find().sort({ createdAt: -1 });
 		return sendSuccess(res, "Fetched banners successfully", { data: banners });
 	} catch (error) {
 		next(error);
@@ -90,7 +85,7 @@ export async function getBanner(req, res, next) {
 		if (!mongoose.Types.ObjectId.isValid(id))
 			return sendError(res, "Invalid banner ID", 400);
 
-		const banner = await AddBannerModel.findById(id);
+		const banner = await SliderBannerV2.findById(id);
 		if (!banner) return sendError(res, "Banner not found", 404);
 
 		return sendSuccess(res, "Banner fetched successfully", { data: banner });
@@ -117,7 +112,7 @@ export async function removeBannerImage(req, res, next) {
 			return sendError(res, "Invalid Cloudinary image URL format", 400);
 		}
 
-		const publicId = match[1]; // e.g., classyshop/categoryimg/filename
+		const publicId = match[1]; // e.g., classyshop/bannerV2img/filename
 
 		// Delete image from Cloudinary
 		const result = await cloudinary.uploader.destroy(publicId);
@@ -130,15 +125,15 @@ export async function removeBannerImage(req, res, next) {
 			);
 		}
 
-		// Remove image URL from associated category
-		const category = await AddBannerModel.findOne({ images: imgUrl });
+		// Remove image URL from associated bannerV2
+		const bannerV2 = await SliderBannerV2.findOne({ images: imgUrl });
 
-		if (category) {
-			category.images = category.images.filter((img) => img !== imgUrl);
-			await category.save();
+		if (bannerV2) {
+			bannerV2.images = bannerV2.images.filter((img) => img !== imgUrl);
+			await bannerV2.save();
 		}
 
-		return sendSuccess(res, "Image deleted and removed from category", {
+		return sendSuccess(res, "Image deleted and removed from bannerV2", {
 			result,
 		});
 	} catch (error) {
@@ -153,7 +148,7 @@ export async function updateBanner(req, res, next) {
 		const { id } = req.params;
 		// console.log(id, "put");
 
-		const { title, images } = req.body; // images should be an array of URLs
+		const { title, images, price } = req.body; // images should be an array of URLs
 
 		// Validate ID
 		if (!mongoose.Types.ObjectId.isValid(id))
@@ -165,9 +160,10 @@ export async function updateBanner(req, res, next) {
 		const updateData = {};
 		if (title) updateData.title = title;
 		if (images) updateData.images = images; // replaces old images
+		if (price) updateData.price = price;
 
 		// Update in DB
-		const updatedBanner = await AddBannerModel.findByIdAndUpdate(
+		const updatedBanner = await SliderBannerV2.findByIdAndUpdate(
 			id,
 			updateData,
 			{
@@ -178,7 +174,7 @@ export async function updateBanner(req, res, next) {
 		if (!updatedBanner) return sendError(res, "Banner not found", 404);
 
 		return sendSuccess(res, "Banner updated successfully", {
-			banner: updatedBanner,
+			data: updatedBanner,
 		});
 	} catch (error) {
 		next(error);
@@ -196,7 +192,7 @@ export async function isActiveBanner(req, res, next) {
 			return sendError(res, "Invalid banner ID", 400);
 
 		// Update in DB
-		const updatedBanner = await AddBannerModel.findByIdAndUpdate(
+		const updatedBanner = await SliderBannerV2.findByIdAndUpdate(
 			id,
 			{ isActive },
 			{ new: true }
@@ -214,7 +210,7 @@ export async function isActiveBanner(req, res, next) {
 // ✅ Delete Single Banner
 export async function deleteBanner(req, res, next) {
 	try {
-		const banner = await AddBannerModel.findById(req.params.id);
+		const banner = await SliderBannerV2.findById(req.params.id);
 		if (!banner) {
 			return sendError(res, "baneer not found!", 404);
 		}
@@ -231,7 +227,7 @@ export async function deleteBanner(req, res, next) {
 		await Promise.all(deleteImagePromises);
 
 		// Delete main category
-		await AddBannerModel.findByIdAndDelete(req.params.id);
+		await SliderBannerV2.findByIdAndDelete(req.params.id);
 
 		return sendSuccess(res, "Banner deleted!");
 	} catch (error) {
@@ -249,7 +245,7 @@ export async function deleteMultipleBanners(req, res, next) {
 		}
 
 		for (const id of ids) {
-			const banner = await AddBannerModel.findById(id);
+			const banner = await SliderBannerV2.findById(id);
 			if (!banner) continue;
 
 			// Delete all images from Cloudinary
@@ -263,8 +259,8 @@ export async function deleteMultipleBanners(req, res, next) {
 			});
 			await Promise.all(deleteImagePromises);
 
-			// Delete main category
-			await AddBannerModel.findByIdAndDelete(id);
+			// Delete main Banner
+			await SliderBannerV2.findByIdAndDelete(id);
 		}
 
 		return sendSuccess(res, "Selected Banners deleted!");
