@@ -23,6 +23,7 @@ import MyContext from "../../context/MyContext";
 import HomeSliderSkeleton from "../../componants/HomeSlider/HomeSliderSkeleton";
 import HomeCatSliderSkeleton from "../../componants/HomeCatSlider/HomeCatSliderSkeleton";
 import HomeBanner2Skeleton from "../../componants/HomeSliderV2/HomeBanner2Skeleton";
+import AddBannerSliderV2Skeleton from "../../componants/BannerBoxV2/AddBannerSliderV2Skeleton";
 
 function Home() {
 	const [value, setValue] = useState(null);
@@ -31,12 +32,14 @@ function Home() {
 	const [popularProductsData, setPopularProductsData] = useState([]);
 	const [productsData, setProductsData] = useState([]);
 	const [FeaturedProductsData, setFeaturedProductsData] = useState([]);
+	const [bannerBoxV1Data, setBannerBoxV1Data] = useState([]);
 	const [isLodingProductItem, setIsLoadingProductItem] = useState(false);
 	const [isLatestProductLoading, setIsLatestProductLoading] = useState(false);
 	const [isBannerLoading, setIsBannerLoading] = useState(false);
 	const [isBannerLoadingV2, setIsBannerLoadingV2] = useState(false);
 	const [isFeaturedProductLoading, setIsFeaturedProductLoading] =
 		useState(false);
+	const [isBannerBoxV1Loading, setIsBannerBoxV1Loading] = useState(false);
 	const [isCatLoading, setIsCatLoading] = useState(false);
 	const [catData, setCatData] = useState([]);
 
@@ -60,16 +63,22 @@ function Home() {
 			setIsBannerLoadingV2(true);
 			setIsLatestProductLoading(true);
 			setIsFeaturedProductLoading(true);
+			setIsBannerBoxV1Loading(true);
 
 			try {
-				const [bannersRes, bannersV2Res, latestRes, featuredRes] =
-					await Promise.all([
-						fetchDataFromApi("/api/banner/all"),
-						fetchDataFromApi("/api/bannerv2/all"),
-
-						fetchDataFromApi("/api/product/getAllProducts"),
-						fetchDataFromApi("/api/product/getAllFeaturedProduct"),
-					]);
+				const [
+					bannersRes,
+					bannersV2Res,
+					bannerBaxV1Res,
+					latestRes,
+					featuredRes,
+				] = await Promise.all([
+					fetchDataFromApi("/api/banner/all"),
+					fetchDataFromApi("/api/bannerv2/all"),
+					fetchDataFromApi("/api/bannerboxv1/all"),
+					fetchDataFromApi("/api/product/getAllProducts"),
+					fetchDataFromApi("/api/product/getAllFeaturedProduct"),
+				]);
 
 				// Banners
 				if (bannersRes?.error === false) {
@@ -89,6 +98,16 @@ function Home() {
 				}
 				setTimeout(() => {
 					setIsBannerLoadingV2(false);
+				}, 2000);
+
+				// BannerBoxV1
+				if (bannerBaxV1Res?.error === false) {
+					setBannerBoxV1Data(bannerBaxV1Res.data);
+				} else {
+					console.log("Banner API error:", bannerBaxV1Res?.message);
+				}
+				setTimeout(() => {
+					setIsBannerBoxV1Loading(false);
 				}, 2000);
 
 				// LATEST PRODUCTS ----------------
@@ -262,23 +281,18 @@ function Home() {
 							<HomeBanner2 data={[]} /> // this will use fallback template
 						)}
 					</div>
-					<div className="part2 w-[30%] flex items-center justify-between flex-col gap-5">
-						<div className="mx-[10%]">
-							<BannerBoxV2
-								info="left"
-								image={
-									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965948/sub-banner-1_kky0b0.jpg"
-								}
+					<div className="part2 w-[30%] h-[470px] flex items-center justify-between flex-col gap-5">
+						{isBannerBoxV1Loading ? (
+							<AddBannerSliderV2Skeleton />
+						) : bannerBoxV1Data?.length > 0 ? (
+							<AddBannerSliderV2
+								dir={"vertical"}
+								items={2}
+								data={bannerBoxV1Data}
 							/>
-						</div>
-						<div className="mx-[10%] ">
-							<BannerBoxV2
-								info="right"
-								image={
-									"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734965945/sub-banner-2_sduheq.jpg"
-								}
-							/>
-						</div>
+						) : (
+							<AddBannerSliderV2 dir={"vertical"} items={2} data={[]} /> // fallback used inside component
+						)}
 					</div>
 				</div>
 			</section>
@@ -306,9 +320,19 @@ function Home() {
 						</div>
 					</div>
 				</div>
-
-				<AddBannerSliderV2 items={4} />
-				{/* ads banner slider */}
+				<div className="py-8">
+					{isBannerBoxV1Loading ? (
+						<AddBannerSliderV2Skeleton />
+					) : bannerBoxV1Data?.length > 0 ? (
+						<AddBannerSliderV2
+							dir={"horizontal"}
+							items={4}
+							data={bannerBoxV1Data}
+						/>
+					) : (
+						<AddBannerSliderV2 dir={"horizontal"} items={4} data={[]} /> // fallback used inside component
+					)}
+				</div>
 			</section>
 
 			<section className="py-5 bg-white">
@@ -326,6 +350,7 @@ function Home() {
 						</div>
 					)}
 					{/* product slider */}
+
 					<AddBannerSlider items={3} />
 					{/* Ads slider */}
 				</div>

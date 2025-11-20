@@ -12,6 +12,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import { Collapse } from "react-collapse";
 import MyContext from "../../context/MyContext";
 import { fetchDataFromApi } from "../../utils/api";
+import { GrGallery } from "react-icons/gr";
 
 function Sidebar() {
 	const context = useContext(MyContext);
@@ -264,6 +265,74 @@ function Sidebar() {
 												Add a Sub Category
 											</Button>
 										</li>
+									</ul>
+								</Collapse>
+							</li>
+							<li>
+								<Button
+									className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] "
+									onClick={() => isOpenSubMenu(5)}
+								>
+									<GrGallery className="text-[20px] " /> <span>Banner Box</span>
+									<span className="ml-auto w-[30px] flex items-center justify-center ">
+										<FaAngleDown
+											className={`transition-all ${
+												submenuIndex === 5 ? "rotate-180" : ""
+											} `}
+										/>
+									</span>
+								</Button>
+
+								<Collapse isOpened={submenuIndex === 5 ? true : false}>
+									<ul className="w-full">
+										<li className="w-full">
+											<Link to="/bannerBoxV1/list">
+												<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
+													{" "}
+													<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+													Banner BoxV1 List
+												</Button>
+											</Link>
+										</li>
+
+										<li className="w-full">
+											<Button
+												className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 "
+												onClick={() =>
+													context.setIsOpenFullScreenPanel({
+														open: true,
+														model: "Add Banner BoxV1",
+													})
+												}
+											>
+												<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+												Add Banner BoxV1
+											</Button>
+										</li>
+										{/* <li className="w-full">
+											<Link to="/homesliderV2/list">
+												<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
+													{" "}
+													<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+													Home BannerV2 List
+												</Button>
+											</Link>
+										</li>
+
+										<li className="w-full">
+											<Button
+												className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 "
+												onClick={() =>
+													context.setIsOpenFullScreenPanel({
+														open: true,
+														model: "Add BannerV2",
+													})
+												}
+											>
+												<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
+												Add Home BannerV2 Slide
+											</Button>
+										</li> */}
 									</ul>
 								</Collapse>
 							</li>

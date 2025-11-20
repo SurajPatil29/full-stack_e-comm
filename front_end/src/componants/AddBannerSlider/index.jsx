@@ -5,12 +5,12 @@ import { Navigation } from "swiper/modules";
 import BannerBox from "../BannerBox";
 import PropTypes from "prop-types";
 
-function AddBannerSlider(props) {
+function AddBannerSlider({ items, data }) {
 	// in this componant i was create banner slider
 	return (
 		<div className="pt-10 px-8 w-full">
 			<Swiper
-				slidesPerView={props.items}
+				slidesPerView={items}
 				loop={true}
 				spaceBetween={30}
 				navigation={true}

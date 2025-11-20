@@ -139,7 +139,7 @@ function AddHomeSliderV2() {
 									setImg={(url) =>
 										setFormFields((prev) => ({ ...prev, images: url }))
 									}
-									url="/api/banner/upload"
+									url="/api/bannerv2/upload"
 								/>
 							)}
 						</div>
