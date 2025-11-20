@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlineDelete } from "react-icons/md";
 import { TfiLayoutSliderAlt } from "react-icons/tfi";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -10,9 +11,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import MyContext from "../../context/MyContext";
-import { LuArrowLeftRight, LuArrowUpDown } from "react-icons/lu";
 
+import MyContext from "../../context/MyContext";
 import {
 	fetchDataFromApi,
 	deleteData,
@@ -22,15 +22,16 @@ import {
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
-// ADD NEW COLUMNS HERE
+// Columns
 const columns = [
 	{ id: "image", label: "IMAGE", minWidth: 250 },
-	{ id: "title", label: "TITLE", minWidth: 200 },
+	{ id: "prodType", label: "PRODUCT TYPE", minWidth: 120 },
+
 	{ id: "isActive", label: "ACTIVE STATUS", minWidth: 120 },
 	{ id: "action", label: "ACTION", minWidth: 100 },
 ];
 
-function BannerBoxListV1() {
+function BannerBoxListV2() {
 	const context = useContext(MyContext);
 
 	const [page, setPage] = useState(0);
@@ -44,11 +45,10 @@ function BannerBoxListV1() {
 		setPage(0);
 	};
 
-	// Fetch banners
+	// Fetch Banners
 	const getBanners = async () => {
-		const res = await fetchDataFromApi("/api/bannerboxv1/all");
+		const res = await fetchDataFromApi("/api/bannerboxv2/all");
 		if (res?.success) setBannerData(res.data);
-		console.log(res);
 	};
 
 	useEffect(() => {
@@ -72,7 +72,7 @@ function BannerBoxListV1() {
 	const handleDeleteBanner = async (id) => {
 		if (!window.confirm("Delete this banner?")) return;
 
-		const res = await deleteData(`/api/bannerboxv1/${id}`);
+		const res = await deleteData(`/api/bannerboxv2/${id}`);
 
 		if (res.success) {
 			setBannerData((prev) => prev.filter((b) => b._id !== id));
@@ -80,12 +80,12 @@ function BannerBoxListV1() {
 		}
 	};
 
-	// Delete Multiple
+	// Delete Selected
 	const handleDeleteSelected = async () => {
 		if (selected.length === 0) return;
 		if (!window.confirm(`Delete ${selected.length} banners?`)) return;
 
-		const res = await deleteMultiple(`/api/bannerboxv1/delete-multiple`, {
+		const res = await deleteMultiple(`/api/bannerboxv2/delete-multiple`, {
 			ids: selected,
 		});
 
@@ -95,42 +95,43 @@ function BannerBoxListV1() {
 		}
 	};
 
-	// 🔥 Toggle ACTIVE STATUS
+	// Toggle Active
 	const handleToggleActive = async (id, currentStatus) => {
 		const newStatus = !currentStatus;
 
-		// immediate UI update
+		// UI Optimistic Update
 		setBannerData((prev) =>
 			prev.map((b) => (b._id === id ? { ...b, isActive: newStatus } : b))
 		);
 
-		const res = await putData(`/api/bannerboxv1/${id}`, {
+		const res = await putData(`/api/bannerboxv2/${id}`, {
 			isActive: newStatus,
 		});
 
 		if (!res.success) {
 			alert("Failed to update active status");
-			getBanners(); // reload fallback
+			getBanners(); // fallback reload
 		}
 	};
 
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0">
-				<h2 className="text-[18px] font-[600]">Home Slider BannersV2</h2>
+			{/* Header */}
+			<div className="flex items-center justify-between px-2 py-2">
+				<h2 className="text-[20px] font-semibold">Home Slider Banners V2</h2>
 
-				<div className="col w-[30%] ml-auto flex items-center justify-end gap-3 ">
+				<div className="flex items-center gap-3">
 					<Button
 						className="btn-blue btn-sm !text-white gap-2 flex items-center"
 						onClick={() =>
 							context.setIsOpenFullScreenPanel({
 								open: true,
-								model: "Add Banner BoxV1",
+								model: "Add Banner BoxV2",
 							})
 						}
 					>
 						<TfiLayoutSliderAlt className="text-white text-[20px]" />
-						Add Banner BoxV1
+						Add Banner Box
 					</Button>
 
 					<Button
@@ -143,8 +144,9 @@ function BannerBoxListV1() {
 				</div>
 			</div>
 
-			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
+			{/* Table */}
+			<div className="card my-4 shadow-md sm:rounded-lg bg-white">
+				<TableContainer sx={{ maxHeight: 450 }}>
 					<Table stickyHeader>
 						<TableHead>
 							<TableRow>
@@ -192,51 +194,21 @@ function BannerBoxListV1() {
 												<img
 													src={banner.images?.[0]}
 													alt="banner"
-													className="w-[200px] h-[120px] object-cover rounded-md"
+													className="w-[200px] h-[120px] object-cover rounded-md shadow-sm border"
 												/>
 											</TableCell>
 
-											{/* Title Block */}
+											{/* Product Type */}
 											<TableCell>
-												{/* Title */}
-												<p className="font-semibold text-[15px]">
-													{banner.title}
-												</p>
-
-												{/* Price */}
-												<p className="text-sm text-gray-500">₹{banner.price}</p>
-
-												{/* SLIDE ORIENTATION */}
-												<div className="flex items-center gap-2 mt-2">
-													{banner.slide === "horizontal" ? (
-														<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-blue-100 text-blue-700">
-															<LuArrowLeftRight className="text-lg" />
-															<span className="text-xs font-medium">
-																Horizontal
-															</span>
-														</div>
-													) : (
-														<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-green-100 text-green-700">
-															<LuArrowUpDown className="text-lg" />
-															<span className="text-xs font-medium">
-																Vertical
-															</span>
-														</div>
-													)}
-												</div>
-
-												{/* ANGLE POSITION BADGE */}
-												<div className="mt-2">
-													{banner.angle === "Left" ? (
-														<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-purple-100 text-purple-700">
-															Angle: Left
-														</span>
-													) : (
-														<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-orange-100 text-orange-700">
-															Angle: Right
-														</span>
-													)}
-												</div>
+												<span
+													className={`px-3 py-1 rounded-full text-xs font-semibold ${
+														banner.prodType === "latest"
+															? "bg-blue-100 text-blue-700"
+															: "bg-green-100 text-green-700"
+													}`}
+												>
+													{banner.prodType?.toUpperCase()}
+												</span>
 											</TableCell>
 
 											{/* Active Toggle */}
@@ -251,14 +223,14 @@ function BannerBoxListV1() {
 
 											{/* Actions */}
 											<TableCell>
-												<div className="flex items-center gap-2">
+												<div className="flex items-center gap-3">
 													<Tooltip title="Edit Banner" placement="top">
 														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
+															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
 															onClick={() =>
 																context.setIsOpenFullScreenPanel({
 																	open: true,
-																	model: "Edit Banner BoxV1",
+																	model: "Edit Banner BoxV2",
 																	id: banner._id,
 																})
 															}
@@ -269,10 +241,10 @@ function BannerBoxListV1() {
 
 													<Tooltip title="Delete Banner" placement="top">
 														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
+															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
 															onClick={() => handleDeleteBanner(banner._id)}
 														>
-															<MdOutlineDelete className="text-[18px]" />
+															<MdOutlineDelete className="text-[18px] text-red-600" />
 														</Button>
 													</Tooltip>
 												</div>
@@ -298,4 +270,4 @@ function BannerBoxListV1() {
 	);
 }
 
-export default BannerBoxListV1;
+export default BannerBoxListV2;

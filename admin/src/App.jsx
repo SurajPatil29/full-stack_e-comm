@@ -51,6 +51,9 @@ import HomeSliderBannersV2 from "./Pages/HomeSliderBannersV2/index.jsx";
 import BannerBoxListV1 from "./Pages/BannerBoxV1/index.jsx";
 import AddBannerBoxV1 from "./Pages/BannerBoxV1/AddBannerBoxV1.jsx";
 import EditBannerBoxV1 from "./Pages/BannerBoxV1/EditBannerBoxv1.jsx";
+import BannerBoxListV2 from "./Pages/BannerBoxV2/index.jsx";
+import AddBannerBoxV2 from "./Pages/BannerBoxV2/AddBannerBoxV2.jsx";
+import EditBannerBoxV2 from "./Pages/BannerBoxV2/EditBannerBoxv2.jsx";
 
 // add product dilog
 
@@ -231,6 +234,20 @@ function App() {
 				{
 					index: true,
 					element: <BannerBoxListV1 />,
+				},
+			],
+		},
+		{
+			path: "/bannerBoxV2/list",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <BannerBoxListV2 />,
 				},
 			],
 		},
@@ -437,6 +454,12 @@ function App() {
 					)}
 					{isOpenFullScreenPanel?.model === "Edit Banner BoxV1" && (
 						<EditBannerBoxV1 />
+					)}
+					{isOpenFullScreenPanel?.model === "Add Banner BoxV2" && (
+						<AddBannerBoxV2 />
+					)}
+					{isOpenFullScreenPanel?.model === "Edit Banner BoxV2" && (
+						<EditBannerBoxV2 />
 					)}
 				</Dialog>
 			</MyContext.Provider>

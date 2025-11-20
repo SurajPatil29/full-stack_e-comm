@@ -75,19 +75,16 @@ const SelectBox = ({
 	</div>
 );
 
-function AddBannerBoxV1() {
+function AddBannerBoxV2() {
 	const context = useContext(MyContext);
 
 	// ---------------- Form Fields ----------------
 	const [formFields, setFormFields] = useState({
 		images: "",
-		title: "",
-		price: "",
 		catId: "",
 		subCatId: "",
 		thirdsubCatId: "",
-		angle: "",
-		slide: "",
+		prodType: "",
 	});
 
 	// ---------------- Local States ----------------
@@ -97,8 +94,7 @@ function AddBannerBoxV1() {
 	const [catData, setCatData] = useState([]);
 	const [subCatData, setSubCatData] = useState([]);
 	const [thirdCatData, setThirdCatData] = useState([]);
-	const [angleData, setAngleData] = useState(["Right", "Left"]); //"Top", "Bottom"
-	const [slideData, setslideData] = useState(["vertical", "horizontal"]);
+	const [prodTypeData, setProdTypeData] = useState(["featured", "latest"]); //"Top", "Bottom"
 	// ---------------- Fetch Categories ----------------
 	const getCategoryData = async () => {
 		try {
@@ -165,7 +161,7 @@ function AddBannerBoxV1() {
 			setIsLoading(true);
 
 			await deleteImagefromCloudi(
-				"/api/bannerboxv1/remove-image",
+				"/api/bannerboxv2/remove-image",
 				formFields.images
 			);
 
@@ -187,7 +183,7 @@ function AddBannerBoxV1() {
 			setIsLoading(true);
 
 			const result = await postData(
-				"/api/bannerboxv1/createBanner",
+				"/api/bannerboxv2/createBanner",
 				formFields
 			);
 
@@ -196,13 +192,10 @@ function AddBannerBoxV1() {
 
 				setFormFields({
 					images: "",
-					title: "",
-					price: "",
 					catId: "",
 					subCatId: "",
 					thirdsubCatId: "",
-					angle: "",
-					slide: "",
+					prodType: "",
 				});
 
 				setTimeout(() => {
@@ -220,11 +213,7 @@ function AddBannerBoxV1() {
 	};
 
 	// ---------------- Form Validation ----------------
-	const isFormValid =
-		formFields.images &&
-		formFields.title.trim() &&
-		formFields.price.trim() &&
-		formFields.catId.trim();
+	const isFormValid = formFields.images && formFields.catId.trim();
 
 	// ========================================================================
 	// ------------------------- UI SECTION BELOW ------------------------------
@@ -236,26 +225,6 @@ function AddBannerBoxV1() {
 				<div className="max-h-[72vh] pr-4 overflow-y-scroll">
 					{/* Inputs */}
 					<div className="flex items-center gap-5 m-3">
-						<InputBox
-							label="Banner Title"
-							name="title"
-							value={formFields.title}
-							required
-							onChange={(e) =>
-								setFormFields({ ...formFields, title: e.target.value })
-							}
-						/>
-
-						<InputBox
-							label="Price"
-							name="price"
-							value={formFields.price}
-							required
-							onChange={(e) =>
-								setFormFields({ ...formFields, price: e.target.value })
-							}
-						/>
-
 						<SelectBox
 							label="Product Category"
 							value={formFields.catId}
@@ -279,32 +248,20 @@ function AddBannerBoxV1() {
 							options={thirdCatData}
 							disabled={!thirdCatData.length}
 						/>
-					</div>
-
-					<div className="flex items-center gap-5 m-3">
 						<SelectBox
-							label="Product Angle"
-							value={formFields.angle}
+							label="Product Type"
+							value={formFields.prodType}
 							onChange={(e) =>
-								setFormFields({ ...formFields, angle: e.target.value })
+								setFormFields({ ...formFields, prodType: e.target.value })
 							}
-							options={angleData}
-							disabled={!angleData.length}
-						/>
-						<SelectBox
-							label="Product Dlirection"
-							value={formFields.slide}
-							onChange={(e) =>
-								setFormFields({ ...formFields, slide: e.target.value })
-							}
-							options={slideData}
-							disabled={!slideData.length}
+							options={prodTypeData}
+							disabled={!prodTypeData.length}
 						/>
 					</div>
 
 					{/* Image Upload */}
 					<div className="col w-full px-5">
-						<h3 className="font-[500] text-[18px] mb-3">Banner Image V1</h3>
+						<h3 className="font-[500] text-[18px] mb-3">Banner Image V2</h3>
 
 						<div className="grid grid-cols-7 gap-4">
 							{formFields.images ? (
@@ -333,7 +290,7 @@ function AddBannerBoxV1() {
 									setImg={(url) =>
 										setFormFields((prev) => ({ ...prev, images: url }))
 									}
-									url="/api/bannerboxv1/upload"
+									url="/api/bannerboxv2/upload"
 								/>
 							)}
 						</div>
@@ -371,4 +328,4 @@ function AddBannerBoxV1() {
 	);
 }
 
-export default AddBannerBoxV1;
+export default AddBannerBoxV2;

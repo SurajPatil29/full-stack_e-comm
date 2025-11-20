@@ -24,6 +24,7 @@ import HomeSliderSkeleton from "../../componants/HomeSlider/HomeSliderSkeleton";
 import HomeCatSliderSkeleton from "../../componants/HomeCatSlider/HomeCatSliderSkeleton";
 import HomeBanner2Skeleton from "../../componants/HomeSliderV2/HomeBanner2Skeleton";
 import AddBannerSliderV2Skeleton from "../../componants/BannerBoxV2/AddBannerSliderV2Skeleton";
+import AddBannerSliderV1Skeleton from "../../componants/BannerBox/AddBannerBoxsliderV1Skeleton";
 
 function Home() {
 	const [value, setValue] = useState(null);
@@ -33,6 +34,7 @@ function Home() {
 	const [productsData, setProductsData] = useState([]);
 	const [FeaturedProductsData, setFeaturedProductsData] = useState([]);
 	const [bannerBoxV1Data, setBannerBoxV1Data] = useState([]);
+	const [bannerBoxV2Data, setBannerBoxV2Data] = useState([]);
 	const [isLodingProductItem, setIsLoadingProductItem] = useState(false);
 	const [isLatestProductLoading, setIsLatestProductLoading] = useState(false);
 	const [isBannerLoading, setIsBannerLoading] = useState(false);
@@ -40,6 +42,8 @@ function Home() {
 	const [isFeaturedProductLoading, setIsFeaturedProductLoading] =
 		useState(false);
 	const [isBannerBoxV1Loading, setIsBannerBoxV1Loading] = useState(false);
+	const [isBannerBoxV2Loading, setIsBannerBoxV2Loading] = useState(false);
+
 	const [isCatLoading, setIsCatLoading] = useState(false);
 	const [catData, setCatData] = useState([]);
 
@@ -64,18 +68,21 @@ function Home() {
 			setIsLatestProductLoading(true);
 			setIsFeaturedProductLoading(true);
 			setIsBannerBoxV1Loading(true);
+			setIsBannerBoxV2Loading(true);
 
 			try {
 				const [
 					bannersRes,
 					bannersV2Res,
 					bannerBaxV1Res,
+					bannerBoxV2Res,
 					latestRes,
 					featuredRes,
 				] = await Promise.all([
 					fetchDataFromApi("/api/banner/all"),
 					fetchDataFromApi("/api/bannerv2/all"),
 					fetchDataFromApi("/api/bannerboxv1/all"),
+					fetchDataFromApi("/api/bannerboxv2/all"),
 					fetchDataFromApi("/api/product/getAllProducts"),
 					fetchDataFromApi("/api/product/getAllFeaturedProduct"),
 				]);
@@ -108,6 +115,16 @@ function Home() {
 				}
 				setTimeout(() => {
 					setIsBannerBoxV1Loading(false);
+				}, 2000);
+
+				// BannerBoxV1
+				if (bannerBoxV2Res?.error === false) {
+					setBannerBoxV2Data(bannerBoxV2Res.data);
+				} else {
+					console.log("Banner API error:", bannerBoxV2Res?.message);
+				}
+				setTimeout(() => {
+					setIsBannerBoxV2Loading(false);
 				}, 2000);
 
 				// LATEST PRODUCTS ----------------
@@ -261,9 +278,11 @@ function Home() {
 							loading={false}
 						/>
 					) : (
-						<p className="text-center text-gray-500 ">
-							No popular products found
-						</p>
+						<div className="flex items-center justify-center h-[250px]">
+							<p className="text-center text-gray-500">
+								No popular products found
+							</p>
+						</div>
 					)}
 					{/* product slider */}
 				</div>
@@ -351,7 +370,21 @@ function Home() {
 					)}
 					{/* product slider */}
 
-					<AddBannerSlider items={3} />
+					{isBannerBoxV2Loading ? (
+						// show skeleton when loading
+						<AddBannerSliderV1Skeleton />
+					) : bannerBoxV2Data?.length > 0 ? (
+						// show slider when data present
+						<AddBannerSlider
+							items={3}
+							data={bannerBoxV2Data}
+							prodType="latest"
+						/>
+					) : (
+						// show empty fallback
+						<AddBannerSlider items={3} data={[]} prodType="latest" />
+					)}
+
 					{/* Ads slider */}
 				</div>
 			</section>
@@ -366,12 +399,23 @@ function Home() {
 					) : (
 						<div className="w-full h-[200px] flex items-center justify-center ">
 							<p className="text-[rgba(0,0,0,0.7)]  ">
-								No Latest Products Found!
+								No featured Products Found!
 							</p>
 						</div>
 					)}
 					{/* product slider */}
-					<AddBannerSlider items={4} />
+					{isBannerBoxV2Loading ? (
+						<AddBannerSliderV1Skeleton />
+					) : bannerBoxV2Data?.length > 0 ? (
+						<AddBannerSlider
+							items={4}
+							data={bannerBoxV2Data}
+							prodType="featured"
+						/>
+					) : (
+						<AddBannerSlider items={4} data={[]} prodType="featured" />
+					)}
+
 					{/* Ads slider */}
 				</div>
 			</section>

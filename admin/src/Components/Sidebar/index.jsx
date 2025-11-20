@@ -309,12 +309,12 @@ function Sidebar() {
 												Add Banner BoxV1
 											</Button>
 										</li>
-										{/* <li className="w-full">
-											<Link to="/homesliderV2/list">
+										<li className="w-full">
+											<Link to="/bannerBoxV2/list">
 												<Button className="!text-[rgba(0,0,0,0.8)] !capitalize !justify-start !w-full !text-[13px] !font-[500] !pl-9 flex gap-3 ">
 													{" "}
 													<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
-													Home BannerV2 List
+													Banner BoxV2 List
 												</Button>
 											</Link>
 										</li>
@@ -325,14 +325,14 @@ function Sidebar() {
 												onClick={() =>
 													context.setIsOpenFullScreenPanel({
 														open: true,
-														model: "Add BannerV2",
+														model: "Add Banner BoxV2",
 													})
 												}
 											>
 												<span className="block w-[5px] h-[5px] rounded-full bg-[rgba(0,0,0,0.3)] "></span>
-												Add Home BannerV2 Slide
+												Add Banner BoxV2
 											</Button>
-										</li> */}
+										</li>
 									</ul>
 								</Collapse>
 							</li>

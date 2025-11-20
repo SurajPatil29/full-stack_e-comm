@@ -5,8 +5,25 @@ import { Navigation } from "swiper/modules";
 import BannerBox from "../BannerBox";
 import PropTypes from "prop-types";
 
-function AddBannerSlider({ items, data }) {
+function AddBannerSlider({ items, data, prodType }) {
 	// in this componant i was create banner slider
+	if (!data || data.length === 0) {
+		return (
+			<div className="homeSliderV2 py-4">
+				<div className="w-full">
+					<div
+						className="h-[300px] sm:h-[380px] md:h-[420px]
+						bg-[#f3f3f3] rounded-md border border-gray-300
+						flex items-center justify-center"
+					>
+						<p className="text-gray-500 text-lg font-medium">
+							No Banners Available
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
 	return (
 		<div className="pt-10 px-8 w-full">
 			<Swiper
@@ -17,7 +34,16 @@ function AddBannerSlider({ items, data }) {
 				modules={[Navigation]}
 				className="smlBtn"
 			>
-				<SwiperSlide>
+				{data?.length !== 0 && data.length > 0
+					? data?.map((item, i) =>
+							prodType === item.prodType ? (
+								<SwiperSlide key={i}>
+									<BannerBox img={item.images[0]} link={"/"} />
+								</SwiperSlide>
+							) : null
+					  )
+					: null}
+				{/* <SwiperSlide>
 					<BannerBox
 						img={
 							"https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734699438/ban4_tthk9r.jpg"
@@ -60,7 +86,7 @@ function AddBannerSlider({ items, data }) {
 						}
 						link={"/"}
 					/>
-				</SwiperSlide>
+				</SwiperSlide> */}
 			</Swiper>
 		</div>
 	);

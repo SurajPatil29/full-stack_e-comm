@@ -17,6 +17,7 @@ import addressRouter from "./route/address.route.js";
 import bannerRouter from "./route/addBanner.route.js";
 import bannerRouterV2 from "./route/sliderBannerV2.route.js";
 import bannerBoxV1Route from "./route/bannerBoxV1.route.js";
+import bannerBoxV2Route from "./route/bannerBoxV2.route.js";
 
 // Load env variables
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/api/address", addressRouter);
 app.use("/api/banner", bannerRouter);
 app.use("/api/bannerv2", bannerRouterV2);
 app.use("/api/bannerboxv1", bannerBoxV1Route);
+app.use("/api/bannerboxv2", bannerBoxV2Route);
 
 // app.use("*", (req, res) => {
 // 	res.status(404).json({ success: false, message: "Route not found" });
