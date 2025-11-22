@@ -18,6 +18,7 @@ const InputBox = ({
 	value,
 	onChange,
 	type = "text",
+	readOnly = false,
 	required,
 }) => (
 	<div>
@@ -28,6 +29,7 @@ const InputBox = ({
 			value={value || ""}
 			required={required}
 			onChange={onChange}
+			readOnly={readOnly}
 			className="w-full h-[40px] border rounded-sm p-3 text-sm"
 		/>
 	</div>
@@ -39,10 +41,31 @@ function EditBannerV2() {
 		images: "",
 		title: "",
 		price: "",
+		productId: "",
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [product, setProduct] = useState({});
+
+	// FIXED USEEFFECT
+	useEffect(() => {
+		const fetchProduct = async () => {
+			try {
+				const res = await fetchDataFromApi(
+					`/api/product/${formFields.productId}`
+				);
+				if (res?.error === false) {
+					setProduct(res.data);
+				}
+			} catch (error) {
+				console.log(error);
+				setMessage("❌ Failed to get product details. Try again.");
+			}
+		};
+
+		fetchProduct();
+	}, []);
 
 	const id = context.isOpenFullScreenPanel.id;
 
@@ -62,6 +85,7 @@ function EditBannerV2() {
 					images: banner.images?.[0] || "",
 					title: String(banner.title || ""),
 					price: String(banner.price || ""),
+					productId: String(banner.productId || ""),
 				});
 			}
 		};
@@ -158,6 +182,14 @@ function EditBannerV2() {
 							onChange={(e) =>
 								setFormFields({ ...formFields, price: e.target.value })
 							}
+							required
+						/>
+
+						<InputBox
+							label="Product Name"
+							name="Product name"
+							value={product.name}
+							readOnly
 							required
 						/>
 					</div>

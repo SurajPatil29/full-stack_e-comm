@@ -46,7 +46,7 @@ export async function uploadImage(req, res, next) {
 // ✅ Create Banner (single or multiple images)
 export async function createBanner(req, res, next) {
 	try {
-		const { images, title, price } = req.body;
+		const { images, title, price, productId } = req.body;
 
 		if (!images) {
 			return sendError(res, "Images are required", 422);
@@ -56,6 +56,7 @@ export async function createBanner(req, res, next) {
 			images: images,
 			title: title || "BannerV2",
 			price: price,
+			productId: productId,
 		});
 
 		await banner.save();

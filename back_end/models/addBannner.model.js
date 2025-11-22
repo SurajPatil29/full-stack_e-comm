@@ -10,6 +10,11 @@ const addBannerSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 		},
+		productId: {
+			type: mongoose.Schema.Types.ObjectId, // <── Better than String
+			ref: "Product", // <── Reference your product model
+			required: true,
+		},
 		isActive: {
 			type: Boolean,
 			default: true, // ✅ can hide/show banners without deleting

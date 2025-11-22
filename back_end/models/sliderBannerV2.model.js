@@ -13,6 +13,11 @@ const sliderBannerV2 = new mongoose.Schema(
 		price: {
 			type: Number,
 		},
+		productId: {
+			type: mongoose.Schema.Types.ObjectId, // <── Better than String
+			ref: "Product", // <── Reference your product model
+			required: true,
+		},
 		isActive: {
 			type: Boolean,
 			default: true, // ✅ can hide/show banners without deleting

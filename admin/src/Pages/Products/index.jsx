@@ -716,6 +716,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { AiOutlineEdit } from "react-icons/ai";
+import { RiImageAddLine } from "react-icons/ri";
 import { FaRegEye } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { PiExport } from "react-icons/pi";
@@ -739,6 +740,8 @@ const columns = [
 	{ id: "subcategory", label: "SUB CATEGORY", minWidth: 150 },
 	{ id: "price", label: "PRICE", minWidth: 150 },
 	{ id: "sales", label: "SALES", minWidth: 150 },
+	{ id: "addBanner", label: "Add Banner", minWidth: 150 },
+
 	{ id: "action", label: "ACTION", minWidth: 150 },
 ];
 
@@ -1136,6 +1139,39 @@ function Products() {
 													{product.sale || 0}{" "}
 													<span className="font-[600]">sale</span>
 													<Progress value={product.sale} type="warning" />
+												</div>
+											</TableCell>
+
+											<TableCell>
+												<div className="flex items-center gap-2">
+													<Tooltip title="Add BannerV1" placement="top">
+														<Button
+															className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
+															onClick={() =>
+																context.setIsOpenFullScreenPanel({
+																	open: true,
+																	model: "Add Home Slide",
+																	id: product._id,
+																})
+															}
+														>
+															<RiImageAddLine className="text-[18px]" />
+														</Button>
+													</Tooltip>
+													<Tooltip title="Add BannerV2" placement="top">
+														<Button
+															className="!w-[35px] !h-[35px] !rounded-full bg-[#f1f1f1] border hover:bg-gray-100"
+															onClick={() =>
+																context.setIsOpenFullScreenPanel({
+																	open: true,
+																	model: "Add BannerV2",
+																	id: product._id,
+																})
+															}
+														>
+															<RiImageAddLine className="text-[18px]" />
+														</Button>
+													</Tooltip>
 												</div>
 											</TableCell>
 

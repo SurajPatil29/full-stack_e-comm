@@ -8,7 +8,12 @@ import { Button } from "@mui/material";
 import { useContext } from "react";
 import MyContext from "../../context/MyContext";
 import { useState } from "react";
-import { deleteImagefromCloudi, postData } from "../../utils/api";
+import {
+	deleteImagefromCloudi,
+	fetchDataFromApi,
+	postData,
+} from "../../utils/api";
+import { useEffect } from "react";
 
 // ✅ Reusable Input
 const InputBox = ({
@@ -18,6 +23,7 @@ const InputBox = ({
 	onChange,
 	type = "text",
 	required,
+	readOnly = false, // ADD THIS
 }) => (
 	<div>
 		<h3 className="font-[700] text-[18px] mb-1">{label}</h3>
@@ -27,7 +33,10 @@ const InputBox = ({
 			value={value || ""}
 			required={required}
 			onChange={onChange}
-			className="w-full h-[40px] border rounded-sm p-3 text-sm"
+			readOnly={readOnly} // AND THIS
+			className={`w-full h-[40px] border rounded-sm p-3 text-sm ${
+				readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+			}`}
 		/>
 	</div>
 );
@@ -38,10 +47,50 @@ function AddHomeSliderV2() {
 		images: "",
 		title: "",
 		price: "",
+		productId: context.isOpenFullScreenPanel.id || "",
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [product, setProduct] = useState({});
+	const [allProducts, setAllProducts] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [showDropdown, setShowDropdown] = useState(false);
+
+	// FIXED USEEFFECT
+	useEffect(() => {
+		if (formFields.productId) {
+			fetchProduct();
+		} else {
+			fetchAllProducts();
+		}
+	}, [formFields.productId]);
+
+	const fetchAllProducts = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/product/getAllProducts");
+			console.log(res);
+			if (!res.error) {
+				setAllProducts(res.products);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const fetchProduct = async () => {
+		try {
+			const res = await fetchDataFromApi(
+				`/api/product/${formFields.productId}`
+			);
+			if (res?.error === false) {
+				setProduct(res.data);
+			}
+		} catch (error) {
+			console.log(error);
+			setMessage("❌ Failed to get product details. Try again.");
+		}
+	};
 
 	const handleDeleteBannerImg = async () => {
 		if (!formFields.images) return;
@@ -67,7 +116,12 @@ function AddHomeSliderV2() {
 			const result = await postData(`/api/bannerv2/createBanner`, formFields);
 			if (result.success) {
 				setMessage("✅ Banner added successfully");
-				setFormFields({ name: "", images: "" });
+				setFormFields({
+					images: "",
+					title: "",
+					price: "",
+					productId: "",
+				});
 				setTimeout(() => {
 					context.setIsOpenFullScreenPanel({
 						open: false,
@@ -105,6 +159,56 @@ function AddHomeSliderV2() {
 							}
 							required
 						/>
+						{formFields.productId ? (
+							<InputBox label="Product Name" value={product.name} readOnly />
+						) : (
+							<div className="w-full relative">
+								<h3 className="font-[700] text-[18px] mb-1">Select Product</h3>
+
+								<input
+									type="text"
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
+									onFocus={() => setShowDropdown(true)}
+									onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+									placeholder="Search product..."
+									className="w-full h-[40px] border rounded-sm p-3 text-sm"
+								/>
+
+								{/* DROPDOWN LIST */}
+								{showDropdown && (
+									<div className="absolute left-0 top-[75px] w-full max-h-[250px] overflow-y-auto bg-white shadow-lg z-50 border rounded-md">
+										{allProducts
+											?.filter((p) =>
+												p?.name
+													?.toLowerCase()
+													.includes(searchTerm.toLowerCase())
+											)
+
+											.map((p) => (
+												<div
+													key={p._id}
+													className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+													onClick={() => {
+														setFormFields((prev) => ({
+															...prev,
+															productId: p._id,
+														}));
+														setProduct(p);
+														setShowDropdown(false);
+													}}
+												>
+													<img
+														src={p.images?.[0]}
+														className="w-[40px] h-[40px] object-cover rounded"
+													/>
+													<p>{p.name}</p>
+												</div>
+											))}
+									</div>
+								)}
+							</div>
+						)}
 					</div>
 					<div className="col w-full px-5">
 						<h3 className="font-[700] text-[18px] mb-3">Banner Images v2</h3>

@@ -11,13 +11,58 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { Button } from "@mui/material";
 
+// Input Component
+const InputBox = ({
+	label,
+	name,
+	value,
+	onChange,
+	type = "text",
+	required,
+	readOnly = false,
+}) => (
+	<div>
+		<h3 className="font-[700] text-[18px] mb-1">{label}</h3>
+		<input
+			type={type}
+			name={name}
+			value={value || ""}
+			required={required}
+			onChange={onChange}
+			readOnly={readOnly}
+			className="w-full h-[40px] border rounded-sm p-3 text-sm"
+		/>
+	</div>
+);
+
 function EditBanner() {
 	const context = useContext(MyContext);
 	const [formFields, setFormFields] = useState({
 		image: "",
+		productId: "",
 	});
 	const [isLoading, setIsLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [product, setProduct] = useState({});
+
+	// FIXED USEEFFECT
+	useEffect(() => {
+		const fetchProduct = async () => {
+			try {
+				const res = await fetchDataFromApi(
+					`/api/product/${formFields.productId}`
+				);
+				if (res?.error === false) {
+					setProduct(res.data);
+				}
+			} catch (error) {
+				console.log(error);
+				setMessage("❌ Failed to get product details. Try again.");
+			}
+		};
+
+		fetchProduct();
+	}, []);
 
 	// ✅ Fetch existing banner details
 	useEffect(() => {
@@ -29,7 +74,7 @@ function EditBanner() {
 				const banner = res.data;
 				// console.log(banner.images);
 				setFormFields({
-					image: banner.images || "",
+					image: banner.images[0] || "",
 				});
 			}
 		});
@@ -96,6 +141,13 @@ function EditBanner() {
 				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll ">
 					{/* ✅ Banner Image */}
 					<div className="px-5">
+						<InputBox
+							label="Product Name"
+							name="productName"
+							value={product.name}
+							required
+							readOnly
+						/>
 						<h3 className="font-[700] text-[18px] mb-3">Banner Image</h3>
 						<div className="grid grid-cols-7 gap-4">
 							{typeof formFields.image === "string" &&
