@@ -54,6 +54,9 @@ import EditBannerBoxV1 from "./Pages/BannerBoxV1/EditBannerBoxv1.jsx";
 import BannerBoxListV2 from "./Pages/BannerBoxV2/index.jsx";
 import AddBannerBoxV2 from "./Pages/BannerBoxV2/AddBannerBoxV2.jsx";
 import EditBannerBoxV2 from "./Pages/BannerBoxV2/EditBannerBoxv2.jsx";
+import AddBlog from "./Pages/Blog/AddBlog.jsx";
+import EditBlog from "./Pages/Blog/EditBlog.jsx";
+import Blog from "./Pages/Blog/index.jsx";
 
 // add product dilog
 
@@ -248,6 +251,20 @@ function App() {
 				{
 					index: true,
 					element: <BannerBoxListV2 />,
+				},
+			],
+		},
+		{
+			path: "/blog/list",
+			element: (
+				<PrivateRoutes>
+					<MainLayout />
+				</PrivateRoutes>
+			),
+			children: [
+				{
+					index: true,
+					element: <Blog />,
 				},
 			],
 		},
@@ -461,6 +478,8 @@ function App() {
 					{isOpenFullScreenPanel?.model === "Edit Banner BoxV2" && (
 						<EditBannerBoxV2 />
 					)}
+					{isOpenFullScreenPanel?.model === "Add Blog" && <AddBlog />}
+					{isOpenFullScreenPanel?.model === "Edit Blog" && <EditBlog />}
 				</Dialog>
 			</MyContext.Provider>
 			<Toaster />

@@ -13,7 +13,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-import { BlogItem } from "../../componants/BlogItem/index";
+// import { BlogItem } from "../../componants/BlogItem/index";
 import HomeBanner2 from "../../componants/HomeSliderV2";
 import BannerBoxV2 from "../../componants/BannerBoxV2";
 import AddBannerSliderV2 from "../../componants/AddBannerSliderv2";
@@ -25,6 +25,7 @@ import HomeCatSliderSkeleton from "../../componants/HomeCatSlider/HomeCatSliderS
 import HomeBanner2Skeleton from "../../componants/HomeSliderV2/HomeBanner2Skeleton";
 import AddBannerSliderV2Skeleton from "../../componants/BannerBoxV2/AddBannerSliderV2Skeleton";
 import AddBannerSliderV1Skeleton from "../../componants/BannerBox/AddBannerBoxsliderV1Skeleton";
+import Blog from "../../componants/Blog/index";
 
 function Home() {
 	const [value, setValue] = useState(null);
@@ -35,6 +36,8 @@ function Home() {
 	const [FeaturedProductsData, setFeaturedProductsData] = useState([]);
 	const [bannerBoxV1Data, setBannerBoxV1Data] = useState([]);
 	const [bannerBoxV2Data, setBannerBoxV2Data] = useState([]);
+	const [blogData, setBlogData] = useState([]);
+
 	const [isLodingProductItem, setIsLoadingProductItem] = useState(false);
 	const [isLatestProductLoading, setIsLatestProductLoading] = useState(false);
 	const [isBannerLoading, setIsBannerLoading] = useState(false);
@@ -43,6 +46,7 @@ function Home() {
 		useState(false);
 	const [isBannerBoxV1Loading, setIsBannerBoxV1Loading] = useState(false);
 	const [isBannerBoxV2Loading, setIsBannerBoxV2Loading] = useState(false);
+	const [isBlogLoading, setIsBlogLoading] = useState(false);
 
 	const [isCatLoading, setIsCatLoading] = useState(false);
 	const [catData, setCatData] = useState([]);
@@ -69,6 +73,7 @@ function Home() {
 			setIsFeaturedProductLoading(true);
 			setIsBannerBoxV1Loading(true);
 			setIsBannerBoxV2Loading(true);
+			setIsBlogLoading(true);
 
 			try {
 				const [
@@ -76,6 +81,7 @@ function Home() {
 					bannersV2Res,
 					bannerBaxV1Res,
 					bannerBoxV2Res,
+					blogRes,
 					latestRes,
 					featuredRes,
 				] = await Promise.all([
@@ -83,6 +89,7 @@ function Home() {
 					fetchDataFromApi("/api/bannerv2/all"),
 					fetchDataFromApi("/api/bannerboxv1/all"),
 					fetchDataFromApi("/api/bannerboxv2/all"),
+					fetchDataFromApi("/api/Blog/all"),
 					fetchDataFromApi("/api/product/getAllProducts"),
 					fetchDataFromApi("/api/product/getAllFeaturedProduct"),
 				]);
@@ -125,6 +132,16 @@ function Home() {
 				}
 				setTimeout(() => {
 					setIsBannerBoxV2Loading(false);
+				}, 2000);
+
+				// Blog
+				if (blogRes?.error === false) {
+					setBlogData(blogRes.data);
+				} else {
+					console.log("Banner API error:", blogRes?.message);
+				}
+				setTimeout(() => {
+					setIsBlogLoading(false);
 				}, 2000);
 
 				// LATEST PRODUCTS ----------------
@@ -422,40 +439,15 @@ function Home() {
 
 			<section className="py-4 pt-0 pb-8  bg-white blogSection ">
 				{/* Blog slider */}
-				<div className="py-4 container ">
-					<h2 className="text-[20px] font-[600] mb-4">From The Blog</h2>
-					<Swiper
-						loop={true}
-						slidesPerView={4}
-						// rewind={true}
-						spaceBetween={40}
-						navigation={true}
-						modules={[Navigation]}
-						className="smlBtn"
-					>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-						<SwiperSlide>
-							<BlogItem />
-						</SwiperSlide>
-					</Swiper>
-				</div>
+				{isBlogLoading ? (
+					<Blog items={4} loading={true} />
+				) : blogData?.length > 0 ? (
+					<Blog items={4} data={blogData} loading={false} />
+				) : (
+					<div className="flex items-center justify-center h-[250px]">
+						<p className="text-center text-gray-500">No blogs found</p>
+					</div>
+				)}
 			</section>
 		</>
 	);

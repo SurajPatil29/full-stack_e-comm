@@ -12,6 +12,7 @@ import {
 	postData,
 } from "../../utils/api";
 import MyContext from "../../context/MyContext";
+import Editor from "react-simple-wysiwyg";
 
 // Reusable Input
 const InputBox = ({
@@ -368,12 +369,12 @@ function AddProduct() {
 					{/* Product Description */}
 					<div className="mb-3">
 						<h3 className="text-[14px] font-[500] mb-1">Product Description</h3>
-						<textarea
-							className="w-full h-[100px] border rounded-sm p-3 text-sm"
-							name="description"
+
+						<Editor
 							value={formFields.description}
-							onChange={handleInputChange}
-							required
+							onChange={(e) =>
+								setFormFields({ ...formFields, description: e.target.value })
+							}
 						/>
 					</div>
 

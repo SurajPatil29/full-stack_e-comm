@@ -191,9 +191,10 @@ function ProductDetails() {
 								<i className="fa-solid fa-circle-info text-blue-500"></i>
 								Description
 							</h3>
-							<p className="text-gray-700 leading-relaxed">
-								{product.description}
-							</p>
+							<div
+								className="description-content text-gray-700 leading-relaxed"
+								dangerouslySetInnerHTML={{ __html: product.description }}
+							></div>
 						</div>
 					)}
 

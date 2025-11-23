@@ -154,3 +154,23 @@ button .MuiCircularProgress-root {
 	border: 1px solid rgba(0, 0, 0, 0.1) !important;
 	color: rgba(0, 0, 0, 0.7);
 }
+
+/* this use for deiscription which set used to rectsimple-wysiwyg */
+.description-content p {
+	margin-bottom: 8px;
+}
+
+.description-content ul {
+	list-style: disc;
+	padding-left: 20px;
+}
+
+.description-content ol {
+	list-style: decimal;
+	padding-left: 20px;
+}
+.rsw-editor {
+	min-height: 200px !important;
+	background: #fff !important;
+}
+/* this use for deiscription which set used to rectsimple-wysiwyg */
