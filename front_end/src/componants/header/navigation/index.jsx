@@ -25,7 +25,7 @@ function Navigation() {
 				{third.map((item) => (
 					<li key={item._id} className="list-none w-full">
 						<Link
-							//  to={`/products/${item._id}`}
+							to={`/productListing/${item._id}`}
 							className="block px-4 py-2 hover:bg-gray-100 text-left"
 						>
 							{item.name}
@@ -41,7 +41,7 @@ function Navigation() {
 			{second.map((item) => (
 				<li key={item._id} className="list-none w-full relative">
 					<Link
-						// to={`/products/${item._id}`}
+						to={`/productListing/${item._id}`}
 						className="block px-4 py-2 hover:bg-gray-100 text-left"
 					>
 						{item.name}
@@ -58,7 +58,7 @@ function Navigation() {
 		catData.map((cat) => (
 			<li key={cat._id} className="list-none relative">
 				<Link
-					// to={`/products/${cat._id}`}
+					to={`/productListing/${cat._id}`}
 					className="link hover-text-[#ff5252] transition text-[14px] font-[500] !py-4 "
 				>
 					<Button

@@ -8,6 +8,7 @@ import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
 import MyContext from "../../context/MyContext";
+import { HiOutlineShoppingCart } from "react-icons/hi";
 
 function ProductItem({ item }) {
 	// this componant use for shocase product info on home page
@@ -45,7 +46,7 @@ function ProductItem({ item }) {
 
 				{/* DISCOUNT BADGE */}
 				{discount > 0 && (
-					<span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
+					<span className="discount flex items-center absolute top-[10px] left-[10px] z-auto bg-[#ff5151] text-white rounded-lg p-1 text-[10px] font-[500]">
 						{discount}%
 					</span>
 				)}
@@ -90,7 +91,7 @@ function ProductItem({ item }) {
 
 				<h2 className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1">
 					<Link to={`/productDetails/${item?._id}`} className="link">
-						{item?.name?.substr(0, 40) + "..."}
+						{item?.name?.substr(0, 50) + "..."}
 					</Link>
 				</h2>
 
@@ -112,6 +113,12 @@ function ProductItem({ item }) {
 					<span className="newPrice text-[#ff5151] text-[15px] font-[600]">
 						₹{newPrice.toLocaleString()}
 					</span>
+				</div>
+				<div className="mt-3 text-center">
+					<Button className="btn-org gap-1">
+						{" "}
+						<HiOutlineShoppingCart className="text-[20px] " /> Add to Cart
+					</Button>
 				</div>
 			</div>
 		</div>

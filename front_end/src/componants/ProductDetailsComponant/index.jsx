@@ -64,8 +64,10 @@ function ProductDetailsComponant({ item }) {
 			</div>
 
 			{/* DESCRIPTION */}
-			<p className="text-[14px] pr-10 my-4">{description}</p>
-
+			<div
+				className="description-content text-gray-700 leading-relaxed"
+				dangerouslySetInnerHTML={{ __html: description }}
+			></div>
 			{/* RAM OPTIONS */}
 			{productRam.length > 0 && (
 				<div className="flex items-center gap-3 mb-4">

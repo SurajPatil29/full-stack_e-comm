@@ -55,7 +55,7 @@ function Header() {
 	};
 
 	return (
-		<header className="bg-white sticky -top-[130px] z-50 shadow-[0px_1px_5px_#0000001a]  ">
+		<header className="bg-white sticky -top-[50px] z-50 shadow-[0px_1px_5px_#0000001a]  ">
 			{/* header include top strim line, mid search line, bottom navigation line */}
 			<div className="top-strim py-2 mt-1 border-t-[1px] border-gray-300 border-b-[1px]">
 				{/* top strim line */}
