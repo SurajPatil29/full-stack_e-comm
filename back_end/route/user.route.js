@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
 	forgotPasswordController,
+	googleLoginController,
 	loginUserController,
 	logoutController,
 	refreshToken,
@@ -19,6 +20,7 @@ import upload from "../middlewares/multer.js";
 const userRouter = Router();
 userRouter.post("/register", registerUserController);
 userRouter.post("/verifyEmail", verifyEmailsController);
+userRouter.post("/googleLogin", googleLoginController);
 userRouter.post("/login", loginUserController);
 userRouter.get("/logout", auth, logoutController);
 userRouter.post(

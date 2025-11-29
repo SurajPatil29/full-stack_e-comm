@@ -61,6 +61,7 @@ function Profile() {
 	const [addAddress, setAddAddress] = useState(false);
 	const [showMore, setShowMore] = useState(false);
 	const address = context?.userData?.address_details;
+	const isGoogleLogIn = context?.userData?.signUpWithGoogle || false;
 
 	// Load user details
 	useEffect(() => {
@@ -226,13 +227,15 @@ function Profile() {
 				<div className="flex justify-between items-center">
 					<h2 className="pb-3">My Profile</h2>
 					<div className="gap-3">
-						<Button
-							className="!text-[#ff5252] !text-[13px] !hover:underline cursor-pointer capitalize gap-1"
-							onClick={() => setChangePass(!changePass)}
-						>
-							<RiExchange2Line />
-							Change Password
-						</Button>
+						{!isGoogleLogIn && (
+							<Button
+								className="!text-[#ff5252] !text-[13px] !hover:underline cursor-pointer capitalize gap-1"
+								onClick={() => setChangePass(!changePass)}
+							>
+								<RiExchange2Line />
+								Change Password
+							</Button>
+						)}
 
 						<Button
 							className="!text-[#ff5252] !text-[13px] !hover:underline cursor-pointer capitalize gap-1"

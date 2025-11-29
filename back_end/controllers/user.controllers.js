@@ -30,12 +30,14 @@ export async function registerUserController(req, res, next) {
 		});
 
 		// ✅ Early exit if user exists and is verified
-		if (user && user.verify_email) {
-			return sendError(
-				res,
-				"This email is already registered for this role.",
-				400
-			);
+		if (user) {
+			if (existing.signUpWithGoogle) {
+				return sendError(
+					res,
+					"This email is registered using Google Sign-In. Please continue with Google login.",
+					400
+				);
+			}
 		}
 
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -175,6 +177,14 @@ export async function loginUserController(req, res, next) {
 			return sendError(res, "Invalid email or password", 400);
 		}
 
+		if (user && user.signUpWithGoogle) {
+			return sendError(
+				res,
+				"This account is registered using google account. Please login normally.",
+				400
+			);
+		}
+
 		if (user.status !== "Active") {
 			return sendError(res, "Your account is inactive. Contact admin.", 403);
 		}
@@ -214,6 +224,94 @@ export async function loginUserController(req, res, next) {
 				name: user.name,
 				email: user.email,
 				role: user.role,
+			},
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function googleLoginController(req, res, next) {
+	try {
+		const { name, email, avatar, role, mobile } = req.body;
+
+		if (!email || !role) {
+			return sendError(res, "Email and role are required", 400);
+		}
+
+		const normalizedEmail = email.toLowerCase().trim();
+
+		let user = await UserModel.findOne({ email: normalizedEmail, role });
+
+		// ------------------------------------------------------------------------------------
+		// 1️⃣ USER EXISTS → LOGIN FLOW
+		// ------------------------------------------------------------------------------------
+		if (user) {
+			if (user && !user.signUpWithGoogle) {
+				return sendError(
+					res,
+					"This account is registered using email & password. Please login normally.",
+					400
+				);
+			}
+
+			if (user.status !== "Active") {
+				return sendError(res, "Your account is inactive. Contact admin.", 403);
+			}
+
+			const accessToken = generatedAccessToken(user._id);
+			const refreshToken = await generatedRefreshToken(user._id);
+
+			await UserModel.findByIdAndUpdate(user._id, {
+				last_login_date: new Date(),
+				refresh_token: refreshToken,
+			});
+
+			return sendSuccess(res, "Google Login Successful", {
+				accessToken,
+				refreshToken,
+				user: {
+					id: user._id,
+					email: user.email,
+					name: user.name,
+					role: user.role,
+					avatar: user.avatar,
+				},
+			});
+		}
+
+		// ------------------------------------------------------------------------------------
+		// 2️⃣ NEW GOOGLE USER → CREATE ACCOUNT
+		// ------------------------------------------------------------------------------------
+
+		const newUser = await UserModel.create({
+			name,
+			email: normalizedEmail,
+			role,
+			avatar,
+			mobile,
+			password: "", // not needed for google users
+			verify_email: true,
+			signUpWithGoogle: true,
+		});
+
+		const accessToken = generatedAccessToken(newUser._id);
+		const refreshToken = await generatedRefreshToken(newUser._id);
+
+		await UserModel.findByIdAndUpdate(newUser._id, {
+			last_login_date: new Date(),
+			refresh_token: refreshToken,
+		});
+
+		return sendSuccess(res, "Google Sign-Up Successful", {
+			accessToken,
+			refreshToken,
+			user: {
+				id: newUser._id,
+				email: newUser.email,
+				name: newUser.name,
+				role: newUser.role,
+				avatar: newUser.avatar,
 			},
 		});
 	} catch (error) {
@@ -573,7 +671,7 @@ export async function resetPassword(req, res, next) {
 		const hashedPassword = await bcryptjs.hash(newPassword, salt);
 
 		user.password = hashedPassword;
-		user.access_token = "";
+		// user.access_token = "";
 		user.refresh_token = "";
 		await user.save();
 

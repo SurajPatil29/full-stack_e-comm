@@ -35,7 +35,12 @@ app.use(
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use(helmet());
+app.use(
+	helmet({
+		crossOriginOpenerPolicy: false,
+		crossOriginEmbedderPolicy: false,
+	})
+);
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Default route

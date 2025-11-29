@@ -17,8 +17,11 @@ const userSchema = mongoose.Schema(
 		},
 		password: {
 			type: String,
-			required: [true, "Provide Password"],
+			required: function () {
+				return !this.signUpWithGoogle;
+			},
 		},
+
 		avatar: {
 			type: String,
 			default: null,
@@ -72,6 +75,10 @@ const userSchema = mongoose.Schema(
 			type: String,
 			enum: ["ADMIN", "USER"],
 			default: "USER",
+		},
+		signUpWithGoogle: {
+			type: Boolean,
+			default: false,
 		},
 		// Optional soft-delete flag
 		isDeleted: {

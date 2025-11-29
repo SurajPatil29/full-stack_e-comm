@@ -7,6 +7,17 @@ import { FcGoogle } from "react-icons/fc";
 import { postData } from "../../utils/api";
 import MyContext from "../../context/MyContext";
 
+import { firebaseApp } from "../../firebase/Firebase";
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	signInWithRedirect,
+} from "firebase/auth";
+
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
 function Login() {
 	const [isLoading, setIsLoading] = useState(false);
 	const context = useContext(MyContext);
@@ -98,6 +109,47 @@ function Login() {
 			}
 		});
 	};
+
+	const authWithGoogle = async () => {
+		try {
+			const result = await signInWithPopup(auth, googleProvider);
+			const user = result.user;
+
+			// Build a safe payload
+			const payload = {
+				name: user.displayName || "Unknown User",
+				email: user.email,
+				avatar: user.photoURL || "",
+				mobile: user.phoneNumber || "", // fallback priority
+				role: "USER",
+				signUpWithGoogle: true,
+			};
+
+			// Call backend Google login endpoint
+			const res = await postData("/api/user/googleLogin", payload);
+
+			if (res.error) {
+				// ❌ Google login not allowed → sign out from Firebase immediately
+				await auth.signOut();
+				context.openAlertBox("error", res.message);
+				return;
+			}
+
+			// ✔ Login success
+			context.openAlertBox("success", res.message);
+
+			localStorage.setItem("accessToken", res.accessToken);
+			localStorage.setItem("refreshToken", res.refreshToken);
+			localStorage.setItem("isGoogleLogin", "true");
+
+			context.setIsLogin(true);
+
+			history("/");
+		} catch (error) {
+			console.log("Google Auth Error:", error);
+			context.openAlertBox("error", "Google authentication failed");
+		}
+	};
 	return (
 		<section className="section py-10">
 			<div className="container">
@@ -181,7 +233,7 @@ function Login() {
 							<Button
 								className="btn-org btn-lg w-full flex gap-3"
 								type="submit"
-								disabled={!valideValue}
+								// disabled={!valideValue}
 							>
 								{isLoading === true ? (
 									<CircularProgress color="inherit" />
@@ -203,7 +255,10 @@ function Login() {
 
 						<p className="text-center">Or continue with social account</p>
 
-						<Button className="flex w-full !bg-[#f1f1f1] btn-lg !text-black gap-3">
+						<Button
+							className="flex w-full !bg-[#f1f1f1] btn-lg !text-black gap-3"
+							onClick={authWithGoogle}
+						>
 							<FcGoogle className="text-[22px]" />
 							Login with Google
 						</Button>

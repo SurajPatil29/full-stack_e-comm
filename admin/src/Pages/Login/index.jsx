@@ -16,22 +16,22 @@ import { MdVisibilityOff } from "react-icons/md";
 import { postData } from "../../utils/api";
 import MyContext from "../../context/MyContext";
 
+import { firebaseApp } from "../../firebase/Firebase";
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	signInWithRedirect,
+} from "firebase/auth";
+
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
 function Login() {
 	//google state
 	const [loadingGoogle, setLoadingGoogle] = useState(false);
 
-	function handleClickGoogle() {
-		setLoadingGoogle(true);
-	}
 	//google state
-
-	//fb state
-	const [loadingfb, setLoadingfb] = useState(false);
-
-	function handleClickfb() {
-		setLoadingfb(true);
-	}
-	//fb state
 
 	// password
 	const [isPasswordShow, setIsPasswordShow] = useState(false);
@@ -93,6 +93,50 @@ function Login() {
 		});
 	};
 
+	const authWithGoogle = async () => {
+		try {
+			setLoadingGoogle(true);
+			const result = await signInWithPopup(auth, googleProvider);
+			const user = result.user;
+
+			// Build a safe payload
+			const payload = {
+				name: user.displayName || "Unknown User",
+				email: user.email,
+				avatar: user.photoURL || "",
+				mobile: user.phoneNumber || "", // fallback priority
+				role: "ADMIN",
+				signUpWithGoogle: true,
+			};
+
+			// Call backend Google login endpoint
+			const res = await postData("/api/user/googleLogin", payload);
+
+			if (res.error) {
+				// ❌ Google login not allowed → sign out from Firebase immediately
+				await auth.signOut();
+				context.openAlertBox("error", res.message);
+				return;
+			}
+
+			// ✔ Login success
+			context.openAlertBox("success", res.message);
+
+			localStorage.setItem("accessToken", res.accessToken);
+			localStorage.setItem("refreshToken", res.refreshToken);
+			localStorage.setItem("isGoogleLogin", "true");
+
+			context.setIsLogin(true);
+			setLoadingGoogle(false);
+
+			history("/");
+		} catch (error) {
+			console.log("Google Auth Error:", error);
+			context.openAlertBox("error", "Google authentication failed");
+			setLoadingGoogle(false);
+		}
+	};
+
 	return (
 		<section className="  w-full ">
 			<header className="w-full fixed top-0 left-0  px-4 py-3 flex items-center justify-between ">
@@ -151,7 +195,7 @@ function Login() {
 				<div className="flex items-center justify-around w-full mt-5 gap-4 ">
 					<Button
 						size="small"
-						onClick={handleClickGoogle}
+						onClick={authWithGoogle}
 						endIcon={<FcGoogle size={24} />}
 						loading={loadingGoogle}
 						loadingPosition="end"
@@ -159,18 +203,6 @@ function Login() {
 						className="!bg-none !py-2 !text-[15px] !capitalize !px-5 !text-[rgba(0,0,0,0.7)]"
 					>
 						SignIn with Google
-					</Button>
-
-					<Button
-						size="small"
-						onClick={handleClickfb}
-						endIcon={<FaFacebookF size={24} color="blue" />}
-						loading={loadingfb}
-						loadingPosition="end"
-						variant="outlined"
-						className="!bg-none !py-2 !text-[15px] !capitalize !px-5 !text-[rgba(0,0,0,0.7)]"
-					>
-						SignIn with Facebook
 					</Button>
 				</div>
 

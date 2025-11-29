@@ -27,12 +27,15 @@ function Sidebar() {
 	const history = useNavigate();
 
 	const logOut = () => {
-		// setAnchorMyAcc(null);
-		fetchDataFromApi("/api/user/logout").then((res) => {
+		// console.log("logout");
+		fetchDataFromApi("/api/user/logout").then(async (res) => {
 			context.setIsLogin(false);
 			localStorage.removeItem("accessToken");
 			localStorage.removeItem("refreshToken");
 			localStorage.removeItem("userId");
+
+			localStorage.removeItem("isGoogleLogin");
+
 			history("/");
 		});
 	};

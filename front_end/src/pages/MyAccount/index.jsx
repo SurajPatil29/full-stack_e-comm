@@ -48,6 +48,7 @@ function MyAccount() {
 
 	const [showMore, setShowMore] = useState(false);
 	const address = context?.userData?.address_details;
+	const isGoogleLogIn = context?.userData?.signUpWithGoogle || false;
 
 	useEffect(() => {
 		if (context.userData) {
@@ -162,12 +163,14 @@ function MyAccount() {
 					<div className="card bg-white p-5 shadow-md rounded-md">
 						<div className="flex justify-between ">
 							<h2 className="pb-3">My Profile</h2>
-							<Button
-								className="!text-[#ff5252] !hover:underline cursor-pointer"
-								onClick={() => setChangePass(!changePass)}
-							>
-								Change Password
-							</Button>
+							{!isGoogleLogIn && (
+								<Button
+									className="!text-[#ff5252] !hover:underline cursor-pointer"
+									onClick={() => setChangePass(!changePass)}
+								>
+									Change Password
+								</Button>
+							)}
 						</div>
 						<hr />
 
@@ -302,89 +305,103 @@ function MyAccount() {
 								<div>
 									<h4 className="text-[13px] mt-5">Change Password</h4>
 
-									<div className="flex items-center gap-5 mt-4">
-										<div className="w-[33%]">
-											<TextField
-												label="Old Password"
-												type={showPassword.old ? "text" : "password"}
-												name="oldPassword"
-												value={userDetails.oldPassword}
-												onChange={onChangeInput}
-												variant="outlined"
-												autoComplete="off"
-												size="small"
-												className="w-full"
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																onClick={() => togglePasswordVisibility("old")}
-																edge="end"
-															>
-																{showPassword.old ? <FaEyeSlash /> : <FaEye />}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-											/>
+									{!isGoogleLogIn && (
+										<div className="flex items-center gap-5 mt-4">
+											<div className="w-[33%]">
+												<TextField
+													label="Old Password"
+													type={showPassword.old ? "text" : "password"}
+													name="oldPassword"
+													value={userDetails.oldPassword}
+													onChange={onChangeInput}
+													variant="outlined"
+													autoComplete="off"
+													size="small"
+													className="w-full"
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<IconButton
+																	onClick={() =>
+																		togglePasswordVisibility("old")
+																	}
+																	edge="end"
+																>
+																	{showPassword.old ? (
+																		<FaEyeSlash />
+																	) : (
+																		<FaEye />
+																	)}
+																</IconButton>
+															</InputAdornment>
+														),
+													}}
+												/>
+											</div>
+											<div className="w-[33%]">
+												<TextField
+													label="New Password"
+													type={showPassword.new ? "text" : "password"}
+													name="newPassword"
+													value={userDetails.newPassword}
+													onChange={onChangeInput}
+													variant="outlined"
+													autoComplete="off"
+													size="small"
+													className="w-full"
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<IconButton
+																	onClick={() =>
+																		togglePasswordVisibility("new")
+																	}
+																	edge="end"
+																>
+																	{showPassword.new ? (
+																		<FaEyeSlash />
+																	) : (
+																		<FaEye />
+																	)}
+																</IconButton>
+															</InputAdornment>
+														),
+													}}
+												/>
+											</div>
+											<div className="w-[33%]">
+												<TextField
+													label="Confirm Password"
+													type={showPassword.confirm ? "text" : "password"}
+													name="confermPassword"
+													value={userDetails.confermPassword}
+													onChange={onChangeInput}
+													variant="outlined"
+													autoComplete="off"
+													size="small"
+													className="w-full"
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<IconButton
+																	onClick={() =>
+																		togglePasswordVisibility("confirm")
+																	}
+																	edge="end"
+																>
+																	{showPassword.confirm ? (
+																		<FaEyeSlash />
+																	) : (
+																		<FaEye />
+																	)}
+																</IconButton>
+															</InputAdornment>
+														),
+													}}
+												/>
+											</div>
 										</div>
-										<div className="w-[33%]">
-											<TextField
-												label="New Password"
-												type={showPassword.new ? "text" : "password"}
-												name="newPassword"
-												value={userDetails.newPassword}
-												onChange={onChangeInput}
-												variant="outlined"
-												autoComplete="off"
-												size="small"
-												className="w-full"
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																onClick={() => togglePasswordVisibility("new")}
-																edge="end"
-															>
-																{showPassword.new ? <FaEyeSlash /> : <FaEye />}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-											/>
-										</div>
-										<div className="w-[33%]">
-											<TextField
-												label="Confirm Password"
-												type={showPassword.confirm ? "text" : "password"}
-												name="confermPassword"
-												value={userDetails.confermPassword}
-												onChange={onChangeInput}
-												variant="outlined"
-												autoComplete="off"
-												size="small"
-												className="w-full"
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																onClick={() =>
-																	togglePasswordVisibility("confirm")
-																}
-																edge="end"
-															>
-																{showPassword.confirm ? (
-																	<FaEyeSlash />
-																) : (
-																	<FaEye />
-																)}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-											/>
-										</div>
-									</div>
+									)}
 								</div>
 							)}
 
