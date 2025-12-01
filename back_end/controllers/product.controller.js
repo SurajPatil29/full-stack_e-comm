@@ -836,3 +836,219 @@ export async function getProductWeights(req, res, next) {
 		next(error);
 	}
 }
+
+// reviews controller
+
+// Helper: Upload to Cloudinary
+const uploadToCloudinaryReview = async (
+	files = [],
+	folder = "classyshop/reviews"
+) => {
+	const uploadedImages = [];
+	const validMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+
+	for (const file of files) {
+		if (!validMimeTypes.includes(file.mimetype)) {
+			fs.unlinkSync(file.path);
+			throw new Error("Unsupported image type");
+		}
+		const result = await cloudinary.uploader.upload(file.path, {
+			folder,
+			use_filename: true,
+			unique_filename: true,
+			overwrite: false,
+		});
+		uploadedImages.push(result.secure_url);
+		fs.unlinkSync(file.path);
+	}
+	return uploadedImages;
+};
+
+// ✅ Upload review Images
+export async function uploadReviewImage(req, res, next) {
+	try {
+		const files = req.files;
+		if (!files || files.length === 0)
+			return sendError(res, "No files provided", 422);
+
+		const images = await uploadToCloudinaryReview(files);
+		return sendSuccess(res, "Images uploaded successfully", { images });
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Create Review
+export async function addReview(req, res, next) {
+	try {
+		const { rating, comment, userId, name, image } = req.body;
+		const productId = req.params.id;
+
+		console.log(rating, comment, userId, name, image);
+
+		if (!rating || rating < 1) return sendError(res, "Rating is required", 422);
+		if (!comment?.trim()) return sendError(res, "Comment is required", 422);
+
+		// Find Product
+		const product = await ProductModel.findById(productId);
+		if (!product) return sendError(res, "Product not found", 404);
+
+		// Check duplicate review (same user)
+		const alreadyReviewed = product.reviews?.find(
+			(r) => r.userId.toString() === userId.toString()
+		);
+
+		if (alreadyReviewed)
+			return sendError(res, "You already reviewed this product", 400);
+
+		// New review object
+		const review = {
+			userId,
+			name,
+			rating: Number(rating),
+			comment,
+			image: image || "",
+		};
+
+		// Add review to product
+		product.reviews.push(review);
+
+		// Recalculate total reviews count
+		product.numReviews = product.reviews.length;
+
+		// Recalculate average rating
+		product.avgRating =
+			product.reviews.reduce((acc, item) => acc + item.rating, 0) /
+			product.reviews.length;
+
+		await product.save();
+
+		return sendSuccess(res, "Review added successfully", {
+			reviews: product.reviews,
+			avgRating: product.avgRating,
+			numReviews: product.numReviews,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Get All Reviews (Sorted by Recent)
+export async function getAllReviews(req, res, next) {
+	try {
+		const productId = req.params.id;
+
+		// Populate user data inside reviews
+		const product = await ProductModel.findById(productId).populate(
+			"reviews.userId",
+			"name avatar email"
+		);
+		// "avatar" = your user profile image field
+
+		if (!product) {
+			return sendError(res, "Product not found", 404);
+		}
+
+		// Sort reviews by newest
+		const sortedReviews = [...product.reviews].sort(
+			(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+		);
+
+		return sendSuccess(res, "Reviews fetched successfully", {
+			reviews: sortedReviews,
+			numReviews: sortedReviews.length,
+			avgRating: product.avgRating,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Update Existing Review
+export async function updateReview(req, res, next) {
+	try {
+		const { rating, comment, image, userId } = req.body;
+		const productId = req.params.id;
+
+		if (!rating && !comment && !image) {
+			return sendError(res, "No changes submitted", 422);
+		}
+
+		// Find Product
+		const product = await ProductModel.findById(productId);
+		if (!product) return sendError(res, "Product not found", 404);
+
+		// Find user review
+		const review = product.reviews.find(
+			(r) => r.userId.toString() === userId.toString()
+		);
+
+		if (!review) return sendError(res, "Review not found", 404);
+
+		// Update fields
+		if (rating) review.rating = Number(rating);
+		if (comment) review.comment = comment;
+		if (image) review.image = image;
+
+		// ⭐ Recalculate average rating
+		product.avgRating =
+			product.reviews.reduce((acc, item) => acc + item.rating, 0) /
+			product.reviews.length;
+
+		await product.save();
+
+		return sendSuccess(res, "Review updated successfully", {
+			reviews: product.reviews,
+			avgRating: product.avgRating,
+			numReviews: product.numReviews,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+// ✅ Delete Review
+export async function deleteReview(req, res, next) {
+	try {
+		const { userId } = req.body;
+		const productId = req.params.id;
+
+		// Find product
+		const product = await ProductModel.findById(productId);
+		if (!product) return sendError(res, "Product not found", 404);
+
+		// Find review index by this user
+		const reviewIndex = product.reviews.findIndex(
+			(r) => r.userId.toString() === userId.toString()
+		);
+
+		if (reviewIndex === -1) {
+			return sendError(res, "You have not reviewed this product", 404);
+		}
+
+		// Remove review
+		product.reviews.splice(reviewIndex, 1);
+
+		// Update counts
+		product.numReviews = product.reviews.length;
+
+		// Recalculate avg rating
+		if (product.reviews.length === 0) {
+			product.avgRating = 0;
+		} else {
+			product.avgRating =
+				product.reviews.reduce((acc, item) => acc + item.rating, 0) /
+				product.reviews.length;
+		}
+
+		await product.save();
+
+		return sendSuccess(res, "Review deleted successfully", {
+			reviews: product.reviews,
+			avgRating: product.avgRating,
+			numReviews: product.numReviews,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
