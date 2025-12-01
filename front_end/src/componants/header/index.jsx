@@ -17,9 +17,6 @@ import { LuLogOut } from "react-icons/lu";
 import { fetchDataFromApi } from "../../utils/api";
 import MyContext from "../../context/MyContext";
 
-import { getAuth, signOut } from "firebase/auth";
-const auth = getAuth();
-
 const StyledBadge = styled(Badge)(({ theme }) => ({
 	//this is material ui componant shows the how many product in cart on symbol
 	"& .MuiBadge-badge": {
@@ -67,14 +64,6 @@ function Header() {
 			localStorage.removeItem("accessToken");
 			localStorage.removeItem("refreshToken");
 			localStorage.removeItem("userId");
-			if (isGoogleLogIn) {
-				// Also logout from Firebase (Google)
-				try {
-					await signOut(auth); // <-- Important for Google logout
-				} catch (err) {
-					console.log("Firebase signout error:", err);
-				}
-			}
 
 			localStorage.removeItem("isGoogleLogin");
 

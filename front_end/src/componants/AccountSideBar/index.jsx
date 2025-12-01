@@ -12,8 +12,7 @@ import {
 import { useContext, useState } from "react";
 import { MdOutlineDelete } from "react-icons/md";
 import MyContext from "../../context/MyContext";
-import { getAuth, signOut } from "firebase/auth";
-const auth = getAuth();
+
 function AccountSideBar() {
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -27,14 +26,6 @@ function AccountSideBar() {
 			localStorage.removeItem("accessToken");
 			localStorage.removeItem("refreshToken");
 			localStorage.removeItem("userId");
-			if (isGoogleLogIn) {
-				// Also logout from Firebase (Google)
-				try {
-					await signOut(auth); // <-- Important for Google logout
-				} catch (err) {
-					console.log("Firebase signout error:", err);
-				}
-			}
 
 			localStorage.removeItem("isGoogleLogin");
 

@@ -1,12 +1,162 @@
-import { Breadcrumbs, Button, Rating, TextField } from "@mui/material";
-import { Link } from "react-router-dom";
+import {
+	Breadcrumbs,
+	Button,
+	CircularProgress,
+	Rating,
+	TextField,
+} from "@mui/material";
+import { Link, useParams } from "react-router-dom";
 import ProductZoom from "../../componants/ProductZoom";
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import ProductsSlider from "../../componants/ProductsSlider";
 import ProductDetailsComponant from "../../componants/ProductDetailsComponant";
+import {
+	deleteDataReview,
+	deleteImagefromCloudi,
+	fetchDataFromApi,
+	postData,
+} from "../../utils/api";
+import ProductDetailsSkeleton from "../../componants/ProductDetailsComponant/ProductDetailsSkeleton";
+import MyContext from "../../context/MyContext";
+import { IoMdCloseCircle } from "react-icons/io";
+import { FiTrash2 } from "react-icons/fi";
+
+import UploadBox from "../../componants/UploadBox";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function ProductDetails() {
 	const [activeTab, setActiveTab] = useState(0);
+	const [productData, setProductData] = useState({});
+	const [reviewsData, setReviewsData] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingImg, setIsLoadingImg] = useState(false);
+	const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+
+	const reviewSec = useRef();
+
+	const context = useContext(MyContext);
+	// console.log(context?.userData);
+	const [formFields, setFormFields] = useState({
+		rating: 1,
+		comment: "",
+		userId: "",
+		name: "",
+		image: "",
+	});
+
+	useEffect(() => {
+		if (context?.userData?._id) {
+			setFormFields((prev) => ({
+				...prev,
+				userId: context.userData._id,
+				name: context.userData.name,
+			}));
+		}
+	}, [context?.userData]);
+
+	const { id } = useParams();
+
+	// Fetch product data
+	const loadProduct = () => {
+		setIsLoading(true);
+		fetchDataFromApi(`/api/product/${id}`).then((res) => {
+			if (!res?.error) {
+				setProductData(res?.data);
+				setTimeout(() => {
+					setIsLoading(false);
+				}, 1000);
+			}
+		});
+	};
+
+	const loadReviews = () => {
+		fetchDataFromApi(`/api/product/getAllReviews/${id}`).then((res) => {
+			if (!res?.error) {
+				setReviewsData(res?.reviews);
+			}
+		});
+	};
+
+	useEffect(() => {
+		loadProduct();
+		loadReviews();
+		window.scrollTo(0, 0);
+	}, []);
+
+	// ---------------- Delete Image ----------------
+	const handleDeleteBannerImg = async () => {
+		if (!formFields.image) return;
+
+		try {
+			setIsLoadingImg(true);
+
+			await deleteImagefromCloudi("/api/product/deleteImage", formFields.image);
+
+			setFormFields((prev) => ({ ...prev, image: "" }));
+		} catch (error) {
+			context.openAlertBox("error", "Image delete failed");
+		}
+
+		setIsLoadingImg(false);
+	};
+
+	const deleteReviews = async () => {
+		try {
+			const res = await deleteDataReview(
+				`/api/product/reviewDelete/${id}`,
+				{ userId: formFields.userId } // must be object
+			);
+
+			if (res.success) {
+				alert("Review deleted successfully ✔");
+				loadReviews();
+				loadProduct();
+			} else {
+				alert("Failed to delete review ❌");
+			}
+		} catch (error) {
+			console.log(error);
+			alert("Network error ❌");
+		}
+	};
+
+	// ---------------- Submit Review ----------------
+	const saveReview = async (e) => {
+		e.preventDefault();
+		setIsLoadingSubmit(true);
+
+		try {
+			const result = await postData(`/api/product/addReview/${id}`, formFields);
+
+			if (result.success) {
+				context.openAlertBox("success", "Review added successfully");
+
+				// Reset form
+				setFormFields((prev) => ({
+					...prev,
+					comment: "",
+					image: "",
+					rating: 1,
+				}));
+
+				// Refresh product reviews
+				loadProduct();
+				loadReviews();
+			}
+		} catch (error) {
+			context.openAlertBox("error", "Something went wrong");
+		}
+
+		setIsLoadingSubmit(false);
+	};
+
+	const gotoReviews = () => {
+		window.scrollTo({
+			top: reviewSec?.current.offsetTop - 150,
+			behavior: "smooth",
+		});
+		setActiveTab(1);
+	};
 
 	return (
 		<>
@@ -24,7 +174,6 @@ function ProductDetails() {
 						<Link
 							underline="hover"
 							color="inherit"
-							href="/"
 							className="link transition !text-[14px]"
 						>
 							Fashion
@@ -41,15 +190,22 @@ function ProductDetails() {
 			</div>
 
 			<section className="bg-white py-5">
-				<div className="container flex gap-8  ">
-					<div className="productZoomContainer w-[40%] ">
-						<ProductZoom />
-					</div>
+				{isLoading === true ? (
+					<ProductDetailsSkeleton />
+				) : (
+					<div className="container flex gap-8  ">
+						<div className="productZoomContainer w-[40%] ">
+							<ProductZoom images={productData.images} />
+						</div>
 
-					<div className="productContent w-[60%] px-10">
-						<ProductDetailsComponant />
+						<div className="productContent w-[60%] px-10">
+							<ProductDetailsComponant
+								item={productData}
+								gotoReviews={gotoReviews}
+							/>
+						</div>
 					</div>
-				</div>
+				)}
 
 				<div className="container py-10 ">
 					<div className="flex item-center gap-8">
@@ -61,393 +217,431 @@ function ProductDetails() {
 						>
 							Description
 						</span>
+
 						<span
 							onClick={() => setActiveTab(1)}
 							className={`link test-[17px] curser-pointer font-[500] ${
 								activeTab === 1 && "text-[#ff5151]"
 							} `}
+							ref={reviewSec}
 						>
-							Product Details
-						</span>
-						<span
-							onClick={() => setActiveTab(2)}
-							className={`link test-[17px] curser-pointer font-[500] ${
-								activeTab === 2 && "text-[#ff5151]"
-							} `}
-						>
-							Reviews (5)
+							Reviews {productData?.numReviews || 0}
 						</span>
 					</div>
 
 					{activeTab === 0 && (
 						<div className="shadow-md w-[80%] py-4 px-8 rounded-md ">
-							<p>
-								The best is yet to come! Give your walls a voice with a framed
-								poster. This aesthethic, optimistic poster will look great in
-								your desk or in an open-space office. Painted wooden frame with
-								passe-partout for more depth.
-							</p>
-
-							<h4>Lightweight Design</h4>
-							<p>
-								Designed with a super light geometric case, the Versa family
-								watches are slim, casual and comfortable enough to wear all day
-								and night. Switch up your look with classic, leather, metal and
-								woven accessory bands. Ut elit tellus, luctus nec ullamcorper
-								mattis, pulvinar dapibus leo.
-							</p>
-
-							<h4>Free Shipping & Return</h4>
-							<p>
-								We offer free shipping for products on orders above 50$ and
-								offer free delivery for all orders in US.
-							</p>
-
-							<h4>Money Back Guarantee</h4>
-							<p>
-								We guarantee our products and you could get back all of your
-								money anytime you want in 30 days.
-							</p>
-
-							<h4>Online Support</h4>
-							<p>
-								You will get 24 hour support with this purchase product and you
-								can return it within 30 days for an exchange.
-							</p>
+							<div
+								className="description-content text-gray-700 leading-relaxed"
+								dangerouslySetInnerHTML={{ __html: productData.description }}
+							></div>
 						</div>
 					)}
 
 					{activeTab === 1 && (
 						<div className="shadow-md w-[80%] py-4 px-8 rounded-md ">
-							<div className="relative overflow-x-auto">
-								<table className="w-full text-sm text-left rtl:text-right text-gray-500">
-									<thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
-										<tr>
-											<th scope="col" className="px-6 py-3">
-												Stand Up
-											</th>
-											<th scope="col" className="px-6 py-3">
-												Folded (w/o wheels)
-											</th>
-											<th scope="col" className="px-6 py-3">
-												Folded (w/ wheels)
-											</th>
-											<th scope="col" className="px-6 py-3">
-												Door Pass Through
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr className="bg-white border-b font-[500] ">
-											<td className="px-6 py-4 font-[500]">
-												35″L x 24″W x 37-45″H(front to back wheel)
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 18.5″W x 16.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 24″W x 18.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">24</td>
-										</tr>
-										<tr className="bg-white border-b font-[500] ">
-											<td className="px-6 py-4 font-[500]">
-												35″L x 24″W x 37-45″H(front to back wheel)
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 18.5″W x 16.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 24″W x 18.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">24</td>
-										</tr>
-										<tr className="bg-white border-b font-[500] ">
-											<td className="px-6 py-4 font-[500]">
-												35″L x 24″W x 37-45″H(front to back wheel)
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 18.5″W x 16.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 24″W x 18.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">24</td>
-										</tr>
-										<tr className="bg-white border-b font-[500] ">
-											<td className="px-6 py-4 font-[500]">
-												35″L x 24″W x 37-45″H(front to back wheel)
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 18.5″W x 16.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 24″W x 18.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">24</td>
-										</tr>
-										<tr className="bg-white border-b font-[500] ">
-											<td className="px-6 py-4 font-[500]">
-												35″L x 24″W x 37-45″H(front to back wheel)
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 18.5″W x 16.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">
-												32.5″L x 24″W x 18.5″H
-											</td>
-											<td className="px-6 py-4 font-[500]">24</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					)}
-
-					{activeTab === 2 && (
-						<div className="shadow-md w-[80%] py-4 px-8 rounded-md ">
 							<div className="w-full productReviewContainer">
 								<h2>Customer Questions & Answers</h2>
-								<div className="scroll w-full my-4 max-h-[300px] overflow-y-scroll overflow-x-hidden mt-4 ">
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>
-								</div>
-								<div className="reviewForm bg-[#fafafa] p-4 rounded-md ">
-									<span className="flex items-center justify-between">
-										<h2 className="text-[18px] ">Add a Review</h2>
-										<span className="flex items-center justify-between gap-3">
-											<h2 className="text-[18px] ">Add a Rating : </h2>
-											<Rating name="size-small" defaultValue={0} />
-										</span>
-									</span>
+								<div className="w-full my-4 max-h-[320px] overflow-y-auto space-y-4 pr-2">
+									{reviewsData.length === 0 ? (
+										<p className="text-center text-gray-500">No reviews yet.</p>
+									) : (
+										reviewsData.map((rev) => (
+											<div
+												key={rev._id}
+												className="review bg-white rounded-lg shadow-sm border p-4 flex gap-4 relative"
+											>
+												{/* User Avatar */}
+												<div className="w-[60px] h-[60px] rounded-full overflow-hidden border">
+													<img
+														src={
+															rev?.userId?.avatar ||
+															"https://cdn-icons-png.flaticon.com/512/149/149071.png"
+														}
+														alt="user"
+														className="w-full h-full object-cover"
+													/>
+												</div>
 
-									<form className="w-full mt-5">
-										<TextField
-											id="outlined-multiline-flexible"
-											multiline
-											label="Write a Review...."
-											rows={4}
-											className="w-full text-[#ff5151]"
-										/>
-										<div className="flex items-center mt-5">
-											<Button className="btn-org">Submit Review</Button>
+												{/* Review Content */}
+												<div className="flex-1">
+													<div className="flex items-center justify-between top-5">
+														<h4 className="text-[15px] font-semibold text-gray-800">
+															{rev?.userId?.name}
+														</h4>
+
+														<div className="flex items-center justify-end gap-3">
+															{/* Rating always fixed at right */}
+															<Rating
+																name="read-only"
+																value={rev.rating}
+																size="small"
+																readOnly
+															/>
+
+															{/* DELETE BUTTON ONLY IF USER OWNS REVIEW */}
+															{rev?.userId?._id === context?.userData?._id && (
+																<button
+																	onClick={deleteReviews}
+																	className="text-red-500 hover:text-red-700 transition"
+																	title="Delete Review"
+																>
+																	<FiTrash2 size={18} />
+																</button>
+															)}
+														</div>
+													</div>
+
+													<p className="text-gray-500 text-[12px]">
+														{new Date(rev.createdAt).toLocaleDateString(
+															"en-IN"
+														)}
+													</p>
+
+													<p className="mt-1 text-gray-700 text-[14px] leading-snug">
+														{rev.comment}
+													</p>
+
+													{/* Review Image */}
+													{Array.isArray(rev.image) && rev.image[0] && (
+														<div className="mt-3">
+															<div className="w-[120px] h-[120px] rounded-md overflow-hidden border cursor-pointer hover:scale-105 transition">
+																<img
+																	src={rev.image[0]}
+																	className="w-full h-full object-cover"
+																	alt="review"
+																/>
+															</div>
+														</div>
+													)}
+												</div>
+											</div>
+										))
+									)}
+
+									{/* <div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
 										</div>
-									</form>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div>{" "}
+									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
+										<div className="info w-[60%] flex items-center gap-3 ">
+											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
+												<img
+													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
+													alt="user img"
+													className="w-full"
+												/>
+											</div>
+											<div className="w-[80%]">
+												<h4 className="text-[16px] ">Suraj Patil</h4>
+												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
+												<p className="mt-0">
+													Lorem ipsum dolor, sit amet consectetur adipisicing
+													elit. Quidem, officia numquam veritatis, perspiciatis
+													minus harum exercitationem accusantium magnam neque
+													aut rerum ea, hic est facere.
+												</p>
+											</div>
+										</div>
+										<div className=" flex items-end justify-end">
+											<Rating name="size-small" defaultValue={4} readOnly />
+										</div>
+									</div> */}
 								</div>
+								{context.isLogin && (
+									<div className="reviewForm bg-white shadow-md p-6 rounded-xl border border-gray-200">
+										<form className="w-full space-y-6" onSubmit={saveReview}>
+											{/* Header */}
+											<div className="flex items-center justify-between border-b pb-3">
+												<h2 className="text-[20px] font-semibold text-gray-800">
+													Write a Review
+												</h2>
+
+												<div className="flex items-center gap-3">
+													<span className="text-[16px] text-gray-700">
+														Rating:
+													</span>
+													<Rating
+														name="rating"
+														value={formFields.rating}
+														precision={1}
+														onChange={(_, value) =>
+															setFormFields((prev) => ({
+																...prev,
+																rating: value ?? 1,
+															}))
+														}
+													/>
+												</div>
+											</div>
+
+											{/* Comment Box */}
+											<TextField
+												label="Share your experience..."
+												multiline
+												rows={4}
+												fullWidth
+												InputProps={{
+													style: {
+														borderRadius: "10px",
+													},
+												}}
+												value={formFields.comment}
+												onChange={(e) =>
+													setFormFields((prev) => ({
+														...prev,
+														comment: e.target.value,
+													}))
+												}
+											/>
+
+											{/* Image Upload */}
+											<div>
+												<label className="text-gray-700 font-medium">
+													Upload Image (optional)
+												</label>
+
+												<div className="grid grid-cols-6 gap-4 mt-2">
+													{formFields.image ? (
+														<div className="relative group">
+															<button
+																type="button"
+																onClick={handleDeleteBannerImg}
+																disabled={isLoadingImg}
+																className="absolute top-1 right-1 bg-white rounded-full shadow p-1 opacity-0 group-hover:opacity-100 transition"
+															>
+																<IoMdCloseCircle className="text-red-600 text-[22px]" />
+															</button>
+
+															<div className="w-full h-[140px] rounded-lg overflow-hidden border">
+																<LazyLoadImage
+																	className="w-full h-full object-cover"
+																	src={formFields.image}
+																	alt="uploaded"
+																/>
+															</div>
+														</div>
+													) : (
+														<UploadBox
+															multiple={false}
+															setImg={(url) =>
+																setFormFields((prev) => ({
+																	...prev,
+																	image: url,
+																}))
+															}
+															url="/api/product/uploadReviewImages"
+														/>
+													)}
+												</div>
+											</div>
+
+											{/* Submit Btn */}
+											<div className="pt-2">
+												<Button
+													type="submit"
+													variant="contained"
+													disabled={isLoadingSubmit}
+													className="!bg-[#ff6b35] hover:!bg-[#e85a28] !text-white !px-6 !py-2 !rounded-lg"
+												>
+													{isLoadingSubmit ? (
+														<CircularProgress size={24} />
+													) : (
+														"Submit Review"
+													)}
+												</Button>
+											</div>
+										</form>
+									</div>
+								)}
 							</div>
 						</div>
 					)}

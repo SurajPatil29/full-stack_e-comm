@@ -32,7 +32,7 @@ function QtyBox() {
 				value={qtyVal}
 				onChange={handleChange}
 			/>
-			<div className="flex items-center flex-col justify-between h-[40px] absolute top-0 right-0 z-50  border-l-[2px] ">
+			<div className="flex items-center flex-col justify-between h-[40px] absolute top-0 right-0 z-auto  border-l-[2px] ">
 				<Button
 					onClick={plusQty}
 					className="!min-w-[25px] !w-[25px] !h-[20px] !text-[#000] hover:!bg-[#f1f1f1] "

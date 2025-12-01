@@ -171,9 +171,15 @@ function Home() {
 					setIsBannerLoading(false);
 					setIsLatestProductLoading(false);
 					setIsFeaturedProductLoading(false);
+					setIsBlogLoading(false);
+					setIsBannerBoxV2Loading(false);
+					setIsBannerBoxV1Loading(false);
+					setIsBannerLoadingV2(false);
 				}, 2000);
 			}
 		};
+		window.scrollTo(0, 0);
+
 		loadHomeData();
 		// fetchDataFromApi("/api/banner/all").then((res) => {
 		// 	// console.log(res);

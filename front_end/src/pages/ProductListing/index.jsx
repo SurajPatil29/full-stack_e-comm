@@ -93,6 +93,7 @@ function ProductListing() {
 		};
 
 		fetchProducts();
+		window.scrollTo(0, 0);
 	}, [id]);
 
 	// PAGINATION

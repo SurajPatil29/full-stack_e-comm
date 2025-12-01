@@ -86,6 +86,8 @@ function App() {
 				.catch((err) => {
 					console.error("Failed to fetch user details", err);
 				});
+		} else {
+			setUserData(null);
 		}
 	}, [isLogin]);
 

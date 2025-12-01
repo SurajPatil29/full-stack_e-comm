@@ -5,7 +5,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaRegHeart } from "react-icons/fa";
 import { IoGitCompareOutline } from "react-icons/io5";
 
-function ProductDetailsComponant({ item }) {
+function ProductDetailsComponant({ item, gotoReviews }) {
 	const [selectedSize, setSelectedSize] = useState(null);
 	const [selectedRam, setSelectedRam] = useState(null);
 
@@ -22,8 +22,11 @@ function ProductDetailsComponant({ item }) {
 		size = [],
 		productRam = [],
 		productWeight = [],
-		discount,
+		avgRating,
+		numReviews = 0,
 	} = item;
+	const discount =
+		oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
 	return (
 		<>
@@ -36,9 +39,11 @@ function ProductDetailsComponant({ item }) {
 					Brand: <span className="font-[500] text-black">{brand}</span>
 				</span>
 
-				<Rating size="small" value={rating} readOnly />
+				<Rating size="small" value={avgRating || rating} readOnly />
 
-				<span className="text-[13px] cursor-pointer">Reviews</span>
+				<span className="text-[13px] cursor-pointer" onClick={gotoReviews}>
+					Reviews {numReviews}
+				</span>
 			</div>
 
 			{/* PRICE */}
