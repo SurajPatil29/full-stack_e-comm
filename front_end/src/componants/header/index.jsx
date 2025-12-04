@@ -267,7 +267,10 @@ function Header() {
 										aria-label="cart"
 										onClick={() => setOpenCartPanel(true)}
 									>
-										<StyledBadge badgeContent={5} color="secondary">
+										<StyledBadge
+											badgeContent={context?.cartData?.length}
+											color="secondary"
+										>
 											<IoCartOutline />
 										</StyledBadge>
 									</IconButton>

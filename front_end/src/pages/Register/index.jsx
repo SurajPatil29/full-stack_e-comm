@@ -1,5 +1,5 @@
 import { Button, TextField } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -30,6 +30,10 @@ function Register() {
 		password: "",
 		role: "USER", // For client side
 	});
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
 
 	const context = useContext(MyContext);
 

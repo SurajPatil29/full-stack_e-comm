@@ -3,24 +3,26 @@ import { useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import { FaAngleUp } from "react-icons/fa";
 
-function QtyBox() {
+function QtyBox({ quantity, setQuantity, stock }) {
 	const [qtyVal, setQtyVal] = useState(1);
 
 	const handleChange = (e) => {
 		const newValue = parseInt(e.target.value, 10);
 
 		if (!isNaN(newValue) && newValue > 0) {
-			setQtyVal(newValue);
+			setQuantity(newValue);
 		}
 	};
 
 	const plusQty = () => {
-		setQtyVal(qtyVal + 1);
+		if (stock >= quantity) {
+			setQuantity(quantity + 1);
+		}
 	};
 
 	const minusQty = () => {
-		if (qtyVal > 1) {
-			setQtyVal(qtyVal - 1);
+		if (quantity > 1) {
+			setQuantity(quantity - 1);
 		}
 	};
 
@@ -29,7 +31,7 @@ function QtyBox() {
 			<input
 				type="number"
 				className="w-full h-[40px] p-2 pl-4 text-[15px] focus:outline-none border border-[rgba(0,0,0,0.1) rounded-md]  "
-				value={qtyVal}
+				value={quantity}
 				onChange={handleChange}
 			/>
 			<div className="flex items-center flex-col justify-between h-[40px] absolute top-0 right-0 z-auto  border-l-[2px] ">

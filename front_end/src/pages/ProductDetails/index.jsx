@@ -31,6 +31,7 @@ function ProductDetails() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isLoadingImg, setIsLoadingImg] = useState(false);
 	const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+	const [relatedProdData, setRelatedProdData] = useState([]);
 
 	const reviewSec = useRef();
 
@@ -82,6 +83,24 @@ function ProductDetails() {
 		loadReviews();
 		window.scrollTo(0, 0);
 	}, []);
+
+	useEffect(() => {
+		if (!productData?.catId) return;
+
+		const loadRelated = async () => {
+			const res = await fetchDataFromApi(
+				`/api/product/getAllProductsByCatId/${productData.catId}`
+			);
+
+			// console.log("Related response:", res);
+
+			if (!res?.error) {
+				setRelatedProdData(res.products); // <-- FIXED
+			}
+		};
+
+		loadRelated();
+	}, [productData]);
 
 	// ---------------- Delete Image ----------------
 	const handleDeleteBannerImg = async () => {
@@ -648,7 +667,11 @@ function ProductDetails() {
 				</div>
 				<div className="container">
 					<h2 className="text-[20px]">Related Products</h2>
-					<ProductsSlider items={6} />
+					<ProductsSlider
+						items={6}
+						data={relatedProdData}
+						loading={isLoading}
+					/>
 				</div>
 			</section>
 		</>

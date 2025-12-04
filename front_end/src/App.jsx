@@ -25,7 +25,7 @@ import Checkout from "./pages/Checkout";
 import MyAccount from "./pages/MyAccount";
 import MyList from "./pages/MyList";
 import Orders from "./pages/Orders";
-import { fetchDataFromApi } from "./utils/api";
+import { fetchDataFromApi, postData, putData } from "./utils/api";
 import MyContext from "./context/MyContext";
 import Address from "./pages/Address";
 
@@ -39,6 +39,7 @@ function App() {
 	const [userData, setUserData] = useState(null);
 	const [authChecked, setAuthChecked] = useState(false);
 	const [catData, setCatData] = useState([]);
+	const [cartData, setCartData] = useState([]);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -79,6 +80,7 @@ function App() {
 					if (res?.user) {
 						setUserData(res.user);
 						localStorage.setItem("userId", res.user._id);
+						fetchCartData();
 					} else {
 						console.warn("User details not found in response", res);
 					}
@@ -97,7 +99,117 @@ function App() {
 				setCatData(res?.data);
 			}
 		});
+		window.scrollTo(0, 0);
 	}, []);
+
+	const addToCart = async (product, userId, quantity = 1) => {
+		try {
+			// ----------------------------------
+			// 1. User Not Logged In
+			// ----------------------------------
+			if (!userId) {
+				openAlertBox("error", "Please log in first.");
+				return false;
+			}
+
+			// ----------------------------------
+			// 2. Missing Product
+			// ----------------------------------
+			if (!product || !product?._id) {
+				openAlertBox("error", "Product not found.");
+				return false;
+			}
+
+			// ----------------------------------
+			// 3. Invalid Quantity
+			// ----------------------------------
+			if (quantity <= 0 || typeof quantity !== "number") {
+				openAlertBox("error", "Invalid quantity selected.");
+				return false;
+			}
+
+			// ----------------------------------
+			// 4. Stock Validation
+			// ----------------------------------
+			if (product.countInStock === 0) {
+				openAlertBox("error", "This product is out of stock.");
+				return false;
+			}
+
+			if (quantity > product.countInStock) {
+				openAlertBox(
+					"error",
+					`Only ${product.countInStock} items available in stock.`
+				);
+				return false;
+			}
+
+			// ----------------------------------
+			// 5. Prepare Payload
+			// ----------------------------------
+			const data = {
+				productTitle: product.name || "",
+				image: product.images?.[0] || "",
+				rating: product.rating || 0,
+				price: product.price || 0,
+				quantity,
+				subTotal: Number(product.price * quantity) || 0,
+				productId: product._id,
+				countInStock: product.countInStock - quantity,
+				userId,
+			};
+
+			// ----------------------------------
+			// 6. Validate Payload
+			// ----------------------------------
+			if (!data.productTitle || !data.image || !data.price) {
+				openAlertBox("error", "Product details missing.");
+				return false;
+			}
+
+			// ----------------------------------
+			// 7. Add to Cart API Call
+			// ----------------------------------
+			const res = await postData("/api/cart/add", data);
+
+			if (res?.error === false) {
+				openAlertBox("success", res.message);
+
+				// ----------------------------------
+				// 8. 🔥 Update Product Stock in DB
+				// ----------------------------------
+				const newStock = product.countInStock - quantity;
+
+				await putData(`/api/product/updateProduct/${product._id}`, {
+					countInStock: newStock,
+				});
+
+				// ----------------------------------
+				// 9. Refresh Cart + Product Details
+				// ----------------------------------
+				await fetchCartData();
+			} else {
+				openAlertBox("error", res?.message || "Unable to add item to cart.");
+			}
+		} catch (error) {
+			console.error("Add to cart error:", error);
+			openAlertBox("error", "Server error, please try again.");
+		}
+	};
+
+	const fetchCartData = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/cart/get");
+			if (res?.data) {
+				setCartData(res.data);
+			} else {
+				openAlertBox("error", "Unable to fetch cart data");
+			}
+		} catch (error) {
+			console.error("Cart Fetch Error:", error);
+			openAlertBox("error", "Something went wrong while fetching cart.");
+		}
+	};
 
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
@@ -109,6 +221,8 @@ function App() {
 		setUserData: setUserData,
 		setCatData: setCatData,
 		catData: catData,
+		addToCart: addToCart,
+		cartData: cartData,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -203,52 +317,57 @@ function App() {
 				</Routes>
 
 				<Footer />
+
+				{/* toast from hot tost npm */}
+				<Toaster />
+				<Dialog
+					open={openProductDetailsModel.open}
+					onClose={handleCloseProductDetailsModel}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+					fullWidth={true}
+					maxWidth="lg"
+					className="productDetailsModel "
+				>
+					<DialogContent>
+						<div className="productDetailsModelContainer flex item-center w-full relative">
+							<Button
+								className="!absolute !w-[40px] !min-w-[40px] !h-[40px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
+								onClick={handleCloseProductDetailsModel}
+							>
+								<IoMdClose className="!text-[18px]  " />
+							</Button>
+							<div className="col1 w-[43%] ">
+								<ProductZoom images={openProductDetailsModel.item.images} />
+							</div>
+							<div className="col2 productContent w-[57%] px-5 ">
+								<ProductDetailsComponant item={openProductDetailsModel.item} />
+							</div>
+						</div>
+					</DialogContent>
+				</Dialog>
+
+				{/* cart panel . */}
+
+				<Drawer
+					open={openCartPanel}
+					onClose={toggleDrawer(false)}
+					anchor="right"
+				>
+					<div className="w-[400px] py-3 px-4 ">
+						<div className="flex items-center justify-between  gap-3  border-b border-[rgba(0,0,0,0.1)] ">
+							<h4>Shoping Cart (1)</h4>
+							<Button
+								className=" !w-[30px] !min-w-[30px] !h-[30px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
+								onClick={toggleDrawer(false)}
+							>
+								<IoMdClose className="!text-[16px]  " />
+							</Button>
+						</div>
+						<CartPanel />
+					</div>
+				</Drawer>
 			</MyContext.Provider>
-			{/* toast from hot tost npm */}
-			<Toaster />
-			<Dialog
-				open={openProductDetailsModel.open}
-				onClose={handleCloseProductDetailsModel}
-				aria-labelledby="alert-dialog-title"
-				aria-describedby="alert-dialog-description"
-				fullWidth={true}
-				maxWidth="lg"
-				className="productDetailsModel "
-			>
-				<DialogContent>
-					<div className="productDetailsModelContainer flex item-center w-full relative">
-						<Button
-							className="!absolute !w-[40px] !min-w-[40px] !h-[40px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
-							onClick={handleCloseProductDetailsModel}
-						>
-							<IoMdClose className="!text-[18px]  " />
-						</Button>
-						<div className="col1 w-[43%] ">
-							<ProductZoom images={openProductDetailsModel.item.images} />
-						</div>
-						<div className="col2 productContent w-[57%] px-5 ">
-							<ProductDetailsComponant item={openProductDetailsModel.item} />
-						</div>
-					</div>
-				</DialogContent>
-			</Dialog>
-
-			{/* cart panel . */}
-
-			<Drawer open={openCartPanel} onClose={toggleDrawer(false)} anchor="right">
-				<div className="w-[400px] py-3 px-4 ">
-					<div className="flex items-center justify-between  gap-3  border-b border-[rgba(0,0,0,0.1)] ">
-						<h4>Shoping Cart (1)</h4>
-						<Button
-							className=" !w-[30px] !min-w-[30px] !h-[30px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
-							onClick={toggleDrawer(false)}
-						>
-							<IoMdClose className="!text-[16px]  " />
-						</Button>
-					</div>
-					<CartPanel />
-				</div>
-			</Drawer>
 		</>
 	);
 }

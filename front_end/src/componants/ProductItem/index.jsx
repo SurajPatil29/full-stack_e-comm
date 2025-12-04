@@ -1,18 +1,22 @@
 import { Link } from "react-router-dom";
 import "../ProductItem/style.css";
 import Rating from "@mui/material/Rating";
-import { FaRegHeart } from "react-icons/fa";
+import { FaMinus, FaPlus, FaRegHeart } from "react-icons/fa";
 import { IoGitCompareOutline } from "react-icons/io5";
 import { MdZoomOutMap } from "react-icons/md";
 import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import MyContext from "../../context/MyContext";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 
 function ProductItem({ item }) {
 	// this componant use for shocase product info on home page
-	const { setOpenProductDetailsModel } = useContext(MyContext);
+	const { setOpenProductDetailsModel, userData, addToCart, isLogin, cartData } =
+		useContext(MyContext);
+
+	const [quantity, setQuantity] = useState(1);
+	const [addQty, setAddQty] = useState(false);
 
 	// Fallback images (if no images found)
 	const mainImg = item?.images?.[0] ?? "/placeholder.jpg";
@@ -23,6 +27,10 @@ function ProductItem({ item }) {
 	const newPrice = item?.price || 0;
 	const discount =
 		oldPrice > 0 ? Math.round(((oldPrice - newPrice) / oldPrice) * 100) : 0;
+
+	const isInCart = cartData?.some(
+		(cartItem) => cartItem.productId === item._id
+	);
 
 	return (
 		<div className="productItem shadow-md rounded-md overflow-hidden border-2 border-[rgba(0,0,0,0.1)]">
@@ -114,12 +122,71 @@ function ProductItem({ item }) {
 						₹{newPrice.toLocaleString()}
 					</span>
 				</div>
-				<div className="mt-3 text-center">
-					<Button className="btn-org gap-1">
-						{" "}
-						<HiOutlineShoppingCart className="text-[20px] " /> Add to Cart
-					</Button>
-				</div>
+				{isLogin && (
+					<div className="mt-4 text-center space-y-4">
+						{/* Quantity Selector */}
+						{addQty && !isInCart && (
+							<div className="flex items-center justify-center gap-4">
+								<div className="flex items-center justify-between w-full bg-white shadow-sm border rounded-full overflow-hidden ">
+									{/* Minus Button */}
+									<button
+										className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition"
+										onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+									>
+										<FaMinus className="text-gray-700 text-sm" />
+									</button>
+
+									<span className="text-lg font-semibold mx-4">{quantity}</span>
+
+									{/* Plus Button */}
+									<button
+										className="w-8 h-8 flex items-center justify-center bg-red-500 text-white hover:bg-red-600 transition"
+										onClick={() =>
+											setQuantity((prev) =>
+												Math.min(item?.countInStock, prev + 1)
+											)
+										}
+									>
+										<FaPlus className="text-sm" />
+									</button>
+								</div>
+							</div>
+						)}
+
+						{/* BUTTON SECTION */}
+						{isInCart ? (
+							<Button
+								className="!w-full !py-3 !text-[16px] !rounded-full !bg-green-500 hover:!bg-green-600 !text-white !shadow-md cursor-default"
+								disabled
+							>
+								✓ Already in Cart
+							</Button>
+						) : (
+							<Button
+								className={`btn-org gap-2 w-full !py-3 !text-[16px] !rounded-full shadow-md transition 
+			${item?.countInStock === 0 ? "!bg-gray-300 !cursor-not-allowed" : ""}`}
+								disabled={item?.countInStock <= 0}
+								onClick={() => {
+									if (!addQty) {
+										setAddQty(true);
+									} else {
+										addToCart(item, userData?._id, quantity);
+										setAddQty(false);
+									}
+								}}
+							>
+								{item?.countInStock > 0 ? (
+									<>
+										<HiOutlineShoppingCart className="text-[20px]" />
+										{addQty ? "Confirm Add" : "Add to Cart"}
+									</>
+								) : (
+									"Out of Stock"
+								)}
+							</Button>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	);

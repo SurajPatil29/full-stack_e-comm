@@ -1,5 +1,5 @@
 import { Button, CircularProgress, TextField } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { MdVisibilityOff } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,6 +29,10 @@ function Login() {
 	});
 
 	const history = useNavigate();
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
 
 	const forgotPassword = () => {
 		setIsLoading(true);
