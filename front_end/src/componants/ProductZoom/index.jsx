@@ -23,7 +23,7 @@ function ProductZoom({ images = [] }) {
 				<Swiper
 					ref={zoomSliderSml}
 					direction={"vertical"}
-					slidesPerView={4}
+					slidesPerView={5}
 					mousewheel={true}
 					spaceBetween={10}
 					navigation={true}

@@ -142,9 +142,7 @@ function ProductItem({ item }) {
 									<button
 										className="w-8 h-8 flex items-center justify-center bg-red-500 text-white hover:bg-red-600 transition"
 										onClick={() =>
-											setQuantity((prev) =>
-												Math.min(item?.countInStock, prev + 1)
-											)
+											setQuantity((prev) => Math.min(10, prev + 1))
 										}
 									>
 										<FaPlus className="text-sm" />

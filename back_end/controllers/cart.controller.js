@@ -10,10 +10,18 @@ export const addToCartItemController = async (req, res, next) => {
 			image,
 			rating,
 			price,
+			oldPrice,
 			quantity,
 			subTotal,
 			productId,
 			countInStock,
+			ProductBrand,
+			size,
+			ram,
+			weight,
+			ramRange,
+			sizeRange,
+			weightRange,
 		} = req.body;
 
 		if (!productId) return sendError(res, "Provide productId", 400);
@@ -32,11 +40,19 @@ export const addToCartItemController = async (req, res, next) => {
 			image: image,
 			rating: rating,
 			price: price,
+			oldPrice: oldPrice,
 			quantity: quantity,
 			subTotal: subTotal,
 			productId: productId,
 			countInStock: countInStock,
 			userId: userId,
+			ProductBrand: ProductBrand,
+			size: size,
+			ram: ram,
+			weight: weight,
+			ramRange: ramRange,
+			sizeRange: sizeRange,
+			weightRange: weightRange,
 		});
 
 		const save = await cartItem.save();
@@ -63,14 +79,26 @@ export const getCartItemController = async (req, res, next) => {
 export const updateCartItemOtyController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
-		const { _id, qty } = req.body;
+		const { _id, qty, size, ram, weight } = req.body;
 
 		if (!_id || !qty) return sendError(res, "Provide _id and qty", 400);
 
-		const updated = await CartProductModel.updateOne(
-			{ _id, _id, userId: userId },
-			{ quantity: qty }
-		);
+		// 1. Find cart item
+		const cartItem = await CartProductModel.findOne({ _id, userId });
+		if (!cartItem) return sendError(res, "Cart item not found", 404);
+
+		// 2. Calculate subtotal = quantity * price
+		const newSubtotal = qty * cartItem.price;
+
+		// 3. Update fields
+		cartItem.quantity = qty;
+		cartItem.size = size || cartItem.size;
+		cartItem.ram = ram || cartItem.ram;
+		(cartItem.weight = weight || cartItem.weight),
+			(cartItem.subTotal = newSubtotal);
+
+		// 4. Save updated item
+		const updated = await cartItem.save();
 
 		return sendSuccess(res, "Cart updated", { data: updated });
 	} catch (error) {
@@ -82,10 +110,9 @@ export const updateCartItemOtyController = async (req, res, next) => {
 export const deleteCartItemQtyController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
-		const { _id, productId } = req.body;
+		const _id = req.params.id;
 
-		if (!_id || !productId)
-			return sendError(res, "Provide _id and productId", 400);
+		if (!_id) return sendError(res, "Provide _id", 400);
 
 		const deleted = await CartProductModel.deleteOne({ _id, userId });
 		if (!deleted.deletedCount) {

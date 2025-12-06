@@ -22,16 +22,20 @@ const InputBox = ({
 	onChange,
 	type = "text",
 	required,
+	readOnly = false,
 }) => (
 	<div>
 		<h3 className="text-[14px] font-[500] mb-1">{label}</h3>
 		<input
 			type={type}
 			name={name}
-			value={value || ""}
+			value={value}
 			required={required}
 			onChange={onChange}
-			className="w-full h-[40px] border rounded-sm p-3 text-sm"
+			readOnly={readOnly}
+			className={`w-full h-[40px] border rounded-sm p-3 text-sm ${
+				readOnly ? "bg-gray-100 cursor-not-allowed" : ""
+			}`}
 		/>
 	</div>
 );
@@ -215,7 +219,23 @@ function EditProduct() {
 	// ✅ Handle Input Change
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
-		setFormFields((prev) => ({ ...prev, [name]: value }));
+
+		setFormFields((prev) => {
+			let updated = { ...prev, [name]: value };
+
+			const price = parseFloat(updated.price);
+			const oldPrice = parseFloat(updated.oldPrice);
+
+			// Auto calculate discount
+			if (!isNaN(price) && !isNaN(oldPrice) && oldPrice > price) {
+				const discount = ((oldPrice - price) / oldPrice) * 100;
+				updated.discount = Math.round(discount); // or +discount.toFixed(1)
+			} else {
+				updated.discount = "";
+			}
+
+			return updated;
+		});
 	};
 
 	// ✅ Category Changes
@@ -372,6 +392,34 @@ function EditProduct() {
 								<MenuItem value="false">False</MenuItem>
 							</Select>
 						</div>
+					</div>
+
+					<div className="grid grid-cols-4 gap-4 mb-3">
+						<InputBox
+							label="Product Price"
+							name="price"
+							value={formFields.price}
+							onChange={handleInputChange}
+							required
+						/>
+						<InputBox
+							label="Old Price"
+							name="oldPrice"
+							value={formFields.oldPrice}
+							onChange={handleInputChange}
+						/>
+						<InputBox
+							label="Brand"
+							name="brand"
+							value={formFields.brand}
+							onChange={handleInputChange}
+						/>
+						<InputBox
+							label="Discount (%)"
+							name="discount"
+							value={formFields.discount}
+							readOnly={true} // 🔒 cannot edit
+						/>
 					</div>
 
 					{/* ✅ Product specs updated */}

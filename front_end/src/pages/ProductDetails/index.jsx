@@ -195,14 +195,14 @@ function ProductDetails() {
 							color="inherit"
 							className="link transition !text-[14px]"
 						>
-							Fashion
+							{productData.catName}
 						</Link>
 						<Link
 							underline="hover"
 							color="inherit"
 							className=" transition !text-[14px]"
 						>
-							Kurti Dress
+							{productData.subCat}
 						</Link>
 					</Breadcrumbs>
 				</div>

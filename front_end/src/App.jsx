@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Header } from "./componants/header";
 import { Home } from "./pages/Home";
@@ -28,6 +28,7 @@ import Orders from "./pages/Orders";
 import { fetchDataFromApi, postData, putData } from "./utils/api";
 import MyContext from "./context/MyContext";
 import Address from "./pages/Address";
+import { IoCartOutline } from "react-icons/io5";
 
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState({
@@ -102,7 +103,14 @@ function App() {
 		window.scrollTo(0, 0);
 	}, []);
 
-	const addToCart = async (product, userId, quantity = 1) => {
+	const addToCart = async (
+		product,
+		userId,
+		quantity = 1,
+		ram,
+		size,
+		weight
+	) => {
 		try {
 			// ----------------------------------
 			// 1. User Not Logged In
@@ -150,13 +158,21 @@ function App() {
 			const data = {
 				productTitle: product.name || "",
 				image: product.images?.[0] || "",
-				rating: product.rating || 0,
+				rating: product.avgRating || product.rating || 0,
 				price: product.price || 0,
+				oldPrice: product.oldPrice || 0,
 				quantity,
 				subTotal: Number(product.price * quantity) || 0,
 				productId: product._id,
 				countInStock: product.countInStock - quantity,
 				userId,
+				ram: ram || product.productRam[0],
+				size: size || product.size[0],
+				weight: weight || product.productWeight[0],
+				ProductBrand: product.brand,
+				ramRange: product.productRam,
+				sizeRange: product.size,
+				weightRange: product.productWeight,
 			};
 
 			// ----------------------------------
@@ -223,6 +239,7 @@ function App() {
 		catData: catData,
 		addToCart: addToCart,
 		cartData: cartData,
+		fetchCartData: fetchCartData,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -356,7 +373,7 @@ function App() {
 				>
 					<div className="w-[400px] py-3 px-4 ">
 						<div className="flex items-center justify-between  gap-3  border-b border-[rgba(0,0,0,0.1)] ">
-							<h4>Shoping Cart (1)</h4>
+							<h4>Shoping Cart {cartData?.length}</h4>
 							<Button
 								className=" !w-[30px] !min-w-[30px] !h-[30px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
 								onClick={toggleDrawer(false)}
@@ -364,7 +381,43 @@ function App() {
 								<IoMdClose className="!text-[16px]  " />
 							</Button>
 						</div>
-						<CartPanel />
+						{cartData?.length !== 0 ? (
+							<CartPanel data={cartData} />
+						) : (
+							<div className="flex flex-col items-center justify-center py-10 gap-3 text-center">
+								{/* Icon Box */}
+								<div
+									className="w-20 h-20 flex items-center justify-center rounded-full"
+									style={{ backgroundColor: "rgba(255, 82, 82, 0.1)" }}
+								>
+									<IoCartOutline
+										className="text-4xl"
+										style={{ color: "#ff5252" }}
+									/>
+								</div>
+
+								<h3
+									className="text-lg font-semibold"
+									style={{ color: "#ff5252" }}
+								>
+									Your cart is empty
+								</h3>
+
+								<p className="text-sm text-gray-500">
+									Add items to your cart to see them here.
+								</p>
+
+								<Link to="/">
+									<Button
+										className="!mt-3 !px-6 !py-2 !rounded-full !text-white"
+										style={{ backgroundColor: "#ff5252" }}
+										onClick={toggleDrawer(false)}
+									>
+										Start Shopping
+									</Button>
+								</Link>
+							</div>
+						)}
 					</div>
 				</Drawer>
 			</MyContext.Provider>

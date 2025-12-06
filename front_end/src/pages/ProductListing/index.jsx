@@ -7,13 +7,14 @@ import { IoGrid } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProductItemListView from "../../componants/ProductItemListView";
 import Pagination from "@mui/material/Pagination";
 import { useParams } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
 import ProductItemSkeleton from "../../componants/ProductItem/ProductItemSkeleton";
 import ProductItemListSkeleton from "../../componants/ProductItemListView/ProductItemListSkeleton";
+import MyContext from "../../context/MyContext";
 
 function ProductListing() {
 	const [itemView, setItemView] = useState("grid");
@@ -23,6 +24,25 @@ function ProductListing() {
 	const [originalProducts, setOriginalProducts] = useState([]);
 	const [sortType, setSortType] = useState("relevance");
 	const [isLoading, setIsLoading] = useState(false);
+
+	const context = useContext(MyContext);
+
+	const findCategoryNameById = (categories, id) => {
+		for (let cat of categories) {
+			// 1️⃣ Match at current level
+			if (cat._id === id) return cat.name;
+
+			// 2️⃣ Search inside children (if exists)
+			if (cat.children && cat.children.length > 0) {
+				const result = findCategoryNameById(cat.children, id);
+				if (result) return result;
+			}
+		}
+
+		return null; // not found
+	};
+
+	const catName = findCategoryNameById(context.catData, id);
 
 	// GLOBAL LOADER FUNCTION
 	const showLoader = (callback) => {
@@ -127,7 +147,7 @@ function ProductListing() {
 						href="/"
 						className="link transition !text[14px]"
 					>
-						Fashion
+						{catName}
 					</Link>
 				</Breadcrumbs>
 			</div>

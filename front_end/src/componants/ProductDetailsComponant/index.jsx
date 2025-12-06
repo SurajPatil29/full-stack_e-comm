@@ -10,6 +10,8 @@ import MyContext from "../../context/MyContext";
 function ProductDetailsComponant({ item, gotoReviews }) {
 	const [selectedSize, setSelectedSize] = useState(null);
 	const [selectedRam, setSelectedRam] = useState(null);
+	const [selectedWeight, setSelectedWeight] = useState(null);
+
 	const { isLogin, userData, addToCart, cartData } = useContext(MyContext);
 	const [quantity, setQuantity] = useState(1);
 
@@ -35,6 +37,48 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 	} = item;
 	const discount =
 		oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+
+	// -----------------------------
+	// HANDLE ADD TO CART
+	// -----------------------------
+	const handleAddToCart = () => {
+		// Validate RAM selection
+		if (productRam.length > 0 && selectedRam === null) {
+			openAlertBox("error", "Please select RAM option.");
+			return;
+		}
+
+		// Validate Size selection
+		if (size.length > 0 && selectedSize === null) {
+			openAlertBox("error", "Please select Size option.");
+			return;
+		}
+
+		// Validate Weight selection
+		if (productWeight.length > 0 && selectedWeight === null) {
+			openAlertBox("error", "Please select Weight option.");
+			return;
+		}
+
+		// Extract selected values
+		const selectedRamValue =
+			selectedRam !== null ? productRam[selectedRam] : null;
+
+		const selectedSizeValue = selectedSize !== null ? size[selectedSize] : null;
+
+		const selectedWeightValue =
+			selectedWeight !== null ? productWeight[selectedWeight] : null;
+
+		// CALL ADD TO CART
+		addToCart(
+			item,
+			userData?._id,
+			quantity,
+			selectedRamValue,
+			selectedSizeValue,
+			selectedWeightValue
+		);
+	};
 
 	return (
 		<>
@@ -128,9 +172,26 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 
 			{/* WEIGHT */}
 			{productWeight.length > 0 && (
-				<p className="text-[14px] mb-4">
-					Weight: <span className="font-[600]">{productWeight[0]}</span>
-				</p>
+				<div className="flex items-center gap-3 mb-4 ">
+					<span className="text-[16px]">Weight :</span>
+
+					<div className="flex items-center gap-1 actions">
+						{productWeight.map((w, index) => (
+							<Button
+								key={index}
+								className={`${
+									selectedWeight === index && "!bg-[#ff5252] !text-white"
+								}`}
+								onClick={() => setSelectedWeight(index)}
+							>
+								{w}
+							</Button>
+						))}
+					</div>
+				</div>
+				// <p className="text-[14px] mb-4">
+				// 	Weight: <span className="font-[600]">{productWeight[0]}</span>
+				// </p>
 			)}
 
 			{/* QTY + ADD TO CART */}
@@ -153,10 +214,7 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 								/>
 							</div>
 
-							<Button
-								className="btn-org flex gap-2"
-								onClick={() => addToCart(item, userData?._id, quantity)}
-							>
+							<Button className="btn-org flex gap-2" onClick={handleAddToCart}>
 								<HiOutlineShoppingCart className="text-[22px]" />
 								Add To Cart
 							</Button>

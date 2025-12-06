@@ -15,7 +15,7 @@ function QtyBox({ quantity, setQuantity, stock }) {
 	};
 
 	const plusQty = () => {
-		if (stock >= quantity) {
+		if (10 > quantity) {
 			setQuantity(quantity + 1);
 		}
 	};
