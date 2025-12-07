@@ -41,6 +41,7 @@ function App() {
 	const [authChecked, setAuthChecked] = useState(false);
 	const [catData, setCatData] = useState([]);
 	const [cartData, setCartData] = useState([]);
+	const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -112,11 +113,13 @@ function App() {
 		weight
 	) => {
 		try {
+			setIsLoadingAddToCart(true);
 			// ----------------------------------
 			// 1. User Not Logged In
 			// ----------------------------------
 			if (!userId) {
 				openAlertBox("error", "Please log in first.");
+				setIsLoadingAddToCart(false);
 				return false;
 			}
 
@@ -125,6 +128,8 @@ function App() {
 			// ----------------------------------
 			if (!product || !product?._id) {
 				openAlertBox("error", "Product not found.");
+				setIsLoadingAddToCart(false);
+
 				return false;
 			}
 
@@ -133,6 +138,8 @@ function App() {
 			// ----------------------------------
 			if (quantity <= 0 || typeof quantity !== "number") {
 				openAlertBox("error", "Invalid quantity selected.");
+				setIsLoadingAddToCart(false);
+
 				return false;
 			}
 
@@ -141,6 +148,8 @@ function App() {
 			// ----------------------------------
 			if (product.countInStock === 0) {
 				openAlertBox("error", "This product is out of stock.");
+				setIsLoadingAddToCart(false);
+
 				return false;
 			}
 
@@ -149,6 +158,8 @@ function App() {
 					"error",
 					`Only ${product.countInStock} items available in stock.`
 				);
+				setIsLoadingAddToCart(false);
+
 				return false;
 			}
 
@@ -180,6 +191,8 @@ function App() {
 			// ----------------------------------
 			if (!data.productTitle || !data.image || !data.price) {
 				openAlertBox("error", "Product details missing.");
+				setIsLoadingAddToCart(false);
+
 				return false;
 			}
 
@@ -204,12 +217,17 @@ function App() {
 				// 9. Refresh Cart + Product Details
 				// ----------------------------------
 				await fetchCartData();
+				setTimeout(() => {
+					setIsLoadingAddToCart(false);
+				}, 1000);
 			} else {
 				openAlertBox("error", res?.message || "Unable to add item to cart.");
+				setIsLoadingAddToCart(false);
 			}
 		} catch (error) {
 			console.error("Add to cart error:", error);
 			openAlertBox("error", "Server error, please try again.");
+			setIsLoadingAddToCart(false);
 		}
 	};
 
@@ -240,6 +258,8 @@ function App() {
 		addToCart: addToCart,
 		cartData: cartData,
 		fetchCartData: fetchCartData,
+		isLoadingAddToCart: isLoadingAddToCart,
+		setIsLoadingAddToCart: setIsLoadingAddToCart,
 	};
 
 	function PrivateRoutes({ children }) {

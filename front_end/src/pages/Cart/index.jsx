@@ -2,17 +2,32 @@ import { Button } from "@mui/material";
 import { BsBagCheck } from "react-icons/bs";
 
 import CartItems from "./CartItems";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import MyContext from "../../context/MyContext";
 import { IoCartOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import SkeletonCart from "./SkeletonCartItem";
 
 function CartPage() {
 	const context = useContext(MyContext);
+	const [localLoading, setLocalLoading] = useState(true);
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
+
+		// Create 1 sec loading delay
+		const timer = setTimeout(() => {
+			setLocalLoading(false);
+		}, 1000);
+
+		return () => clearTimeout(timer);
 	}, []);
+	console.log(context.cartData);
+	const totalSubtotal = context.cartData?.reduce(
+		(sum, item) => sum + (item.subTotal || 0),
+		0
+	);
+
 	return (
 		<section className="section py-10 px-5">
 			<div className="container w-[80%] min-w-[80%] flex gap-5">
@@ -29,7 +44,9 @@ function CartPage() {
 								products in your cart
 							</p>
 						</div>
-						{context?.cartData && context?.cartData.length > 0 ? (
+						{localLoading ? (
+							<SkeletonCart count={3} />
+						) : context.cartData.length > 0 ? (
 							context.cartData.map((item, i) => (
 								<CartItems data={item} key={i} />
 							))
@@ -71,13 +88,15 @@ function CartPage() {
 				</div>
 
 				<div className="rightPart w-[30%] ">
-					<div className="shadow-md rounded-md bg-white p-5">
+					<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px] z-auto ">
 						<h3>Cart Total</h3>
 						<hr />
 
 						<p className="flex items-center justify-between">
 							<span className="text-[14px] font-[500] ">Subtotal</span>
-							<span className="text-[#ff5151] font-bold ">$300</span>
+							<span className="text-[#ff5151] font-bold ">
+								&#8377;{totalSubtotal}
+							</span>
 						</p>
 
 						<p className="flex items-center justify-between">
@@ -92,7 +111,9 @@ function CartPage() {
 
 						<p className="flex items-center justify-between">
 							<span className="text-[14px] font-[500] ">Total</span>
-							<span className="text-[#ff5151] font-bold ">$900</span>
+							<span className="text-[#ff5151] font-bold ">
+								&#8377;{totalSubtotal}
+							</span>
 						</p>
 						<Button className="btn-org btn-lg w-full flex gap-3">
 							<BsBagCheck className="text-[20px]" /> Checkout

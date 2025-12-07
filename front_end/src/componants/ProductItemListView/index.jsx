@@ -4,7 +4,7 @@ import Rating from "@mui/material/Rating";
 import { FaMinus, FaPlus, FaRegHeart } from "react-icons/fa";
 import { IoGitCompareOutline } from "react-icons/io5";
 import { MdZoomOutMap } from "react-icons/md";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { useContext, useState } from "react";
@@ -12,8 +12,14 @@ import MyContext from "../../context/MyContext";
 
 function ProductItemListView({ item }) {
 	// this componant use for shocase product info on home page
-	const { setOpenProductDetailsModel, userData, addToCart, isLogin, cartData } =
-		useContext(MyContext);
+	const {
+		setOpenProductDetailsModel,
+		userData,
+		addToCart,
+		isLogin,
+		cartData,
+		isLoadingAddToCart,
+	} = useContext(MyContext);
 
 	const [quantity, setQuantity] = useState(1);
 	const [addQty, setAddQty] = useState(false);
@@ -147,7 +153,9 @@ function ProductItemListView({ item }) {
 									<button
 										className="w-8 h-8 flex items-center justify-center bg-red-500 text-white hover:bg-red-600 transition"
 										onClick={() =>
-											setQuantity((prev) => Math.min(10, prev + 1))
+											setQuantity((prev) =>
+												Math.min(Math.min(item.countInStock, 10), prev + 1)
+											)
 										}
 									>
 										<FaPlus className="text-sm" />
@@ -168,7 +176,7 @@ function ProductItemListView({ item }) {
 							<Button
 								className={`btn-org gap-2 w-full !py-3 !text-[16px] !rounded-full shadow-md transition 
 							${item?.countInStock === 0 ? "!bg-gray-300 !cursor-not-allowed" : ""}`}
-								disabled={item?.countInStock <= 0}
+								disabled={item?.countInStock <= 0 || isLoadingAddToCart}
 								onClick={() => {
 									if (!addQty) {
 										setAddQty(true);
@@ -178,7 +186,9 @@ function ProductItemListView({ item }) {
 									}
 								}}
 							>
-								{item?.countInStock > 0 ? (
+								{isLoadingAddToCart ? (
+									<CircularProgress size={22} thickness={5} />
+								) : item?.countInStock > 0 ? (
 									<>
 										<HiOutlineShoppingCart className="text-[20px]" />
 										{addQty ? "Confirm Add" : "Add to Cart"}

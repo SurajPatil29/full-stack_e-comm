@@ -7,15 +7,28 @@ function QtyBox({ quantity, setQuantity, stock }) {
 	const [qtyVal, setQtyVal] = useState(1);
 
 	const handleChange = (e) => {
-		const newValue = parseInt(e.target.value, 10);
+		let newValue = parseInt(e.target.value, 10);
 
-		if (!isNaN(newValue) && newValue > 0) {
+		// If invalid or empty input
+		if (isNaN(newValue) || newValue <= 0) {
+			setQuantity(1);
+			return;
+		}
+
+		// Max should not exceed stock or 10
+		const maxAllowed = Math.min(stock, 10);
+
+		if (newValue > maxAllowed) {
+			setQuantity(maxAllowed);
+		} else {
 			setQuantity(newValue);
 		}
 	};
 
 	const plusQty = () => {
-		if (10 > quantity) {
+		const maxAllowed = Math.min(stock, 10);
+
+		if (quantity < maxAllowed) {
 			setQuantity(quantity + 1);
 		}
 	};

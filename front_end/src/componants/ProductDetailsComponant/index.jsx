@@ -1,25 +1,30 @@
-import { Button, Rating } from "@mui/material";
-import { useState } from "react";
+import { Button, CircularProgress, Rating } from "@mui/material";
+import { useEffect, useState } from "react";
 import QtyBox from "../QtyBox";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaRegHeart } from "react-icons/fa";
 import { IoGitCompareOutline } from "react-icons/io5";
 import { useContext } from "react";
 import MyContext from "../../context/MyContext";
+import { putData } from "../../utils/api";
 
 function ProductDetailsComponant({ item, gotoReviews }) {
-	const [selectedSize, setSelectedSize] = useState(null);
-	const [selectedRam, setSelectedRam] = useState(null);
-	const [selectedWeight, setSelectedWeight] = useState(null);
-
-	const { isLogin, userData, addToCart, cartData } = useContext(MyContext);
-	const [quantity, setQuantity] = useState(1);
+	const {
+		isLogin,
+		userData,
+		addToCart,
+		cartData,
+		isLoadingAddToCart,
+		openAlertBox,
+	} = useContext(MyContext);
 
 	const isInCart = cartData?.some(
 		(cartItem) => cartItem.productId === item._id
 	);
 
-	if (!item || Object.keys(item).length === 0) return null;
+	const cartItem = cartData?.find(
+		(cartItem) => cartItem.productId === item._id
+	);
 
 	const {
 		name,
@@ -35,6 +40,23 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 		avgRating,
 		numReviews = 0,
 	} = item;
+
+	const [selectedRam, setSelectedRam] = useState(
+		cartItem ? productRam.indexOf(cartItem.ram) : null
+	);
+
+	const [selectedSize, setSelectedSize] = useState(
+		cartItem ? size.indexOf(cartItem.size) : null
+	);
+
+	const [selectedWeight, setSelectedWeight] = useState(
+		cartItem ? productWeight.indexOf(cartItem.weight) : null
+	);
+
+	const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
+
+	if (!item || Object.keys(item).length === 0) return null;
+
 	const discount =
 		oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
@@ -79,6 +101,27 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 			selectedWeightValue
 		);
 	};
+
+	useEffect(() => {
+		const updateCart = async () => {
+			try {
+				await putData("/api/cart/update-item", {
+					_id: cartItem._id,
+					qty: quantity,
+					size: size[selectedSize],
+					ram: productRam[selectedRam],
+					weight: productWeight[selectedWeight],
+				});
+
+				// if needed: context.fetchCart()
+			} catch (error) {
+				console.error("Cart update failed:", error);
+			}
+		};
+
+		updateCart();
+		// context.fetchCartData();
+	}, [quantity, selectedRam, selectedSize, selectedWeight]);
 
 	return (
 		<>
@@ -214,9 +257,21 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 								/>
 							</div>
 
-							<Button className="btn-org flex gap-2" onClick={handleAddToCart}>
-								<HiOutlineShoppingCart className="text-[22px]" />
-								Add To Cart
+							<Button
+								className={`btn-org flex gap-2 !py-3 !rounded-full !text-[16px]`}
+								onClick={handleAddToCart}
+								disabled={isLoadingAddToCart || item?.countInStock <= 0}
+							>
+								{isLoadingAddToCart ? (
+									<CircularProgress size={22} thickness={5} />
+								) : item?.countInStock > 0 ? (
+									<>
+										<HiOutlineShoppingCart className="text-[22px]" />
+										Add To Cart
+									</>
+								) : (
+									"Out of Stock"
+								)}
 							</Button>
 						</div>
 					)}
