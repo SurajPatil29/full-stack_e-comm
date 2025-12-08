@@ -42,6 +42,8 @@ function App() {
 	const [catData, setCatData] = useState([]);
 	const [cartData, setCartData] = useState([]);
 	const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
+	const [myListData, setMyListData] = useState([]);
+	const [isLoadingAddToMyList, setIsLoadingAddToMyList] = useState(false);
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -83,6 +85,7 @@ function App() {
 						setUserData(res.user);
 						localStorage.setItem("userId", res.user._id);
 						fetchCartData();
+						fetchMyListData();
 					} else {
 						console.warn("User details not found in response", res);
 					}
@@ -92,6 +95,8 @@ function App() {
 				});
 		} else {
 			setUserData(null);
+			setCartData([]);
+			setMyListData([]);
 		}
 	}, [isLogin]);
 
@@ -245,6 +250,74 @@ function App() {
 		}
 	};
 
+	const addToMyList = async (product, userId) => {
+		try {
+			setIsLoadingAddToMyList(true);
+
+			if (!userId) {
+				openAlertBox("error", "Please Log in first.");
+				setIsLoadingAddToMyList(false);
+				return false;
+			}
+
+			if (!product || !product?._id) {
+				openAlertBox("error", "Please not found.");
+				setIsLoadingAddToMyList(false);
+				return false;
+			}
+
+			const data = {
+				productTitle: product.name || "",
+				image: product.images?.[0] || "",
+				rating: product.avgRating || product.rating || 0,
+				price: product.price || 0,
+				oldPrice: product.oldPrice || 0,
+				productId: product._id,
+				userId,
+				ProductBrand: product.brand,
+			};
+
+			if (!data.productTitle || !data.image || !data.price) {
+				openAlertBox("error", "Product details missing.");
+				setIsLoadingAddToMyList(false);
+
+				return false;
+			}
+
+			const res = await postData("/api/myList/mylist-add", data);
+
+			if (res?.error === false) {
+				openAlertBox("success", res.message);
+
+				await fetchMyListData();
+				setTimeout(() => {
+					setIsLoadingAddToMyList(false);
+				}, 1000);
+			} else {
+				openAlertBox("error", res?.message || "Unable to add item to MyList");
+				setIsLoadingAddToMyList(false);
+			}
+		} catch (error) {
+			console.error("Add to MyList error:", error);
+			openAlertBox("error", "Server error, please try again.");
+			setIsLoadingAddToMyList(false);
+		}
+	};
+
+	const fetchMyListData = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/myList/get-mylist");
+			if (res?.data) {
+				setMyListData(res.data);
+			} else {
+				openAlertBox("error", "Unable to fetch MyList data");
+			}
+		} catch (error) {
+			console.error("MyList Fetch Error:", error);
+			openAlertBox("error", "Something went wrong while fetching MyList.");
+		}
+	};
+
 	const value = {
 		setOpenProductDetailsModel: setOpenProductDetailsModel,
 		setOpenCartPanel: setOpenCartPanel,
@@ -260,6 +333,11 @@ function App() {
 		fetchCartData: fetchCartData,
 		isLoadingAddToCart: isLoadingAddToCart,
 		setIsLoadingAddToCart: setIsLoadingAddToCart,
+		addToMyList: addToMyList,
+		myListData: myListData,
+		fetchMyListData: fetchMyListData,
+		isLoadingAddToMyList: isLoadingAddToMyList,
+		setIsLoadingAddToMyList: setIsLoadingAddToMyList,
 	};
 
 	function PrivateRoutes({ children }) {

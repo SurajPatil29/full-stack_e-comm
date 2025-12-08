@@ -7,6 +7,7 @@ import MyContext from "../../context/MyContext";
 import { IoCartOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import SkeletonCart from "./SkeletonCartItem";
+import SkeletonCartTotal from "./SkeletonCartTotal";
 
 function CartPage() {
 	const context = useContext(MyContext);
@@ -88,37 +89,37 @@ function CartPage() {
 				</div>
 
 				<div className="rightPart w-[30%] ">
-					<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px] z-auto ">
-						<h3>Cart Total</h3>
-						<hr />
+					{localLoading ? (
+						<SkeletonCartTotal />
+					) : (
+						<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px] z-auto ">
+							<h3>Cart Total</h3>
+							<hr />
 
-						<p className="flex items-center justify-between">
-							<span className="text-[14px] font-[500] ">Subtotal</span>
-							<span className="text-[#ff5151] font-bold ">
-								&#8377;{totalSubtotal}
-							</span>
-						</p>
+							<p className="flex items-center justify-between">
+								<span className="text-[14px] font-[500] ">Subtotal</span>
+								<span className="text-[#ff5151] font-bold ">
+									₹{totalSubtotal}
+								</span>
+							</p>
 
-						<p className="flex items-center justify-between">
-							<span className="text-[14px] font-[500] ">Shipping</span>
-							<span className=" font-bold ">Free</span>
-						</p>
+							<p className="flex items-center justify-between">
+								<span className="text-[14px] font-[500] ">Shipping</span>
+								<span className="font-bold">Free</span>
+							</p>
 
-						<p className="flex items-center justify-between">
-							<span className="text-[14px] font-[500] ">Estimate for</span>
-							<span className=" font-bold ">United Kingdom</span>
-						</p>
+							<p className="flex items-center justify-between">
+								<span className="text-[14px] font-[500] ">Total</span>
+								<span className="text-[#ff5151] font-bold ">
+									₹{totalSubtotal}
+								</span>
+							</p>
 
-						<p className="flex items-center justify-between">
-							<span className="text-[14px] font-[500] ">Total</span>
-							<span className="text-[#ff5151] font-bold ">
-								&#8377;{totalSubtotal}
-							</span>
-						</p>
-						<Button className="btn-org btn-lg w-full flex gap-3">
-							<BsBagCheck className="text-[20px]" /> Checkout
-						</Button>
-					</div>
+							<Button className="btn-org btn-lg w-full flex gap-3">
+								<BsBagCheck className="text-[20px]" /> Checkout
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		</section>

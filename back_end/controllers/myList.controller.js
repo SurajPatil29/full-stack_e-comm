@@ -1,26 +1,38 @@
-import MyListModel from "../models/mylist.model.js";
-import UserModel from "../models/user.model.js";
+import MyListModel from "../models/myList.model.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 // Add to my list
 export const addToMyListController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
-		const { productId } = req.body;
+		const {
+			productTitle,
+			image,
+			rating,
+			price,
+			oldPrice,
+			productId,
+			ProductBrand,
+		} = req.body;
 
 		if (!productId) return sendError(res, "Provide productId", 400);
 
 		const alreadyExists = await MyListModel.findOne({ userId, productId });
 		if (alreadyExists) return sendError(res, "Item already in list", 400);
 
-		const item = await MyListModel.create({ userId, productId });
+		// Save only once
+		const newItem = await MyListModel.create({
+			productTitle,
+			image,
+			rating,
+			price,
+			oldPrice,
+			productId,
+			userId,
+			ProductBrand,
+		});
 
-		await UserModel.updateOne(
-			{ _id: userId },
-			{ $push: { my_list: productId } }
-		);
-
-		return sendSuccess(res, "Item added to MyList", { data: item });
+		return sendSuccess(res, "Item added to MyList", { data: newItem });
 	} catch (error) {
 		next(error);
 	}
@@ -30,27 +42,32 @@ export const addToMyListController = async (req, res, next) => {
 export const getMyListController = async (req, res, next) => {
 	try {
 		const userId = req.userId;
-		const items = await MyListModel.find({ userId }).populate("productId");
+		const items = await MyListModel.find({ userId });
 		return sendSuccess(res, "MyList items fetched", { data: items });
 	} catch (error) {
 		next(error);
 	}
 };
-
 // Delete item from MyList
 export const deleteToMylistController = async (req, res, next) => {
 	try {
-		const userId = req.userId;
-		const productId = req.params.id;
+		const userId = req.userId; // user authenticated from middleware
+		const _id = req.params.id; // product ID coming from URL
 
-		const deleted = await MyListModel.deleteOne({ userId, productId });
+		// Debug log
+		console.log("Delete MyList:", { _id, userId });
 
-		await UserModel.updateOne(
-			{ _id: userId },
-			{ $pull: { my_list: productId } }
-		);
+		// Try deleting the specific user + product item
+		const deleted = await MyListModel.deleteOne({ userId, _id });
 
-		return sendSuccess(res, "Item removed from MyList", { data: deleted });
+		if (deleted.deletedCount === 0) {
+			return sendError(res, "Item not found in MyList", 404);
+		}
+
+		return sendSuccess(res, "Item removed from MyList", {
+			success: true,
+			removedId: _id,
+		});
 	} catch (error) {
 		next(error);
 	}

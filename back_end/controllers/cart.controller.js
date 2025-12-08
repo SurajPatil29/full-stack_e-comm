@@ -29,12 +29,6 @@ export const addToCartItemController = async (req, res, next) => {
 		const exists = await CartProductModel.findOne({ userId, productId });
 		if (exists) return sendError(res, "Item already in cart", 400);
 
-		const checkItemCart = await CartProductModel.findOne({ userId, productId });
-
-		if (checkItemCart) {
-			return sendError(res, "Item alredy in Cart", 400);
-		}
-
 		const cartItem = new CartProductModel({
 			productTitle: productTitle,
 			image: image,

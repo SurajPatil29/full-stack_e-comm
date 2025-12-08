@@ -2,7 +2,7 @@ import { Button, CircularProgress, Rating } from "@mui/material";
 import { useEffect, useState } from "react";
 import QtyBox from "../QtyBox";
 import { HiOutlineShoppingCart } from "react-icons/hi";
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoGitCompareOutline } from "react-icons/io5";
 import { useContext } from "react";
 import MyContext from "../../context/MyContext";
@@ -15,6 +15,8 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 		addToCart,
 		cartData,
 		isLoadingAddToCart,
+		addToMyList,
+		myListData,
 		openAlertBox,
 	} = useContext(MyContext);
 
@@ -24,6 +26,10 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 
 	const cartItem = cartData?.find(
 		(cartItem) => cartItem.productId === item._id
+	);
+
+	const isInMyList = myListData?.some(
+		(listItem) => listItem.productId === item._id
 	);
 
 	const {
@@ -279,13 +285,44 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 			)}
 
 			{/* WISHLIST + COMPARE */}
-			<div className="flex items-center gap-4 mt-4">
-				<span className="flex items-center gap-3 text-[14px] font-[500] cursor-pointer">
-					<FaRegHeart className="text-[18px]" /> Add to Wishlist
-				</span>
+			<div className="flex items-center gap-5 mt-4">
+				{/* Add to Wishlist */}
+				<button
+					onClick={() => {
+						if (!isLogin) {
+							openAlertBox("error", "Please login to continue");
+							return;
+						}
+						addToMyList(item, userData?._id);
+					}}
+					className={`
+      flex items-center gap-2 px-4 py-2 rounded-full border 
+      transition-all duration-300 select-none
+      ${
+				isInMyList
+					? "bg-red-500 border-red-500 text-white hover:bg-red-600"
+					: "bg-white border-gray-300 text-gray-700 hover:bg-red-500 hover:text-white"
+			}
+    `}
+				>
+					{isInMyList ? (
+						<FaHeart className="text-white text-[17px]" />
+					) : (
+						<FaRegHeart
+							className={`
+        text-[17px] transition-all duration-300 
+        text-gray-700 
+        group-hover:text-white
+      `}
+						/>
+					)}
+					{isInMyList ? "Added to Wishlist" : "Add to Wishlist"}
+				</button>
 
-				<span className="flex items-center gap-3 text-[14px] font-[500] cursor-pointer">
-					<IoGitCompareOutline className="text-[18px]" /> Add to Compare
+				{/* Compare Button */}
+				<span className="flex items-center gap-2 text-[14px] font-[500] cursor-pointer">
+					<IoGitCompareOutline className="text-[18px]" />
+					Add to Compare
 				</span>
 			</div>
 		</>

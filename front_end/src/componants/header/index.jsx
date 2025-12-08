@@ -254,8 +254,13 @@ function Header() {
 							<li>
 								<Tooltip title="Favorite">
 									<IconButton aria-label="cart">
-										<StyledBadge badgeContent={5} color="secondary">
-											<MdFavoriteBorder />
+										<StyledBadge
+											badgeContent={context?.myListData.length || 0}
+											color="secondary"
+										>
+											<Link to="/my-list">
+												<MdFavoriteBorder />
+											</Link>
 										</StyledBadge>
 									</IconButton>
 								</Tooltip>

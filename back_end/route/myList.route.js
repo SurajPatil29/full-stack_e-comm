@@ -8,8 +8,8 @@ import {
 
 const myListRouter = Router();
 
-myListRouter.post("/add", auth, addToMyListController);
-myListRouter.get("/", auth, getMyListController);
-myListRouter.delete("/:id", auth, deleteToMylistController);
+myListRouter.post("/mylist-add", auth, addToMyListController);
+myListRouter.get("/get-mylist", auth, getMyListController);
+myListRouter.delete("/delete-mylist/:id", auth, deleteToMylistController);
 
 export default myListRouter;

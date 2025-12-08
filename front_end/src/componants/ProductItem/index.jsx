@@ -19,6 +19,9 @@ function ProductItem({ item }) {
 		isLogin,
 		cartData,
 		isLoadingAddToCart,
+		addToMyList,
+		myListData,
+		openAlertBox,
 	} = useContext(MyContext);
 
 	const [quantity, setQuantity] = useState(1);
@@ -36,6 +39,13 @@ function ProductItem({ item }) {
 
 	const isInCart = cartData?.some(
 		(cartItem) => cartItem.productId === item._id
+	);
+
+	{
+		/* CHECK IF PRODUCT ALREADY IN MY LIST */
+	}
+	const isInMyList = myListData?.some(
+		(listItem) => listItem.productId === item._id
 	);
 
 	return (
@@ -81,13 +91,36 @@ function ProductItem({ item }) {
 						</Button>
 					</Tooltip>
 
-					<Tooltip title="Favourite" placement="left-start">
-						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
-							<FaRegHeart className="text-[18px] !text-black group-hover:text-white" />
+					<Tooltip title="Compare" placement="left-start">
+						<Button
+							onClick={() => {
+								if (!isLogin) {
+									// Open your login alert modal
+									openAlertBox("error", "Please login to continue");
+									return;
+								}
+								addToMyList(item, userData?._id);
+							}}
+							className={`!w-[35px] 
+                    !h-[35px] 
+                    !min-w-[35px] 
+                    !rounded-full 
+                    ${
+											isInMyList
+												? "!bg-[#ff5252] !text-white"
+												: "!bg-white text-black"
+										}
+                    hover:!bg-[#ff5252] hover:text-white group`}
+						>
+							<FaRegHeart
+								className={`text-[18px] 
+                ${isInMyList ? "text-white" : "!text-black"} 
+                group-hover:text-white`}
+							/>
 						</Button>
 					</Tooltip>
 
-					<Tooltip title="Compare" placement="left-start">
+					<Tooltip title="Favourite" placement="left-start">
 						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
 							<IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white" />
 						</Button>

@@ -2,15 +2,39 @@ import mongoose from "mongoose";
 
 const myListSchema = new mongoose.Schema(
 	{
-		userId: {
-			type: mongoose.Schema.ObjectId,
-			ref: "User",
+		productTitle: {
+			type: String,
 			required: true,
 		},
+		image: {
+			type: String,
+			required: true,
+		},
+		rating: {
+			type: Number,
+			required: true,
+		},
+		price: {
+			type: Number,
+			required: true,
+		},
+		oldPrice: {
+			type: Number,
+			required: true,
+		},
+
 		productId: {
 			type: mongoose.Schema.ObjectId,
 			ref: "Product",
-			required: true,
+		},
+
+		userId: {
+			type: mongoose.Schema.ObjectId,
+			ref: "User",
+		},
+		ProductBrand: {
+			type: String,
+			default: "",
 		},
 	},
 	{ timestamps: true }
