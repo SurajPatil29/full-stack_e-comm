@@ -1,13 +1,14 @@
 import {
 	Button,
 	CircularProgress,
+	Drawer,
 	IconButton,
 	InputAdornment,
 	TextField,
 } from "@mui/material";
 import AccountSideBar from "../../componants/AccountSideBar";
 import { useState, useEffect, useContext } from "react";
-import { fetchDataFromApi, postData } from "../../utils/api";
+import { deleteDataReview, fetchDataFromApi, postData } from "../../utils/api";
 import {
 	FaEye,
 	FaEyeSlash,
@@ -20,6 +21,8 @@ import {
 import "react-international-phone/style.css";
 import { PhoneInput } from "react-international-phone";
 import MyContext from "../../context/MyContext";
+import AddressCard from "./AddressCard";
+import { useNavigate } from "react-router-dom";
 
 function MyAccount() {
 	const [userDetails, setUserDetails] = useState({
@@ -49,6 +52,11 @@ function MyAccount() {
 	const [showMore, setShowMore] = useState(false);
 	const address = context?.userData?.address_details;
 	const isGoogleLogIn = context?.userData?.signUpWithGoogle || false;
+	const selectedAddress = address?.find((a) => a.status === true);
+	const otherAddresses = address?.filter((a) => a.status !== true);
+	const [openDrawer, setOpenDrawer] = useState(false);
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (context.userData) {
@@ -81,6 +89,28 @@ function MyAccount() {
 			...prev,
 			[field]: !prev[field],
 		}));
+	};
+
+	const handleDefaultAddressSelection = async (addressId) => {
+		const res = await postData("/api/address/set-default", { addressId });
+
+		if (!res.error) {
+			context.openAlertBox("success", "Address selected");
+			context.loadUserDetails(); // Reload user to update address list
+		}
+	};
+
+	const handleDeleteAddress = async (id) => {
+		const res = await deleteDataReview(`/api/address/delete/${id}`);
+
+		if (res?.error) {
+			return context.openAlertBox("error", res.message);
+		}
+
+		context.openAlertBox("success", res.message);
+
+		// Refresh address list after delete
+		context.loadUserDetails();
 	};
 
 	const handleSave = async (e) => {
@@ -143,6 +173,7 @@ function MyAccount() {
 			setMessage("✅ Profile updated successfully.");
 			const updatedUser = await fetchDataFromApi("/api/user/user-details");
 			context.setUserData(updatedUser.user);
+			context.loadUserDetails();
 
 			setEditMode({ name: false, email: false, mobile: false });
 
@@ -261,46 +292,138 @@ function MyAccount() {
 									}}
 								/>
 							</div>
-							<div className="mt-6 border rounded-lg bg-gray-50 p-4 shadow-sm">
-								<div className="flex justify-between items-center">
-									<h2 className="text-base font-medium text-gray-700">
-										Address Details
-									</h2>
-									<button
-										type="button"
-										onClick={() => setShowMore(!showMore)}
-										className="text-gray-500 hover:text-gray-700 transition"
-									>
-										{showMore ? <FaChevronUp /> : <FaChevronDown />}
-									</button>
+							{!selectedAddress ? (
+								<div className="my-4 p-4 border rounded-lg bg-white shadow-sm text-center">
+									<p className="text-gray-700 font-medium">
+										No address selected
+									</p>
+
+									{address?.length > 0 ? (
+										// If user already has addresses → allow them to select
+										<button
+											type="button"
+											className="text-[#ff5151] underline text-sm mt-2"
+											onClick={() => setOpenDrawer(true)}
+										>
+											Select Address
+										</button>
+									) : (
+										// If user has no addresses → show Add Address
+										<button
+											className="text-[#ff5151] underline text-sm mt-2"
+											onClick={() => {
+												navigate("/address");
+											}}
+										>
+											Add Address
+										</button>
+									)}
 								</div>
+							) : (
+								/* SELECTED ADDRESS CARD */
+								<div className="my-4 p-4 border rounded-lg bg-white shadow-md">
+									{/* Top Section */}
+									<div className="flex justify-between items-start">
+										<div>
+											<p className="text-[15px] font-semibold text-gray-900">
+												{selectedAddress.addressType} Address
+											</p>
 
-								{/* Always visible */}
-								<p className="text-sm text-gray-700 mt-2">
-									<strong>Address:</strong> {address?.address_line}
-								</p>
+											<p className="text-gray-700 mt-1 leading-5">
+												{selectedAddress.address_line}, {selectedAddress.city},{" "}
+												{selectedAddress.state} - {selectedAddress.pincode}
+											</p>
 
-								{/* Toggle section */}
-								{showMore && (
-									<div className="mt-2 space-y-1 text-sm">
-										<p className="text-gray-700">
-											<strong>City:</strong> {address?.city}
-										</p>
-										<p className="text-gray-700">
-											<strong>State:</strong> {address?.state}
-										</p>
-										<p className="text-gray-700">
-											<strong>Pincode:</strong> {address?.pincode}
-										</p>
-										<p className="text-gray-700">
-											<strong>Country:</strong> {address?.country}
-										</p>
-										<p className="text-gray-700">
-											<strong>Mobile:</strong> {address?.mobile}
-										</p>
+											{/* Landmark */}
+											{selectedAddress.landmark && (
+												<p className="text-gray-600 text-sm mt-1">
+													Landmark: {selectedAddress.landmark}
+												</p>
+											)}
+
+											{/* Mobile */}
+											<p className="text-gray-800 font-medium text-sm mt-1">
+												Phone: {selectedAddress.mobile}
+											</p>
+										</div>
+
+										{/* DEFAULT BADGE */}
+										{selectedAddress.status === true && (
+											<span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+												DEFAULT
+											</span>
+										)}
 									</div>
-								)}
-							</div>
+
+									{/* Divider */}
+									<div className="border-t my-3"></div>
+
+									{/* Actions */}
+									<div className="flex justify-end gap-4">
+										<button
+											type="button"
+											onClick={() => handleDeleteAddress(selectedAddress._id)}
+											className="text-red-500 hover:text-red-700 font-semibold text-sm"
+										>
+											DELETE
+										</button>
+
+										<button
+											type="button"
+											onClick={() => setOpenDrawer(true)}
+											className="text-[#ff5151] font-semibold text-sm"
+										>
+											CHANGE
+										</button>
+									</div>
+								</div>
+							)}
+
+							{/* DRAWER FOR SELECTING ADDRESS */}
+							<Drawer
+								anchor="right"
+								open={openDrawer}
+								onClose={() => setOpenDrawer(false)}
+							>
+								<div className="w-[350px] p-4">
+									<h3 className="text-lg font-semibold mb-4">Select Address</h3>
+
+									<div className="space-y-3">
+										{otherAddresses?.length > 0 ? (
+											otherAddresses.map((addr) => (
+												<AddressCard
+													key={addr._id}
+													address={addr}
+													onSelect={(id) => {
+														handleDefaultAddressSelection(id);
+														setOpenDrawer(false);
+													}}
+													onDelete={handleDeleteAddress}
+												/>
+											))
+										) : (
+											/* ⭐ Fallback If No Other Addresses */
+											<div className="text-center py-6 text-gray-600">
+												<p className="text-sm font-medium">
+													No other addresses available
+												</p>
+
+												<button
+													type="button"
+													onClick={() => {
+														setOpenDrawer(false);
+														navigate("/address"); // or open add address form
+													}}
+													className="mt-3 text-[#ff5151] underline text-sm font-medium"
+												>
+													Add New Address
+												</button>
+											</div>
+										)}
+									</div>
+								</div>
+							</Drawer>
+
 							{changePass && (
 								<div>
 									<h4 className="text-[13px] mt-5">Change Password</h4>

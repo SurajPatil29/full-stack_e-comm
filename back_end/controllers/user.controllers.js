@@ -746,7 +746,10 @@ export async function userDetails(req, res, next) {
 
 		const user = await UserModel.findById(userId)
 			.select("-password -refresh_token")
-			.populate("address_details");
+			.populate({
+				path: "address_details",
+				model: "address",
+			});
 
 		if (!user) {
 			return sendError(res, "User not found", 404);

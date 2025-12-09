@@ -2,7 +2,7 @@ import AddressModel from "../models/address.model.js";
 import UserModel from "../models/user.model.js"; // ✅ make sure this is imported
 import { sendError, sendSuccess } from "../utils/response.js";
 
-export const addOrUpdateAddressController = async (req, res, next) => {
+export const addAddressController = async (req, res, next) => {
 	try {
 		const {
 			address_line,
@@ -11,10 +11,13 @@ export const addOrUpdateAddressController = async (req, res, next) => {
 			pincode,
 			country,
 			mobile,
+			landmark,
+			addressType,
 			status,
 			userId,
 		} = req.body;
 
+		// Validate required fields
 		if (
 			!address_line ||
 			!city ||
@@ -22,55 +25,81 @@ export const addOrUpdateAddressController = async (req, res, next) => {
 			!pincode ||
 			!country ||
 			!mobile ||
-			!status ||
 			!userId
 		) {
 			return sendError(res, "Please provide all required fields", 400);
 		}
 
-		// ✅ Find user
 		const user = await UserModel.findById(userId);
-		if (!user) {
-			return sendError(res, "User not found", 404);
+		if (!user) return sendError(res, "User not found", 404);
+
+		// ⭐ LIMIT ADDRESS COUNT (MAX 4)
+		if (user.address_details.length >= 4) {
+			return sendError(res, "You can only save up to 4 addresses", 400);
 		}
 
-		let address;
-
-		if (user.address_details) {
-			// ✅ Update existing address
-			address = await AddressModel.findByIdAndUpdate(
-				user.address_details,
-				{
-					address_line,
-					city,
-					state,
-					pincode,
-					country,
-					mobile,
-					status,
-				},
-				{ new: true } // return updated doc
-			);
-		} else {
-			// ✅ Create new address
-			address = new AddressModel({
-				address_line,
-				city,
-				state,
-				pincode,
-				country,
-				mobile,
-				status,
-				userId,
-			});
-			await address.save();
-
-			// ✅ Save address reference in user
-			user.address_details = address._id;
-			await user.save();
+		// If status = true → Make this the only default address
+		if (status === true) {
+			await AddressModel.updateMany({ userId }, { status: false });
 		}
 
-		return sendSuccess(res, "Address saved successfully", address);
+		const address = await AddressModel.create({
+			address_line,
+			city,
+			state,
+			pincode,
+			country,
+			mobile,
+			status,
+			landmark,
+			addressType,
+			userId,
+		});
+
+		user.address_details.push(address._id);
+		await user.save();
+
+		return sendSuccess(res, "Address added successfully", address);
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const updateAddressController = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+
+		const updatedAddress = await AddressModel.findByIdAndUpdate(id, req.body, {
+			new: true,
+		});
+
+		if (!updatedAddress) return sendError(res, "Address not found", 404);
+
+		return sendSuccess(res, "Address updated successfully", updatedAddress);
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const setDefaultAddressController = async (req, res, next) => {
+	try {
+		const userId = req.userId;
+		const { addressId } = req.body;
+
+		const user = await UserModel.findById(userId);
+		if (!user) return sendError(res, "User not found", 404);
+
+		if (!user.address_details.includes(addressId)) {
+			return sendError(res, "Address does not belong to user", 403);
+		}
+
+		// Set all addresses false
+		await AddressModel.updateMany({ userId }, { $set: { status: false } });
+
+		// Set selected address true
+		await AddressModel.findByIdAndUpdate(addressId, { status: true });
+
+		return sendSuccess(res, "Address selected as default");
 	} catch (error) {
 		next(error);
 	}
@@ -78,21 +107,11 @@ export const addOrUpdateAddressController = async (req, res, next) => {
 
 export const getAddressController = async (req, res, next) => {
 	try {
-		const address = await AddressModel.find({ userId: req?.query?.userId });
+		const { userId } = req.query;
 
-		if (!address) {
-			return res.status({
-				error: true,
-				success: false,
-				message: "Address not found",
-			});
-		}
+		const addressList = await AddressModel.find({ userId });
 
-		return res.status({
-			error: false,
-			success: true,
-			address: address,
-		});
+		return sendSuccess(res, "Address list fetched", addressList);
 	} catch (error) {
 		next(error);
 	}
@@ -100,55 +119,32 @@ export const getAddressController = async (req, res, next) => {
 
 export const deleteAddressController = async (req, res, next) => {
 	try {
-		const userId = req.userId; // assuming this comes from auth middleware
-		const { _id } = req.body; // address id
+		const userId = req.userId; // from auth middleware
+		const { id } = req.params; // address ID
 
-		if (!_id) {
-			return res.status(400).json({
-				message: "Provide _id",
-				error: true,
-				success: false,
-			});
+		if (!id) {
+			return sendError(res, "Address ID is required", 400);
 		}
 
-		// Find user
 		const user = await UserModel.findById(userId);
-		if (!user) {
-			return res.status(404).json({
-				message: "User not found",
-				error: true,
-				success: false,
-			});
+		if (!user) return sendError(res, "User not found", 404);
+
+		// Check if address belongs to user
+		if (!user.address_details.includes(id)) {
+			return sendError(res, "Address does not belong to the user", 403);
 		}
 
-		// Check if this address actually belongs to the user
-		if (String(user.address_details) !== String(_id)) {
-			return res.status(403).json({
-				message: "This address does not belong to the user",
-				error: true,
-				success: false,
-			});
-		}
+		// Delete address
+		const deleted = await AddressModel.findOneAndDelete({ _id: id, userId });
+		if (!deleted) return sendError(res, "Address not found", 404);
 
-		// Delete address document
-		const deleteItem = await AddressModel.findOneAndDelete({ _id, userId });
-		if (!deleteItem) {
-			return res.status(404).json({
-				message: "Address not found in database",
-				error: true,
-				success: false,
-			});
-		}
-
-		// Remove reference from user
-		user.address_details = null;
+		// Remove address reference
+		user.address_details = user.address_details.filter(
+			(addr) => String(addr) !== String(id)
+		);
 		await user.save();
 
-		return res.status(200).json({
-			message: "Address deleted successfully",
-			error: false,
-			success: true,
-		});
+		return sendSuccess(res, "Address deleted successfully");
 	} catch (error) {
 		next(error);
 	}

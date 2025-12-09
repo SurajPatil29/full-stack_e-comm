@@ -28,9 +28,18 @@ const addressSchema = mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		landmark: {
+			type: String,
+		},
+		addressType: {
+			type: String,
+			enum: ["Home", "Office"],
+			default: "Home",
+		},
 		userId: {
-			type: mongoose.Schema.ObjectId,
-			default: "",
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "users", // reference to UserModel
+			required: true,
 		},
 	},
 	{

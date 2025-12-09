@@ -1,7 +1,5 @@
 import AccountSideBar from "../../componants/AccountSideBar";
 import {
-	IconButton,
-	InputAdornment,
 	TextField,
 	Select,
 	MenuItem,
@@ -9,9 +7,11 @@ import {
 	InputLabel,
 	CircularProgress,
 	Button,
+	FormControlLabel,
+	RadioGroup,
+	Radio,
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { FaCheck, FaRegEdit } from "react-icons/fa";
 import { PhoneInput } from "react-international-phone";
 import MyContext from "../../context/MyContext";
 import { postData } from "../../utils/api";
@@ -25,36 +25,13 @@ function Address() {
 		country: "",
 		mobile: "",
 		status: false,
+		landmark: "",
+		addressType: "Home",
 		userId: localStorage.getItem("userId"),
-	});
-
-	const [editMode, setEditMode] = useState({
-		address_line: false,
-		city: false,
-		state: false,
-		pincode: false,
-		country: false,
-		mobile: false,
-		status: false,
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
 	const context = useContext(MyContext);
-
-	useEffect(() => {
-		if (context.userData?.address_details) {
-			setAddressDetails((prev) => ({
-				...prev,
-				address_line: context.userData?.address_details.address_line || "",
-				city: context.userData?.address_details.city || "",
-				state: context.userData?.address_details.state || "",
-				pincode: context.userData?.address_details.pincode || "",
-				country: context.userData?.address_details.country || "",
-				mobile: context.userData?.address_details.mobile || "",
-				status: context.userData?.address_details.status ?? false,
-			}));
-		}
-	}, [context.userData]);
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -64,258 +41,250 @@ function Address() {
 		}));
 	};
 
-	const toggleEdit = (field) => {
-		setEditMode((prev) => ({
-			...prev,
-			[field]: !prev[field],
-		}));
-	};
-
-	const getFieldClass = (field) =>
-		`p-2 rounded-md ${
-			editMode[field] ? "bg-green-50" : "bg-gray-100"
-		} transition-color`;
-
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
 		setIsLoading(true);
 
-		if (addressDetails.address_line === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter Address Line");
-		}
+		if (!addressDetails.address_line) return stop("Please enter Address Line");
+		if (!addressDetails.city) return stop("Please enter City");
+		if (!addressDetails.state) return stop("Please enter State");
+		if (!addressDetails.pincode) return stop("Please enter Pincode");
+		if (!addressDetails.country) return stop("Please enter Country");
+		if (!addressDetails.mobile) return stop("Please enter Mobile Number");
 
-		if (addressDetails.city === "") {
+		function stop(msg) {
 			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter City");
-		}
-
-		if (addressDetails.state === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter State");
-		}
-
-		if (addressDetails.pincode === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter Pincode");
-		}
-
-		if (addressDetails.country === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter Country");
-		}
-
-		if (addressDetails.mobile === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please enter Mobile Number");
-		}
-
-		if (addressDetails.status === "") {
-			setIsLoading(false);
-			return context.openAlertBox("error", "Please select Status");
+			context.openAlertBox("error", msg);
+			return;
 		}
 
 		postData("/api/address/add", addressDetails).then((res) => {
-			// console.log(res);
-
+			setIsLoading(false);
 			if (res?.error !== true) {
-				setIsLoading(false);
 				context.openAlertBox("success", res?.message);
+				context.loadUserDetails();
 			} else {
 				context.openAlertBox("error", res?.message);
-				setIsLoading(false);
 			}
 		});
 	};
+
 	return (
 		<section className="py-10 w-full">
 			<div className="container flex gap-5">
 				<div className="col1 w-[20%]">
 					<AccountSideBar />
 				</div>
+
 				<div className="col2 w-[70%]">
-					<div>
-						<h3>Address Details Edit</h3>
-					</div>
+					<h3>Address Details</h3>
+
 					<form className="space-y-6" onSubmit={handleSubmit}>
-						{/* Row 1 - Address + City */}
+						{/* Row 1 */}
 						<div className="flex items-center gap-5">
-							<div className={`w-[50%] ${getFieldClass("address_line")}`}>
-								<TextField
-									label="Address"
-									name="address_line"
-									value={addressDetails.address_line}
-									onChange={onChangeInput}
-									variant="outlined"
-									size="small"
-									className="w-full"
-									InputProps={{
-										readOnly: !editMode.address_line,
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													onClick={() => toggleEdit("address_line")}
-													size="small"
-												>
-													{editMode.address_line ? <FaCheck /> : <FaRegEdit />}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-								/>
-							</div>
+							<TextField
+								label="Address"
+								name="address_line"
+								value={addressDetails.address_line}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[50%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
 
-							<div className={`w-[50%] ${getFieldClass("city")}`}>
-								<TextField
-									label="City"
-									name="city"
-									value={addressDetails.city}
-									onChange={onChangeInput}
-									variant="outlined"
-									size="small"
-									className="w-full"
-									InputProps={{
-										readOnly: !editMode.city,
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													onClick={() => toggleEdit("city")}
-													size="small"
-												>
-													{editMode.city ? <FaCheck /> : <FaRegEdit />}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-								/>
+							<TextField
+								label="City"
+								name="city"
+								value={addressDetails.city}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[50%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
+						</div>
+
+						{/* Row 2 */}
+						<div className="flex items-center gap-5">
+							<TextField
+								label="Pincode"
+								name="pincode"
+								value={addressDetails.pincode}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[33%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
+
+							<TextField
+								label="State"
+								name="state"
+								value={addressDetails.state}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[33%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
+
+							<TextField
+								label="Country"
+								name="country"
+								value={addressDetails.country}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[33%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
+						</div>
+
+						{/* ⭐ UPDATED — Row 3 includes landmark + addressType */}
+						<div className="flex items-center gap-5  ">
+							<TextField
+								label="Landmark" // ⭐ NEW FIELD
+								name="landmark"
+								value={addressDetails.landmark}
+								onChange={onChangeInput}
+								variant="outlined"
+								size="small"
+								className="w-[50%] bg-white"
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"&.Mui-focused fieldset": {
+											borderColor: "#ff5151",
+										},
+									},
+									"& label.Mui-focused": {
+										color: "#ff5151",
+									},
+								}}
+							/>
+
+							<div className="w-[30%] flex justify-center">
+								<FormControl>
+									<p className="text-sm mb-1 font-medium text-gray-700 text-center">
+										Address Type
+									</p>
+
+									<RadioGroup
+										row
+										name="addressType"
+										value={addressDetails.addressType}
+										onChange={onChangeInput}
+										className="text-center"
+									>
+										<FormControlLabel
+											value="Home"
+											control={
+												<Radio
+													sx={{
+														color: "#ff5151",
+														"&.Mui-checked": { color: "#ff5151" },
+													}}
+												/>
+											}
+											label="Home"
+										/>
+										<FormControlLabel
+											value="Office"
+											control={
+												<Radio
+													sx={{
+														color: "#ff5151",
+														"&.Mui-checked": { color: "#ff5151" },
+													}}
+												/>
+											}
+											label="Office"
+										/>
+									</RadioGroup>
+								</FormControl>
 							</div>
 						</div>
 
-						{/* Row 2 - Pincode, State, Country */}
+						{/* Row 4 */}
 						<div className="flex items-center gap-5">
-							<div className={`w-[33%] ${getFieldClass("pincode")}`}>
-								<TextField
-									label="Pincode"
-									name="pincode"
-									value={addressDetails.pincode}
-									onChange={onChangeInput}
-									variant="outlined"
-									size="small"
-									className="w-full"
-									InputProps={{
-										readOnly: !editMode.pincode,
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													onClick={() => toggleEdit("pincode")}
-													size="small"
-												>
-													{editMode.pincode ? <FaCheck /> : <FaRegEdit />}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-								/>
-							</div>
-
-							<div className={`w-[33%] ${getFieldClass("state")}`}>
-								<TextField
-									label="State"
-									name="state"
-									value={addressDetails.state}
-									onChange={onChangeInput}
-									variant="outlined"
-									size="small"
-									className="w-full"
-									InputProps={{
-										readOnly: !editMode.state,
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													onClick={() => toggleEdit("state")}
-													size="small"
-												>
-													{editMode.state ? <FaCheck /> : <FaRegEdit />}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-								/>
-							</div>
-
-							<div className={`w-[33%] ${getFieldClass("country")}`}>
-								<TextField
-									label="Country"
-									name="country"
-									value={addressDetails.country}
-									onChange={onChangeInput}
-									variant="outlined"
-									size="small"
-									className="w-full"
-									InputProps={{
-										readOnly: !editMode.country,
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													onClick={() => toggleEdit("country")}
-													size="small"
-												>
-													{editMode.country ? <FaCheck /> : <FaRegEdit />}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-								/>
-							</div>
-						</div>
-
-						{/* Row 3 - Mobile + Status */}
-						<div className="flex items-center gap-5">
-							{/* Mobile */}
-							<div className={`w-[33%] relative ${getFieldClass("mobile")}`}>
+							<div className="w-[33%]">
 								<PhoneInput
 									defaultCountry="in"
 									value={addressDetails.mobile}
 									onChange={(value) =>
-										onChangeInput({ target: { name: "mobile", value } })
+										setAddressDetails((prev) => ({
+											...prev,
+											mobile: value,
+										}))
 									}
-									disabled={!editMode.mobile}
-									inputClassName="w-full !h-10 !text-sm pr-10"
+									inputClassName="w-full !h-10 !text-sm"
 								/>
-								<IconButton
-									onClick={() => toggleEdit("mobile")}
-									className="!absolute right-1 top-1 z-50"
-									size="small"
-								>
-									{editMode.mobile ? <FaCheck /> : <FaRegEdit />}
-								</IconButton>
 							</div>
 
-							{/* Status Selector */}
-							<div className={`w-[33%] flex ${getFieldClass("status")}`}>
+							{/* ⭐ STATUS FIXED — now boolean handled */}
+							<div className="w-[33%]">
 								<FormControl size="small" className="w-full">
 									<InputLabel>Status</InputLabel>
 									<Select
 										label="Status"
 										name="status"
-										value={addressDetails.status}
+										value={addressDetails.status.toString()}
 										onChange={onChangeInput}
-										disabled={!editMode.status}
+										className="bg-white"
 									>
-										<MenuItem value={true}>True</MenuItem>
-										<MenuItem value={false}>False</MenuItem>
+										<MenuItem value="true">True</MenuItem>
+										<MenuItem value="false">False</MenuItem>
 									</Select>
 								</FormControl>
-								<IconButton
-									onClick={() => toggleEdit("status")}
-									size="small"
-									className="ml-2"
-								>
-									{editMode.status ? <FaCheck /> : <FaRegEdit />}
-								</IconButton>
 							</div>
 						</div>
+
 						<div className="flex items-center gap-4 mt-3">
 							<Button
 								type="submit"

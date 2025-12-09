@@ -77,22 +77,27 @@ function App() {
 	}, []);
 	// console.log(authChecked, isLogin);
 
+	const loadUserDetails = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/user/user-details");
+
+			if (res?.user) {
+				setUserData(res.user);
+				localStorage.setItem("userId", res.user._id);
+
+				fetchCartData();
+				fetchMyListData();
+			} else {
+				console.warn("User details not found in response", res);
+			}
+		} catch (error) {
+			console.error("Failed to fetch user details", error);
+		}
+	};
+
 	useEffect(() => {
 		if (isLogin && !userData?.name) {
-			fetchDataFromApi("/api/user/user-details")
-				.then((res) => {
-					if (res?.user) {
-						setUserData(res.user);
-						localStorage.setItem("userId", res.user._id);
-						fetchCartData();
-						fetchMyListData();
-					} else {
-						console.warn("User details not found in response", res);
-					}
-				})
-				.catch((err) => {
-					console.error("Failed to fetch user details", err);
-				});
+			loadUserDetails();
 		} else {
 			setUserData(null);
 			setCartData([]);
@@ -326,6 +331,7 @@ function App() {
 		setIsLogin: setIsLogin,
 		userData: userData,
 		setUserData: setUserData,
+		loadUserDetails: loadUserDetails,
 		setCatData: setCatData,
 		catData: catData,
 		addToCart: addToCart,

@@ -100,20 +100,27 @@ function App() {
 		setAuthChecked(true); // Important: run immediately after checking token
 	}, []);
 	// console.log(authChecked, isLogin);
+
+	// Separate function
+	const loadUserDetails = async () => {
+		try {
+			const res = await fetchDataFromApi("/api/user/user-details");
+
+			if (res?.user) {
+				setUserData(res.user);
+				// localStorage.setItem("userId", res.user.id);
+			} else {
+				console.warn("User details not found in response", res);
+			}
+		} catch (err) {
+			console.error("Failed to fetch user details", err);
+		}
+	};
+
+	// UseEffect
 	useEffect(() => {
 		if (isLogin && !userData?.name) {
-			fetchDataFromApi("/api/user/user-details")
-				.then((res) => {
-					if (res?.user) {
-						setUserData(res.user);
-						// localStorage.setItem("userId", res.user.id);
-					} else {
-						console.warn("user details not found in response", res);
-					}
-				})
-				.catch((err) => {
-					console.error("Failed to fetch user details", err);
-				});
+			loadUserDetails();
 		}
 	}, [isLogin]);
 
@@ -132,6 +139,7 @@ function App() {
 		setIsSidebarOpen,
 		isLogin,
 		setIsLogin,
+		loadUserDetails,
 		isOpenFullScreenPanel,
 		setIsOpenFullScreenPanel,
 		openAlertBox,
