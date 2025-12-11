@@ -12,6 +12,13 @@ import SkeletonCartTotal from "./SkeletonCartTotal";
 function CartPage() {
 	const context = useContext(MyContext);
 	const [localLoading, setLocalLoading] = useState(true);
+	const [selectedIds, setSelectedIds] = useState([]);
+
+	const handleSelectChange = (id, checked) => {
+		setSelectedIds((prev) =>
+			checked ? [...prev, id] : prev.filter((item) => item !== id)
+		);
+	};
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
@@ -23,11 +30,10 @@ function CartPage() {
 
 		return () => clearTimeout(timer);
 	}, []);
-	console.log(context.cartData);
-	const totalSubtotal = context.cartData?.reduce(
-		(sum, item) => sum + (item.subTotal || 0),
-		0
-	);
+	// console.log(context.cartData);
+	const totalSubtotal = context.cartData
+		.filter((item) => selectedIds.includes(item._id))
+		.reduce((sum, item) => sum + (item.subTotal || 0), 0);
 
 	return (
 		<section className="section py-10 px-5">
@@ -49,7 +55,12 @@ function CartPage() {
 							<SkeletonCart count={3} />
 						) : context.cartData.length > 0 ? (
 							context.cartData.map((item, i) => (
-								<CartItems data={item} key={i} />
+								<CartItems
+									data={item}
+									key={i}
+									selected={selectedIds.includes(item._id)}
+									onSelectChange={handleSelectChange}
+								/>
 							))
 						) : (
 							<div className="flex flex-col items-center justify-center py-10 gap-3 text-center">
@@ -115,9 +126,26 @@ function CartPage() {
 								</span>
 							</p>
 
-							<Button className="btn-org btn-lg w-full flex gap-3">
-								<BsBagCheck className="text-[20px]" /> Checkout
-							</Button>
+							{selectedIds.length === 0 ? (
+								<Button
+									className="btn-org btn-lg w-full flex gap-3 opacity-50 cursor-not-allowed"
+									onClick={() => {
+										context.openAlertBox("error", "Select Product");
+									}}
+								>
+									<BsBagCheck className="text-[20px]" /> Checkout
+								</Button>
+							) : (
+								<Link
+									to="/checkout"
+									state={{ selectedIds }}
+									className="w-[50%] d-block link"
+								>
+									<Button className="btn-org btn-lg w-full flex gap-3">
+										<BsBagCheck className="text-[20px]" /> Checkout
+									</Button>
+								</Link>
+							)}
 						</div>
 					)}
 				</div>

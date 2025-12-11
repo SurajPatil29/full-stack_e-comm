@@ -16,8 +16,10 @@ import { PhoneInput } from "react-international-phone";
 import MyContext from "../../context/MyContext";
 import { postData } from "../../utils/api";
 
-function Address() {
+function Address({ closeDrawer }) {
+	const context = useContext(MyContext);
 	const [addressDetails, setAddressDetails] = useState({
+		name: "",
 		address_line: "",
 		city: "",
 		state: "",
@@ -31,7 +33,6 @@ function Address() {
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
-	const context = useContext(MyContext);
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -46,6 +47,7 @@ function Address() {
 
 		setIsLoading(true);
 
+		if (!addressDetails.name) return stop("Please enter Name");
 		if (!addressDetails.address_line) return stop("Please enter Address Line");
 		if (!addressDetails.city) return stop("Please enter City");
 		if (!addressDetails.state) return stop("Please enter State");
@@ -64,6 +66,7 @@ function Address() {
 			if (res?.error !== true) {
 				context.openAlertBox("success", res?.message);
 				context.loadUserDetails();
+				closeDrawer();
 			} else {
 				context.openAlertBox("error", res?.message);
 			}
@@ -71,245 +74,183 @@ function Address() {
 	};
 
 	return (
-		<section className="py-10 w-full">
-			<div className="container flex gap-5">
-				<div className="col1 w-[20%]">
-					<AccountSideBar />
-				</div>
+		<form className="space-y-6 mt-3" onSubmit={handleSubmit}>
+			{/* Name */}
+			<div className="flex flex-col md:flex-row items-center gap-5">
+				<TextField
+					label="Full Name"
+					name="name"
+					value={addressDetails.name}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[50%] bg-white"
+					sx={{
+						"& .MuiOutlinedInput-root": {
+							"&.Mui-focused fieldset": { borderColor: "#ff5151" },
+						},
+						"& label.Mui-focused": { color: "#ff5151" },
+					}}
+				/>
+			</div>
 
-				<div className="col2 w-[70%]">
-					<h3>Address Details</h3>
+			{/* Address + City */}
+			<div className="flex flex-col md:flex-row items-center gap-5">
+				<TextField
+					label="Address"
+					name="address_line"
+					value={addressDetails.address_line}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[50%] bg-white"
+					sx={{
+						"& .MuiOutlinedInput-root": {
+							"&.Mui-focused fieldset": { borderColor: "#ff5151" },
+						},
+						"& label.Mui-focused": { color: "#ff5151" },
+					}}
+				/>
 
-					<form className="space-y-6" onSubmit={handleSubmit}>
-						{/* Row 1 */}
-						<div className="flex items-center gap-5">
-							<TextField
-								label="Address"
-								name="address_line"
-								value={addressDetails.address_line}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[50%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
+				<TextField
+					label="City"
+					name="city"
+					value={addressDetails.city}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[50%] bg-white"
+					sx={{
+						"& .MuiOutlinedInput-root": {
+							"&.Mui-focused fieldset": { borderColor: "#ff5151" },
+						},
+						"& label.Mui-focused": { color: "#ff5151" },
+					}}
+				/>
+			</div>
 
-							<TextField
-								label="City"
-								name="city"
-								value={addressDetails.city}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[50%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
-						</div>
+			{/* Pincode, State, Country */}
+			<div className="flex flex-col md:flex-row items-center gap-5">
+				<TextField
+					label="Pincode"
+					name="pincode"
+					value={addressDetails.pincode}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[33%] bg-white"
+				/>
 
-						{/* Row 2 */}
-						<div className="flex items-center gap-5">
-							<TextField
-								label="Pincode"
-								name="pincode"
-								value={addressDetails.pincode}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[33%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
+				<TextField
+					label="State"
+					name="state"
+					value={addressDetails.state}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[33%] bg-white"
+				/>
 
-							<TextField
-								label="State"
-								name="state"
-								value={addressDetails.state}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[33%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
+				<TextField
+					label="Country"
+					name="country"
+					value={addressDetails.country}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[33%] bg-white"
+				/>
+			</div>
 
-							<TextField
-								label="Country"
-								name="country"
-								value={addressDetails.country}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[33%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
-						</div>
+			{/* Landmark + Phone */}
+			<div className="flex flex-col md:flex-row items-center gap-5">
+				<TextField
+					label="Landmark"
+					name="landmark"
+					value={addressDetails.landmark}
+					onChange={onChangeInput}
+					size="small"
+					className="w-full md:w-[50%] bg-white"
+				/>
 
-						{/* ⭐ UPDATED — Row 3 includes landmark + addressType */}
-						<div className="flex items-center gap-5  ">
-							<TextField
-								label="Landmark" // ⭐ NEW FIELD
-								name="landmark"
-								value={addressDetails.landmark}
-								onChange={onChangeInput}
-								variant="outlined"
-								size="small"
-								className="w-[50%] bg-white"
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"&.Mui-focused fieldset": {
-											borderColor: "#ff5151",
-										},
-									},
-									"& label.Mui-focused": {
-										color: "#ff5151",
-									},
-								}}
-							/>
-
-							<div className="w-[30%] flex justify-center">
-								<FormControl>
-									<p className="text-sm mb-1 font-medium text-gray-700 text-center">
-										Address Type
-									</p>
-
-									<RadioGroup
-										row
-										name="addressType"
-										value={addressDetails.addressType}
-										onChange={onChangeInput}
-										className="text-center"
-									>
-										<FormControlLabel
-											value="Home"
-											control={
-												<Radio
-													sx={{
-														color: "#ff5151",
-														"&.Mui-checked": { color: "#ff5151" },
-													}}
-												/>
-											}
-											label="Home"
-										/>
-										<FormControlLabel
-											value="Office"
-											control={
-												<Radio
-													sx={{
-														color: "#ff5151",
-														"&.Mui-checked": { color: "#ff5151" },
-													}}
-												/>
-											}
-											label="Office"
-										/>
-									</RadioGroup>
-								</FormControl>
-							</div>
-						</div>
-
-						{/* Row 4 */}
-						<div className="flex items-center gap-5">
-							<div className="w-[33%]">
-								<PhoneInput
-									defaultCountry="in"
-									value={addressDetails.mobile}
-									onChange={(value) =>
-										setAddressDetails((prev) => ({
-											...prev,
-											mobile: value,
-										}))
-									}
-									inputClassName="w-full !h-10 !text-sm"
-								/>
-							</div>
-
-							{/* ⭐ STATUS FIXED — now boolean handled */}
-							<div className="w-[33%]">
-								<FormControl size="small" className="w-full">
-									<InputLabel>Status</InputLabel>
-									<Select
-										label="Status"
-										name="status"
-										value={addressDetails.status.toString()}
-										onChange={onChangeInput}
-										className="bg-white"
-									>
-										<MenuItem value="true">True</MenuItem>
-										<MenuItem value="false">False</MenuItem>
-									</Select>
-								</FormControl>
-							</div>
-						</div>
-
-						<div className="flex items-center gap-4 mt-3">
-							<Button
-								type="submit"
-								className="btn-org btn-lg w-[100px]"
-								disabled={isLoading}
-							>
-								{isLoading ? (
-									<CircularProgress size={24} color="inherit" />
-								) : (
-									"Save"
-								)}
-							</Button>
-
-							<Button
-								type="button"
-								onClick={() => window.location.reload()}
-								className="btn-org btn-lg btn-border w-[100px]"
-							>
-								Cancel
-							</Button>
-						</div>
-					</form>
+				<div className="w-full md:w-[50%]">
+					<PhoneInput
+						defaultCountry="in"
+						value={addressDetails.mobile}
+						onChange={(value) =>
+							setAddressDetails((prev) => ({ ...prev, mobile: value }))
+						}
+						inputClassName="w-full !h-10 !text-sm"
+					/>
 				</div>
 			</div>
-		</section>
+
+			{/* Status + Address Type */}
+			<div className="flex flex-col md:flex-row items-center gap-5">
+				<FormControl size="small" className="w-full md:w-[33%]">
+					<InputLabel>Status</InputLabel>
+					<Select
+						label="Status"
+						name="status"
+						value={addressDetails.status.toString()}
+						onChange={onChangeInput}
+					>
+						<MenuItem value="true">True</MenuItem>
+						<MenuItem value="false">False</MenuItem>
+					</Select>
+				</FormControl>
+
+				<FormControl className="w-full md:w-[50%]">
+					<p className="text-sm mb-1 font-medium text-gray-700">Address Type</p>
+
+					<RadioGroup
+						row
+						name="addressType"
+						value={addressDetails.addressType}
+						onChange={onChangeInput}
+					>
+						<FormControlLabel
+							value="Home"
+							control={
+								<Radio
+									sx={{
+										color: "#ff5151",
+										"&.Mui-checked": { color: "#ff5151" },
+									}}
+								/>
+							}
+							label="Home"
+						/>
+
+						<FormControlLabel
+							value="Office"
+							control={
+								<Radio
+									sx={{
+										color: "#ff5151",
+										"&.Mui-checked": { color: "#ff5151" },
+									}}
+								/>
+							}
+							label="Office"
+						/>
+					</RadioGroup>
+				</FormControl>
+			</div>
+
+			{/* Buttons */}
+			<div className="flex items-center gap-4 mt-3">
+				<Button
+					type="submit"
+					className="btn-org btn-lg w-[100px]"
+					disabled={isLoading}
+				>
+					{isLoading ? <CircularProgress size={24} color="inherit" /> : "Save"}
+				</Button>
+
+				<Button
+					type="button"
+					className="btn-org btn-lg btn-border w-[100px]"
+					onClick={() => closeDrawer && closeDrawer()} // ⭐ Close Drawer
+				>
+					Cancel
+				</Button>
+			</div>
+		</form>
 	);
 }
 

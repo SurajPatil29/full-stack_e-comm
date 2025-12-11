@@ -29,6 +29,7 @@ import { fetchDataFromApi, postData, putData } from "./utils/api";
 import MyContext from "./context/MyContext";
 import Address from "./pages/Address";
 import { IoCartOutline } from "react-icons/io5";
+import AddressPage from "./pages/Address/AddressPage";
 
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState({
@@ -44,6 +45,12 @@ function App() {
 	const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
 	const [myListData, setMyListData] = useState([]);
 	const [isLoadingAddToMyList, setIsLoadingAddToMyList] = useState(false);
+
+	const [openAddressPanel, setOpenAddressPanel] = useState(false);
+
+	const toggleAddressDrawer = (newOpen) => () => {
+		setOpenAddressPanel(newOpen);
+	};
 
 	const toggleDrawer = (newOpen) => () => {
 		setOpenCartPanel(newOpen);
@@ -344,6 +351,8 @@ function App() {
 		fetchMyListData: fetchMyListData,
 		isLoadingAddToMyList: isLoadingAddToMyList,
 		setIsLoadingAddToMyList: setIsLoadingAddToMyList,
+		openAddressPanel: openAddressPanel,
+		setOpenAddressPanel: setOpenAddressPanel,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -431,7 +440,7 @@ function App() {
 						exact={true}
 						element={
 							<PrivateRoutes>
-								<Address />
+								<AddressPage />
 							</PrivateRoutes>
 						}
 					/>
@@ -522,6 +531,33 @@ function App() {
 								</Link>
 							</div>
 						)}
+					</div>
+				</Drawer>
+
+				{/* ⭐ ADDRESS DRAWER (500px) */}
+				<Drawer
+					open={openAddressPanel}
+					onClose={toggleAddressDrawer(false)}
+					anchor="right"
+					PaperProps={{
+						sx: { width: "500px", padding: "20px" },
+					}}
+				>
+					<div className="w-full py-3 px-4">
+						{/* Drawer Header */}
+						<div className="flex items-center justify-between border-b pb-2">
+							<h4 className="text-lg font-semibold">Add Address</h4>
+
+							<Button
+								className="!w-[30px] !min-w-[30px] !h-[30px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
+								onClick={toggleAddressDrawer(false)}
+							>
+								<IoMdClose className="!text-[16px]" />
+							</Button>
+						</div>
+
+						{/* ⭐ Address Form Component */}
+						<Address closeDrawer={toggleAddressDrawer(false)} />
 					</div>
 				</Drawer>
 			</MyContext.Provider>

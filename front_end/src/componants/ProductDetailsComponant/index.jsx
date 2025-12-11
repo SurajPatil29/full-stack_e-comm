@@ -8,7 +8,7 @@ import { useContext } from "react";
 import MyContext from "../../context/MyContext";
 import { putData } from "../../utils/api";
 
-function ProductDetailsComponant({ item, gotoReviews }) {
+function ProductDetailsComponant({ item = {}, gotoReviews }) {
 	const {
 		isLogin,
 		userData,
@@ -18,6 +18,7 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 		addToMyList,
 		myListData,
 		openAlertBox,
+		fetchCartData,
 	} = useContext(MyContext);
 
 	const isInCart = cartData?.some(
@@ -108,26 +109,22 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 		);
 	};
 
-	useEffect(() => {
-		const updateCart = async () => {
-			try {
-				await putData("/api/cart/update-item", {
-					_id: cartItem._id,
-					qty: quantity,
-					size: size[selectedSize],
-					ram: productRam[selectedRam],
-					weight: productWeight[selectedWeight],
-				});
+	const updateCart = async (updatedFields) => {
+		if (!cartItem?._id) return;
 
-				// if needed: context.fetchCart()
-			} catch (error) {
-				console.error("Cart update failed:", error);
-			}
-		};
-
-		updateCart();
-		// context.fetchCartData();
-	}, [quantity, selectedRam, selectedSize, selectedWeight]);
+		try {
+			await putData("/api/cart/update-item", {
+				_id: cartItem._id,
+				qty: updatedFields.qty ?? quantity,
+				size: updatedFields.size ?? size[selectedSize],
+				ram: updatedFields.ram ?? productRam[selectedRam],
+				weight: updatedFields.weight ?? productWeight[selectedWeight],
+			});
+			fetchCartData();
+		} catch (error) {
+			console.error("Cart update failed:", error);
+		}
+	};
 
 	return (
 		<>
@@ -189,7 +186,10 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 								className={`${
 									selectedRam === index && "!bg-[#ff5252] !text-white"
 								}`}
-								onClick={() => setSelectedRam(index)}
+								onClick={() => {
+									setSelectedRam(index);
+									updateCart({ ram: productRam[index] });
+								}}
 							>
 								{ram}
 							</Button>
@@ -210,7 +210,10 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 								className={`${
 									selectedSize === index && "!bg-[#ff5252] !text-white"
 								}`}
-								onClick={() => setSelectedSize(index)}
+								onClick={() => {
+									setSelectedSize(index);
+									updateCart({ size: size[index] });
+								}}
 							>
 								{sz}
 							</Button>
@@ -231,7 +234,10 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 								className={`${
 									selectedWeight === index && "!bg-[#ff5252] !text-white"
 								}`}
-								onClick={() => setSelectedWeight(index)}
+								onClick={() => {
+									setSelectedWeight(index);
+									updateCart({ weight: productWeight[index] });
+								}}
 							>
 								{w}
 							</Button>
@@ -258,7 +264,10 @@ function ProductDetailsComponant({ item, gotoReviews }) {
 							<div className="w-[70px]">
 								<QtyBox
 									quantity={quantity}
-									setQuantity={setQuantity}
+									setQuantity={(val) => {
+										setQuantity(val);
+										updateCart({ qty: val });
+									}}
 									stock={item.countInStock}
 								/>
 							</div>

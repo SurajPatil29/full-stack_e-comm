@@ -5,6 +5,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 export const addAddressController = async (req, res, next) => {
 	try {
 		const {
+			name,
 			address_line,
 			city,
 			state,
@@ -19,6 +20,7 @@ export const addAddressController = async (req, res, next) => {
 
 		// Validate required fields
 		if (
+			!name ||
 			!address_line ||
 			!city ||
 			!state ||
@@ -44,6 +46,7 @@ export const addAddressController = async (req, res, next) => {
 		}
 
 		const address = await AddressModel.create({
+			name,
 			address_line,
 			city,
 			state,

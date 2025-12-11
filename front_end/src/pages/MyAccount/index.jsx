@@ -329,6 +329,11 @@ function MyAccount() {
 												{selectedAddress.addressType} Address
 											</p>
 
+											{/* ⭐ NEW: SHOW NAME */}
+											<p className="text-gray-900 font-medium mt-1">
+												{selectedAddress?.name}
+											</p>
+
 											<p className="text-gray-700 mt-1 leading-5">
 												{selectedAddress.address_line}, {selectedAddress.city},{" "}
 												{selectedAddress.state} - {selectedAddress.pincode}

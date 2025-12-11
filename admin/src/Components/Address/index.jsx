@@ -19,7 +19,10 @@ import MyContext from "../../context/MyContext";
 import { postData } from "../../utils/api";
 
 function Address() {
+	const context = useContext(MyContext);
+
 	const [addressDetails, setAddressDetails] = useState({
+		name: context.userData?.name,
 		address_line: "",
 		city: "",
 		state: "",
@@ -33,7 +36,6 @@ function Address() {
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
-	const context = useContext(MyContext);
 
 	const onChangeInput = (e) => {
 		const { name, value } = e.target;
@@ -50,6 +52,7 @@ function Address() {
 
 		// Basic validation
 		const requiredFields = [
+			"name",
 			"address_line",
 			"city",
 			"state",
@@ -86,6 +89,28 @@ function Address() {
 			<h3 className="mb-4">Address Details</h3>
 
 			<form className="space-y-6" onSubmit={handleSubmit}>
+				{/* Row 0 - Name */}
+				<div className="flex items-center gap-5">
+					<TextField
+						label="Full Name"
+						name="name"
+						value={addressDetails.name}
+						onChange={onChangeInput}
+						variant="outlined"
+						size="small"
+						className="w-[50%] bg-white"
+						sx={{
+							"& .MuiOutlinedInput-root": {
+								"&.Mui-focused fieldset": {
+									borderColor: "#ff5151",
+								},
+							},
+							"& label.Mui-focused": {
+								color: "#ff5151",
+							},
+						}}
+					/>
+				</div>
 				{/* Row 1 */}
 				<div className="flex items-center gap-5">
 					<TextField
@@ -154,6 +179,39 @@ function Address() {
 						className="w-[50%]"
 					/>
 
+					<div className="w-[50%]">
+						<PhoneInput
+							defaultCountry="in"
+							value={addressDetails.mobile}
+							onChange={(value) =>
+								setAddressDetails((prev) => ({
+									...prev,
+									mobile: value,
+								}))
+							}
+							inputClassName="w-full !h-10 !text-sm"
+						/>
+					</div>
+				</div>
+
+				{/* Row 4 — Mobile + Status */}
+				<div className="flex items-center gap-5">
+					{/* ⭐ Status */}
+					<div className="w-[50%]">
+						<FormControl size="small" className="w-full">
+							<InputLabel>Status</InputLabel>
+							<Select
+								label="Status"
+								name="status"
+								value={addressDetails.status.toString()}
+								onChange={onChangeInput}
+							>
+								<MenuItem value="true">True</MenuItem>
+								<MenuItem value="false">False</MenuItem>
+							</Select>
+						</FormControl>
+					</div>
+
 					<div className="w-[50%] flex justify-center">
 						<FormControl>
 							<p className="text-sm mb-1 font-medium text-gray-700 text-center">
@@ -192,39 +250,6 @@ function Address() {
 									label="Office"
 								/>
 							</RadioGroup>
-						</FormControl>
-					</div>
-				</div>
-
-				{/* Row 4 — Mobile + Status */}
-				<div className="flex items-center gap-5">
-					<div className="w-[50%]">
-						<PhoneInput
-							defaultCountry="in"
-							value={addressDetails.mobile}
-							onChange={(value) =>
-								setAddressDetails((prev) => ({
-									...prev,
-									mobile: value,
-								}))
-							}
-							inputClassName="w-full !h-10 !text-sm"
-						/>
-					</div>
-
-					{/* ⭐ Status */}
-					<div className="w-[50%]">
-						<FormControl size="small" className="w-full">
-							<InputLabel>Status</InputLabel>
-							<Select
-								label="Status"
-								name="status"
-								value={addressDetails.status.toString()}
-								onChange={onChangeInput}
-							>
-								<MenuItem value="true">True</MenuItem>
-								<MenuItem value="false">False</MenuItem>
-							</Select>
 						</FormControl>
 					</div>
 				</div>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { VscTriangleDown } from "react-icons/vsc";
 // import { VscTriangleUp } from "react-icons/vsc";
 import { Button, Rating } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PropTypes from "prop-types";
@@ -42,12 +42,10 @@ const Dropdown = ({
 	</div>
 );
 
-function CartItems({ data }) {
+function CartItems({ data, selected, onSelectChange }) {
 	const context = useContext(MyContext);
 	const [sizeAnchorEl, setSizeAnchorEl] = useState(null);
-	const [selectedSize, setSelectedSize] = useState(
-		data.size || data.sizeRange?.[0] || ""
-	);
+	const [selectedSize, setSelectedSize] = useState(data.size);
 	const openSize = Boolean(sizeAnchorEl);
 
 	const [qtyAnchorEl, setQtyAnchorEl] = useState(null);
@@ -56,37 +54,27 @@ function CartItems({ data }) {
 	const qtyOptions = Array.from({ length: 10 }, (_, i) => (i + 1).toString());
 
 	const [ramAnchorEl, setRamAnchorEl] = useState(null);
-	const [selectedRam, setSelectedRam] = useState(
-		data.ram || data.ramRange?.[0] || ""
-	);
+	const [selectedRam, setSelectedRam] = useState(data.ram);
 	const openRam = Boolean(ramAnchorEl);
 
 	const [weightAnchorEl, setWeightAnchorEl] = useState(null);
-	const [selectedWeight, setSelectedWeight] = useState(
-		data.Weight || data.weightRange?.[0] || ""
-	);
+	const [selectedWeight, setSelectedWeight] = useState(data.weight);
 	const openWeight = Boolean(weightAnchorEl);
 
-	useEffect(() => {
-		const updateCart = async () => {
-			try {
-				await putData("/api/cart/update-item", {
-					_id: data._id,
-					qty: selectedQty,
-					size: selectedSize,
-					ram: selectedRam,
-					weight: selectedWeight,
-				});
-
-				// if needed: context.fetchCart()
-			} catch (error) {
-				console.error("Cart update failed:", error);
-			}
-		};
-
-		updateCart();
-		// context.fetchCartData();
-	}, [selectedQty, selectedRam, selectedSize, selectedWeight]);
+	const updateCart = async (fields) => {
+		try {
+			await putData("/api/cart/update-item", {
+				_id: data._id,
+				qty: fields.qty ?? selectedQty,
+				size: fields.size ?? selectedSize,
+				ram: fields.ram ?? selectedRam,
+				weight: fields.weight ?? selectedWeight,
+			});
+			context?.fetchCartData();
+		} catch (error) {
+			console.error("Cart update failed:", error);
+		}
+	};
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
@@ -99,6 +87,7 @@ function CartItems({ data }) {
 		setSizeAnchorEl(null);
 		if (value !== null) {
 			setSelectedSize(value);
+			updateCart({ size: value });
 		}
 	};
 
@@ -109,6 +98,7 @@ function CartItems({ data }) {
 		setQtyAnchorEl(null);
 		if (value !== null) {
 			setSelectedQty(value);
+			updateCart({ qty: value });
 		}
 	};
 
@@ -119,6 +109,7 @@ function CartItems({ data }) {
 		setRamAnchorEl(null);
 		if (value !== null) {
 			setSelectedRam(value);
+			updateCart({ ram: value });
 		}
 	};
 
@@ -129,6 +120,7 @@ function CartItems({ data }) {
 		setWeightAnchorEl(null);
 		if (value !== null) {
 			setSelectedWeight(value);
+			updateCart({ weight: value });
 		}
 	};
 
@@ -158,6 +150,12 @@ function CartItems({ data }) {
 	return (
 		<>
 			<div className="cartItem w-full p-3 flex items-center gap-4 pb-5 border-b border-[rgba(0,0,0,0.2)] ">
+				<input
+					type="checkbox"
+					checked={selected}
+					onChange={(e) => onSelectChange(data._id, e.target.checked)}
+					className="w-4 h-4 accent-[#ff5151] cursor-pointer"
+				/>
 				<div className="img w-[15%] group border border-[rgba(0,0,0,0.2)] rounded-md">
 					<Link to={`/productDetails/${data?.productId}`}>
 						<img

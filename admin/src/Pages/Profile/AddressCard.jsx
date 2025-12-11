@@ -28,6 +28,11 @@ function AddressCard({ address, onSelect, onDelete }) {
 						)}
 					</div>
 
+					{/* ⭐ NEW: SHOW NAME */}
+					<p className="text-gray-900 font-medium text-sm mt-1">
+						{address.name}
+					</p>
+
 					{/* Address text */}
 					<p className="text-gray-700 text-sm mt-1 leading-5">{fullAddress}</p>
 
