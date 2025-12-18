@@ -2,6 +2,7 @@ import OrderModel from "../models/order.model.js";
 import ProductModel from "../models/product.model.js";
 import AddressModel from "../models/address.model.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import paypal from "@paypal/checkout-server-sdk";
 
 /**
  * ✅ CREATE ORDER CONTROLLER
@@ -160,6 +161,94 @@ export const getOrderDetailsController = async (req, res, next) => {
 			.sort({ createdAt: -1 });
 
 		return sendSuccess(res, "Order list fetched", { orders });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export function getPayPalClient() {
+	const environment =
+		process.env.PAYPAL_MODE === "live"
+			? new paypal.core.LiveEnvironment(
+					process.env.PAYPAL_CLIENT_ID_LIVE,
+					process.env.PAYPAL_SECRET_LIVE
+			  )
+			: new paypal.core.SandboxEnvironment(
+					process.env.PAYPAL_CLIENT_ID_TEST,
+					process.env.PAYPAL_SECRET_TEST
+			  );
+
+	return new paypal.core.PayPalHttpClient(environment);
+}
+
+export const createPaypalOrderController = async (req, res, next) => {
+	try {
+		const { totalAmt } = req.body;
+
+		if (!totalAmt || totalAmt <= 0) {
+			return sendError(res, "Invalid amount", 422);
+		}
+
+		const request = new paypal.orders.OrdersCreateRequest();
+		request.prefer("return=representation");
+
+		request.requestBody({
+			intent: "CAPTURE",
+			purchase_units: [
+				{
+					amount: {
+						currency_code: "USD",
+						value: totalAmt.toFixed(2),
+					},
+				},
+			],
+		});
+
+		const client = getPayPalClient();
+		const order = await client.execute(request);
+
+		return sendSuccess(res, "PayPal order created", {
+			orderId: order.result.id,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const capturePaypalOrderController = async (req, res, next) => {
+	try {
+		const { paypalOrderId, products, delivery_address } = req.body;
+		const userId = req.userId;
+
+		if (!paypalOrderId) {
+			return sendError(res, "PayPal order ID missing", 422);
+		}
+
+		const request = new paypal.orders.OrdersCaptureRequest(paypalOrderId);
+		request.requestBody({});
+
+		const client = getPayPalClient();
+		const capture = await client.execute(request);
+
+		/* ===== VERIFICATION ===== */
+		if (capture.result.status !== "COMPLETED") {
+			return sendError(res, "Payment not completed", 400);
+		}
+
+		const paidAmount =
+			capture.result.purchase_units[0].payments.captures[0].amount.value;
+
+		/* ===== REUSE YOUR EXISTING ORDER LOGIC ===== */
+		req.body = {
+			products,
+			delivery_address,
+			totalAmt: Number(paidAmount),
+			payment_method: "paypal",
+			payment_status: "success",
+			paymentId: paypalOrderId,
+		};
+
+		return createOrderController(req, res, next);
 	} catch (error) {
 		next(error);
 	}

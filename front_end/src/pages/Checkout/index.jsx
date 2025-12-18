@@ -6,6 +6,11 @@ import { deleteDataReview, postData } from "../../utils/api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VITE_APP_RAZORPAY_KEY_ID = import.meta.env.VITE_APP_RAZORPAY_KEY_ID;
+// const VITE_APP_RAZORPAY_KEY_SECRET = import.meta.env
+// 	.VITE_APP_RAZORPAY_KEY_SECRET;
+
+const VITE_APP_PAYPAL_CLINT_ID = import.meta.env.VITE_APP_PAYPAL_CLINT_ID;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 function Checkout() {
 	const context = useContext(MyContext);
@@ -108,9 +113,9 @@ function Checkout() {
 			return initiateRazorpay();
 		}
 
-		if (paymentMethod === "paypal") {
-			// return initiatePaypal();
-		}
+		// if (paymentMethod === "paypal") {
+		// 	// return initiatePaypal();
+		// }
 	};
 
 	const placeOrder = async (method, status, paymentId = "") => {
@@ -181,7 +186,8 @@ function Checkout() {
 		// ⏳ Small delay so user can read alert
 		setTimeout(() => {
 			const options = {
-				key: import.meta.env.VITE_APP_RAZORPAY_KEY_ID,
+				key: VITE_APP_RAZORPAY_KEY_ID,
+				// key_secret: VITE_APP_RAZORPAY_KEY_SECRET,
 				amount: Math.round(totalAmount * 100),
 				currency: "INR",
 				name: "New ClassyShop",
@@ -205,6 +211,67 @@ function Checkout() {
 
 			new window.Razorpay(options).open();
 		}, 5000); // delay for better UX
+	};
+
+	useEffect(() => {
+		if (paymentMethod !== "paypal" || paypalRendered.current) return;
+		if (!selectedAddressId || !totalAmount) return;
+
+		const script = document.createElement("script");
+		script.src = `https://www.paypal.com/sdk/js?client-id=${VITE_APP_PAYPAL_CLIENT_ID}&currency=USD`;
+		script.async = true;
+
+		script.onload = () => {
+			window.paypal
+				.Buttons({
+					createOrder: async () => {
+						const res = await postData("/api/order/paypal/create", {
+							totalAmt: totalAmount,
+						});
+						if (res?.error) throw new Error(res.message);
+						return res.orderId;
+					},
+					onApprove: async (data) => {
+						await capturePaypalPayment(data.orderID);
+					},
+					onError: () => {
+						context.openAlertBox("error", "PayPal payment failed");
+					},
+				})
+				.render("#paypal-button-container");
+
+			paypalRendered.current = true;
+		};
+
+		document.body.appendChild(script);
+	}, [paymentMethod, totalAmount, selectedAddressId]);
+
+	const capturePaypalPayment = async (paypalOrderId) => {
+		try {
+			const res = await postData("/api/order/paypal/capture", {
+				paypalOrderId,
+				products: selectedCartItems,
+				delivery_address: selectedAddressId,
+			});
+
+			if (res?.error) {
+				return context.openAlertBox("error", res.message);
+			}
+
+			await Promise.all(
+				selectedCartItems.map((item) =>
+					deleteDataReview(`/api/cart/delete-cart-item/${item._id}`)
+				)
+			);
+
+			await context.fetchCartData();
+
+			navigate("/order-success", {
+				state: { orderId: res.order._id },
+			});
+		} catch {
+			context.openAlertBox("error", "Payment capture failed");
+		}
 	};
 
 	return (
@@ -431,20 +498,23 @@ function Checkout() {
 									</label>
 
 									{/* PayPal */}
-									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
+									{/* <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
 										<input
 											type="radio"
 											name="paymentMethod"
 											value="paypal"
 											checked={paymentMethod === "paypal"}
-											onChange={() => setPaymentMethod("paypal")}
+											onChange={() => {
+												paypalRendered.current = false;
+												setPaymentMethod("paypal");
+											}}
 										/>
 										<img
 											src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1765700086/paypal_jgwy0b.svg"
 											className="w-6"
 										/>
 										<span className="font-medium">PayPal</span>
-									</label>
+									</label> */}
 
 									{/* COD */}
 									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
