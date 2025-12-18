@@ -90,7 +90,7 @@ function MyListItems({ data }) {
 	return (
 		<div className="cartItem w-full p-3 flex items-center gap-4 pb-5 border-b border-[rgba(0,0,0,0.2)] ">
 			<div className="img w-[15%] group border border-[rgba(0,0,0,0.2)] rounded-md">
-				<Link to="productDetails/123">
+				<Link to="/productDetails/123">
 					<img
 						src={data?.image}
 						alt={data?.productTitle}
@@ -104,7 +104,7 @@ function MyListItems({ data }) {
 				</button>
 				<span className="text-[13px] ">{data?.ProductBrand}</span>
 				<h3 className="tetx-[15px] ">
-					<Link to={`productDetails/${data?.productId}`} className="link">
+					<Link to={`/productDetails/${data?.productId}`} className="link">
 						{data?.productTitle}
 					</Link>
 				</h3>
@@ -117,9 +117,11 @@ function MyListItems({ data }) {
 				/>
 
 				<div className="flex items-center gap-4 mt-2 mb-2 ">
-					<span className="pprice  text[14px] font-[600] ">{data?.price}</span>
+					<span className="pprice  text[14px] font-[600] ">
+						&#8377;{data?.price.toLocaleString()}
+					</span>
 					<span className="oldPrice line-through text-gray-500 text-[14px] font[500] ">
-						{data?.oldPrice}
+						&#8377;{data?.oldPrice.toLocaleString()}
 					</span>
 
 					<span className="pprice text-[#ff5151] text[12px] font-[500] ">

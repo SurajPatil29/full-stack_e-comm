@@ -6,18 +6,34 @@ const orderSchema = new mongoose.Schema(
 			type: mongoose.Schema.ObjectId,
 			ref: "User",
 		},
-		orderId: {
+		products: [
+			{
+				productId: {
+					type: mongoose.Schema.ObjectId,
+					ref: "Product",
+					required: true,
+				},
+				productsTitle: {
+					type: String,
+				},
+				quantity: {
+					type: Number,
+				},
+				price: {
+					type: Number,
+				},
+				image: {
+					type: String,
+				},
+				subTotal: {
+					type: Number,
+				},
+			},
+		],
+		payment_method: {
 			type: String,
-			required: [true, "Provide orderId"],
-			unique: true,
-		},
-		productId: {
-			type: mongoose.Schema.ObjectId,
-			ref: "productId",
-		},
-		product_details: {
-			name: String,
-			image: Array,
+			enum: ["razorpay", "paypal", "cod"],
+			required: true,
 		},
 		paymentId: {
 			type: String,
@@ -25,15 +41,17 @@ const orderSchema = new mongoose.Schema(
 		},
 		payment_status: {
 			type: String,
-			default: "",
+			enum: ["pending", "success", "failed"],
+			default: "pending",
+		},
+		order_status: {
+			type: String,
+			enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+			default: "pending",
 		},
 		delivery_address: {
 			type: mongoose.Schema.ObjectId,
 			ref: "address",
-		},
-		subTotalAmt: {
-			type: Number,
-			default: 0,
 		},
 		totalAmt: {
 			type: Number,

@@ -151,11 +151,13 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 			<div className="flex items-center gap-4 mt-4">
 				{oldPrice > price && (
 					<span className="line-through text-gray-500 text-[18px] font-[500]">
-						₹{oldPrice}
+						₹{oldPrice.toLocaleString()}
 					</span>
 				)}
 
-				<span className="text-[#ff5252] text-[18px] font-[600]">₹{price}</span>
+				<span className="text-[#ff5252] text-[18px] font-[600]">
+					₹{price.toLocaleString()}
+				</span>
 
 				{discount > 0 && (
 					<span className="text-green-600 text-[14px] font-[600]">

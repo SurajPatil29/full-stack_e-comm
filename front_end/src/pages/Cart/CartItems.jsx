@@ -132,11 +132,6 @@ function CartItems({ data, selected, onSelectChange }) {
 			if (res.error === false) {
 				context.openAlertBox("success", "Item removed successfully");
 
-				// UPDATE PRODUCT STOCK
-				await putData(`/api/product/updateProduct/${productId}`, {
-					countInStock: updatedStockQty,
-				});
-
 				// REFETCH CART
 				context.fetchCartData();
 			} else {
@@ -239,10 +234,10 @@ function CartItems({ data, selected, onSelectChange }) {
 
 					<div className="flex items-center gap-4 mt-2 ">
 						<span className="pprice  text[14px] font-[600] ">
-							&#8377;{data?.price}
+							&#8377;{data?.price.toLocaleString()}
 						</span>
 						<span className="oldPrice line-through text-gray-500 text-[14px] font[500] ">
-							&#8377;{data?.oldPrice}
+							&#8377;{data?.oldPrice.toLocaleString()}
 						</span>
 
 						<span className="pprice text-[#ff5151] text[12px] font-[500] ">

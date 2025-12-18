@@ -9,13 +9,27 @@ import { Link } from "react-router-dom";
 import SkeletonCart from "./SkeletonCartItem";
 import SkeletonCartTotal from "./SkeletonCartTotal";
 
+/* ================= CONSTANT ================= */
+const RAZORPAY_MAX_AMOUNT = 25000;
+
+/* ============ WARNING COMPONENT ============ */
+function RazorpayLimitWarning({ amount, limit }) {
+	if (amount <= limit) return null;
+
+	return (
+		<p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+			⚠ Maximum Online payment allowed is ₹{limit.toLocaleString()}
+		</p>
+	);
+}
+
 function CartPage() {
 	const context = useContext(MyContext);
 	const [localLoading, setLocalLoading] = useState(true);
-	const [selectedIds, setSelectedIds] = useState([]);
+	const [selectedProductsIds, setSelectedProductsIds] = useState([]);
 
 	const handleSelectChange = (id, checked) => {
-		setSelectedIds((prev) =>
+		setSelectedProductsIds((prev) =>
 			checked ? [...prev, id] : prev.filter((item) => item !== id)
 		);
 	};
@@ -32,7 +46,7 @@ function CartPage() {
 	}, []);
 	// console.log(context.cartData);
 	const totalSubtotal = context.cartData
-		.filter((item) => selectedIds.includes(item._id))
+		.filter((item) => selectedProductsIds.includes(item._id))
 		.reduce((sum, item) => sum + (item.subTotal || 0), 0);
 
 	return (
@@ -58,7 +72,7 @@ function CartPage() {
 								<CartItems
 									data={item}
 									key={i}
-									selected={selectedIds.includes(item._id)}
+									selected={selectedProductsIds.includes(item._id)}
 									onSelectChange={handleSelectChange}
 								/>
 							))
@@ -99,47 +113,69 @@ function CartPage() {
 					</div>
 				</div>
 
-				<div className="rightPart w-[30%] ">
+				<div className="rightPart w-[30%]">
 					{localLoading ? (
 						<SkeletonCartTotal />
 					) : (
-						<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px] z-auto ">
+						<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px]">
 							<h3>Cart Total</h3>
 							<hr />
 
 							<p className="flex items-center justify-between">
-								<span className="text-[14px] font-[500] ">Subtotal</span>
-								<span className="text-[#ff5151] font-bold ">
-									₹{totalSubtotal}
+								<span className="text-[14px] font-[500]">Subtotal</span>
+								<span className="text-[#ff5151] font-bold">
+									₹{totalSubtotal.toLocaleString()}
 								</span>
 							</p>
 
 							<p className="flex items-center justify-between">
-								<span className="text-[14px] font-[500] ">Shipping</span>
+								<span className="text-[14px] font-[500]">Shipping</span>
 								<span className="font-bold">Free</span>
 							</p>
 
 							<p className="flex items-center justify-between">
-								<span className="text-[14px] font-[500] ">Total</span>
-								<span className="text-[#ff5151] font-bold ">
-									₹{totalSubtotal}
+								<span className="text-[14px] font-[500]">Total</span>
+								<span className="text-[#ff5151] font-bold">
+									₹{totalSubtotal.toLocaleString()}
 								</span>
 							</p>
 
-							{selectedIds.length === 0 ? (
+							{/* ⚠ Razorpay Limit Warning */}
+							<RazorpayLimitWarning
+								amount={totalSubtotal}
+								limit={RAZORPAY_MAX_AMOUNT}
+							/>
+
+							{/* ============ CHECKOUT BUTTON LOGIC ============ */}
+							{selectedProductsIds.length === 0 ? (
 								<Button
 									className="btn-org btn-lg w-full flex gap-3 opacity-50 cursor-not-allowed"
-									onClick={() => {
-										context.openAlertBox("error", "Select Product");
-									}}
+									onClick={() =>
+										context.openAlertBox(
+											"error",
+											"Please select at least one product"
+										)
+									}
+								>
+									<BsBagCheck className="text-[20px]" /> Checkout
+								</Button>
+							) : totalSubtotal > RAZORPAY_MAX_AMOUNT ? (
+								<Button
+									className="btn-org btn-lg w-full flex gap-3 opacity-50 cursor-not-allowed"
+									onClick={() =>
+										context.openAlertBox(
+											"error",
+											"Razorpay supports payments up to ₹25,000 only"
+										)
+									}
 								>
 									<BsBagCheck className="text-[20px]" /> Checkout
 								</Button>
 							) : (
 								<Link
 									to="/checkout"
-									state={{ selectedIds }}
-									className="w-[50%] d-block link"
+									state={{ selectedProductsIds }}
+									className="w-full d-block link"
 								>
 									<Button className="btn-org btn-lg w-full flex gap-3">
 										<BsBagCheck className="text-[20px]" /> Checkout

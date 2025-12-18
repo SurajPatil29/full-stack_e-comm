@@ -1,21 +1,27 @@
-import { Button, TextField } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { Button, CircularProgress, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { IoBagCheck } from "react-icons/io5";
 import MyContext from "../../context/MyContext";
 import { deleteDataReview, postData } from "../../utils/api";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const VITE_APP_RAZORPAY_KEY_ID = import.meta.env.VITE_APP_RAZORPAY_KEY_ID;
 
 function Checkout() {
 	const context = useContext(MyContext);
 	const Addresses = context?.userData?.address_details;
 	const cartData = context?.cartData || [];
+	const [addressIsLoading, setAddressIsLoading] = useState(false);
+	const [paymentMethod, setPaymentMethod] = useState("razorpay");
+
+	const navigate = useNavigate();
 
 	const location = useLocation();
-	const { selectedIds = [] } = location.state || [];
+	const { selectedProductsIds = [] } = location.state || [];
 
 	// Get only selected cart items
 	const selectedCartItems = cartData.filter((item) =>
-		selectedIds.includes(item._id)
+		selectedProductsIds.includes(item._id)
 	);
 
 	const totalItems = selectedCartItems.reduce(
@@ -28,10 +34,17 @@ function Checkout() {
 		0
 	);
 
-	console.log("Selected Cart Items:", selectedCartItems);
+	const selectedAddressId = Addresses?.find(
+		(item) => item.status === true
+	)?._id;
+
+	const name = context?.userData?.name;
+
+	// console.log("Selected Cart Items:", selectedCartItems);
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
+		// if (selectedProductsIds) navigate("/");
 	}, []);
 
 	const handleDeleteAddress = async (id) => {
@@ -48,13 +61,152 @@ function Checkout() {
 	};
 
 	const handleDefaultAddressSelection = async (addressId) => {
-		const res = await postData("/api/address/set-default", { addressId });
+		// ❌ Guard: invalid id
+		if (!addressId) {
+			return context.openAlertBox("error", "Invalid address");
+		}
 
-		if (!res.error) {
+		// ❌ Prevent double click / multiple requests
+		if (addressIsLoading) return;
+
+		try {
+			setAddressIsLoading(true);
+
+			const res = await postData("/api/address/set-default", { addressId });
+
+			// ❌ Backend-level error
+			if (res?.error) {
+				context.openAlertBox(
+					"error",
+					res.message || "Failed to select address"
+				);
+				return;
+			}
+
 			context.openAlertBox("success", "Address selected");
-			context.loadUserDetails(); // Reload user to update address list
+
+			// ✅ Reload user & addresses
+			await context.loadUserDetails();
+		} catch (error) {
+			console.error("Set default address error:", error);
+			context.openAlertBox("error", "Network error. Please try again");
+		} finally {
+			setAddressIsLoading(false);
 		}
 	};
+
+	const handlePayment = async () => {
+		if (!selectedAddressId) {
+			return context.openAlertBox("error", "Select delivery address");
+		}
+
+		if (paymentMethod === "cod") {
+			return placeOrder("cod", "pending");
+		}
+
+		if (paymentMethod === "razorpay") {
+			return initiateRazorpay();
+		}
+
+		if (paymentMethod === "paypal") {
+			// return initiatePaypal();
+		}
+	};
+
+	const placeOrder = async (method, status, paymentId = "") => {
+		if (!selectedCartItems?.length) {
+			return context.openAlertBox("error", "No items selected");
+		}
+
+		if (!selectedAddressId) {
+			return context.openAlertBox("error", "Select delivery address");
+		}
+
+		try {
+			const orderPayload = {
+				products: selectedCartItems,
+				delivery_address: selectedAddressId,
+				totalAmt: totalAmount,
+				payment_method: method,
+				payment_status: status,
+				paymentId,
+			};
+
+			const orderRes = await postData("/api/order/create", orderPayload);
+
+			if (orderRes?.error) {
+				return context.openAlertBox(
+					"error",
+					orderRes.message || "Order failed"
+				);
+			}
+
+			context.openAlertBox("success", "Order placed successfully");
+
+			// delete selected cart items
+			await Promise.all(
+				selectedCartItems.map((item) =>
+					deleteDataReview(`/api/cart/delete-cart-item/${item._id}`)
+				)
+			);
+
+			await context.fetchCartData();
+
+			navigate("/order-success", {
+				state: { orderId: orderRes.order._id },
+			});
+		} catch (error) {
+			console.error("Place order error:", error);
+			context.openAlertBox("error", "Something went wrong. Try again.");
+		}
+	};
+
+	const initiateRazorpay = () => {
+		context.openAlertBox(
+			"info",
+			<div>
+				<strong>⚠ Razorpay Test Mode (Not a Real Payment)</strong>
+				<p style={{ marginTop: "6px" }}>
+					This is a test transaction. No real money will be deducted.
+				</p>
+				<p style={{ marginTop: "6px" }}>Use Razorpay test credentials:</p>
+				<p>
+					Mobile: <b>9999999999</b>
+					<br />
+					OTP: <b>123456</b>
+				</p>
+			</div>
+		);
+
+		// ⏳ Small delay so user can read alert
+		setTimeout(() => {
+			const options = {
+				key: import.meta.env.VITE_APP_RAZORPAY_KEY_ID,
+				amount: Math.round(totalAmount * 100),
+				currency: "INR",
+				name: "New ClassyShop",
+				description: "Order Payment",
+
+				handler: async function (response) {
+					const paymentId = response.razorpay_payment_id;
+					await placeOrder("razorpay", "success", paymentId);
+				},
+
+				prefill: {
+					name: context?.userData?.name || "Test User",
+					email: context?.userData?.email || "test@example.com",
+					contact: "9999999999",
+				},
+
+				theme: {
+					color: "#ff5252",
+				},
+			};
+
+			new window.Razorpay(options).open();
+		}, 5000); // delay for better UX
+	};
+
 	return (
 		<section className="py-10">
 			<div className="container flex gap-5">
@@ -75,17 +227,27 @@ function Checkout() {
 							</Button>
 						)}
 					</div>
-					<div className="pl-20">
+					<div className="pl-20 relative">
+						{addressIsLoading && (
+							<div className="absolute inset-0 z-10 bg-white/60 flex items-center justify-center rounded-lg">
+								<CircularProgress size={40} color="error" />
+							</div>
+						)}
 						{Addresses?.length > 0 ? (
 							Addresses?.map((item, i) => (
 								<div
 									key={i}
-									className={`my-4 p-4 rounded-lg w-[70%] transition-all 
-		${
-			item.status
-				? "border-2 border-[#ff5151] bg-[#fff5f5] shadow-md"
-				: "border bg-white shadow-sm hover:shadow-md"
-		} `}
+									className={`my-4 p-4 rounded-lg w-[70%] transition-all cursor-pointer
+					${
+						item.status
+							? "border-2 border-[#ff5151] bg-[#fff5f5] shadow-md"
+							: "border bg-white shadow-sm hover:shadow-md"
+					}
+					${addressIsLoading ? "pointer-events-none opacity-60" : ""}
+				`}
+									onClick={() =>
+										!addressIsLoading && handleDefaultAddressSelection(item._id)
+									}
 								>
 									<div className="flex gap-4 items-start">
 										{/* Radio for Default */}
@@ -93,7 +255,7 @@ function Checkout() {
 											type="radio"
 											name="selectedAddress"
 											checked={item.status === true}
-											onChange={() => handleDefaultAddressSelection(item._id)}
+											readOnly
 											className="mt-1 h-4 w-4 cursor-pointer accent-[#ff5151]"
 										/>
 
@@ -121,13 +283,13 @@ function Checkout() {
 											</p>
 
 											{item.landmark && (
-												<p className="text-gray-600 text-sm mt-1">
-													Landmark: {item.landmark}
+												<p className="text-gray-800 font-medium text-sm mt-1">
+													Landmark : {item.landmark}
 												</p>
 											)}
 
 											<p className="text-gray-800 font-medium text-sm mt-1">
-												Phone: {item.mobile}
+												Phone : {item.mobile}
 											</p>
 											{item.status === true && (
 												<button className="w-[90%] bg-[#ff5151] text-white rounded-md  !capitalize py-2 ">
@@ -193,7 +355,10 @@ function Checkout() {
 						<div className="scroll max-h-[300px] overflow-x-hidden overflow-y-scroll ">
 							{selectedCartItems?.length > 0 &&
 								selectedCartItems?.map((item, i) => (
-									<div className="flex items-center justify-between py-2">
+									<div
+										className="flex items-center justify-between py-2"
+										key={i}
+									>
 										<div className="part1 flex items-center gap-3">
 											<div className="img w-[50px] h-[50px] object-cover overflow-hidden rounded-md group cursor-pointer ">
 												<img
@@ -216,7 +381,7 @@ function Checkout() {
 										</div>
 
 										<span className="text-[14px] font-[500] ">
-											&#8377;{item?.subTotal}
+											&#8377;{item?.subTotal.toLocaleString()}
 										</span>
 									</div>
 								))}
@@ -233,14 +398,66 @@ function Checkout() {
 
 							<div className="flex justify-between mb-2">
 								<span className="text-[14px] font-semibold">Total Items</span>
-								<span className="text-[14px] font-semibold">{totalItems}</span>
+								<span className="text-[14px] font-semibold">
+									{totalItems.toLocaleString()}
+								</span>
 							</div>
 
 							<div className="flex justify-between mb-2">
 								<span className="text-[14px] font-semibold">Total Amount</span>
 								<span className="text-[14px] font-semibold">
-									₹ {totalAmount}
+									₹ {totalAmount.toLocaleString()}
 								</span>
+							</div>
+
+							<div className="mt-4">
+								<h3 className="text-sm font-semibold mb-2">Payment Method</h3>
+
+								<div className="space-y-3">
+									{/* Razorpay */}
+									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
+										<input
+											type="radio"
+											name="paymentMethod"
+											value="razorpay"
+											checked={paymentMethod === "razorpay"}
+											onChange={() => setPaymentMethod("razorpay")}
+										/>
+										<img
+											src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1765700190/razorpay_pgrldg.png"
+											className="w-6"
+										/>
+										<span className="font-medium">Razorpay</span>
+									</label>
+
+									{/* PayPal */}
+									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
+										<input
+											type="radio"
+											name="paymentMethod"
+											value="paypal"
+											checked={paymentMethod === "paypal"}
+											onChange={() => setPaymentMethod("paypal")}
+										/>
+										<img
+											src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1765700086/paypal_jgwy0b.svg"
+											className="w-6"
+										/>
+										<span className="font-medium">PayPal</span>
+									</label>
+
+									{/* COD */}
+									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
+										<input
+											type="radio"
+											name="paymentMethod"
+											value="cod"
+											checked={paymentMethod === "cod"}
+											onChange={() => setPaymentMethod("cod")}
+										/>
+										🚚 <span className="font-medium">Cash on Delivery</span>
+									</label>
+								</div>
 							</div>
 
 							<Button
@@ -248,13 +465,16 @@ function Checkout() {
 								fullWidth
 								sx={{
 									backgroundColor: "#ff5151",
-									mt: 2,
+									mt: 3,
 									py: 1.2,
 									"&:hover": { backgroundColor: "#e64545" },
 								}}
+								onClick={handlePayment}
 							>
 								<IoBagCheck className="text-[20px] mr-2" />
-								Pay ₹{totalAmount}
+								{paymentMethod === "cod"
+									? "Place Order"
+									: `Pay ₹${totalAmount.toLocaleString()}`}
 							</Button>
 						</div>
 					</div>

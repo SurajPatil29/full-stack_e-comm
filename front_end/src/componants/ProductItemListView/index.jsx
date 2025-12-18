@@ -133,7 +133,10 @@ function ProductItemListView({ item }) {
 						{item?.brand || "Brand"}
 					</Link>
 				</h5>
-				<h2 className="text-[18px] title my-3 font-[500] text-[rgba(0,0,0)]  ">
+				<h2
+					className="text-[18px] title my-3 font-[500] text-[rgba(0,0,0)]  "
+					title={item?.name}
+				>
 					<Link
 						to={`/productDetails/${item?._id}`}
 						className="link transition-all"

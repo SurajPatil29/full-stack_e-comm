@@ -136,7 +136,10 @@ function ProductItem({ item }) {
 					</Link>
 				</h5>
 
-				<h2 className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1">
+				<h2
+					className="text-[15px] title mt-1 font-[500] text-[rgba(0,0,0)] mb-1"
+					title={item?.name}
+				>
 					<Link to={`/productDetails/${item?._id}`} className="link">
 						{item?.name?.substr(0, 50) + "..."}
 					</Link>

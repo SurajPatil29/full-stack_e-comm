@@ -9,10 +9,10 @@ import { BsBagCheck } from "react-icons/bs";
 function CartPanel({ data }) {
 	const context = useContext(MyContext);
 
-	const [selectedIds, setSelectedIds] = useState([]);
+	const [selectedProductsIds, setSelectedProductsIds] = useState([]);
 
 	const handleSelectChange = (id, checked) => {
-		setSelectedIds((prev) =>
+		setSelectedProductsIds((prev) =>
 			checked ? [...prev, id] : prev.filter((item) => item !== id)
 		);
 	};
@@ -24,11 +24,6 @@ function CartPanel({ data }) {
 
 			if (res.error === false) {
 				context.openAlertBox("success", "Item removed successfully");
-
-				// UPDATE PRODUCT STOCK
-				await putData(`/api/product/updateProduct/${productId}`, {
-					countInStock: updatedStockQty,
-				});
 
 				// REFETCH CART
 				context.fetchCartData();
@@ -42,8 +37,10 @@ function CartPanel({ data }) {
 	};
 
 	const getTotal = context.cartData
-		.filter((item) => selectedIds.includes(item._id))
+		.filter((item) => selectedProductsIds.includes(item._id))
 		.reduce((sum, item) => sum + (item.subTotal || 0), 0);
+
+	const RAZORPAY_MAX_AMOUNT = 25000;
 
 	// console.log(getTotal);
 
@@ -57,7 +54,7 @@ function CartPanel({ data }) {
 					>
 						<input
 							type="checkbox"
-							checked={selectedIds.includes(item._id)}
+							checked={selectedProductsIds.includes(item._id)}
 							onChange={(e) => handleSelectChange(item._id, e.target.checked)}
 							className="w-4 h-4 accent-[#ff5151] cursor-pointer"
 						/>
@@ -88,7 +85,7 @@ function CartPanel({ data }) {
 									Qty : <span>{item.quantity}</span>
 								</span>{" "}
 								<span className="text-[#ff5151] font-bold">
-									price : &#8377;{item?.price}
+									price : &#8377;{item?.price.toLocaleString()}
 								</span>
 							</p>
 							<Button
@@ -144,14 +141,20 @@ function CartPanel({ data }) {
 						<span className="text-black font-[500]">
 							{context.cartData.length} item
 						</span>
-						<span className="text-[#ff5151] font-bold"> &#8377;{getTotal}</span>
+						<span className="text-[#ff5151] font-bold">
+							{" "}
+							&#8377;{getTotal.toLocaleString()}
+						</span>
 					</div>
 				</div>
 
 				<div className="bottomInfo py-3 my-2 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
 					<div className="flex items-center justify-between w-full">
 						<span className="text-black font-[500]">Total (tax excl)</span>
-						<span className="text-[#ff5151] font-bold"> &#8377;{getTotal}</span>
+						<span className="text-[#ff5151] font-bold">
+							{" "}
+							&#8377;{getTotal.toLocaleString()}
+						</span>
 					</div>
 				</div>
 
@@ -167,7 +170,8 @@ function CartPanel({ data }) {
 					</Link>
 
 					{/* CHECKOUT BUTTON - DISABLED IF NO ITEMS SELECTED */}
-					{selectedIds.length === 0 ? (
+					{selectedProductsIds.length === 0 ? (
+						// ❌ No product selected
 						<div className="w-[50%] d-block link">
 							<Button
 								className="btn-org btn-lg w-full flex gap-3 opacity-50 cursor-not-allowed"
@@ -181,10 +185,26 @@ function CartPanel({ data }) {
 								Checkout
 							</Button>
 						</div>
+					) : getTotal > RAZORPAY_MAX_AMOUNT ? (
+						// ❌ Amount exceeds Razorpay limit
+						<div className="w-[50%] d-block link">
+							<Button
+								className="btn-org btn-lg w-full flex gap-3 opacity-50 cursor-not-allowed"
+								onClick={() => {
+									context.openAlertBox(
+										"error",
+										"Online payments up to ₹25,000 only. Please reduce cart value."
+									);
+								}}
+							>
+								Checkout
+							</Button>
+						</div>
 					) : (
+						// ✅ Allowed checkout
 						<Link
 							to="/checkout"
-							state={{ selectedIds }}
+							state={{ selectedProductsIds }}
 							className="w-[50%] d-block link"
 							onClick={() => context.setOpenCartPanel(false)}
 						>

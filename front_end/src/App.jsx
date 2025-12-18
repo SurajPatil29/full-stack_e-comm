@@ -30,6 +30,7 @@ import MyContext from "./context/MyContext";
 import Address from "./pages/Address";
 import { IoCartOutline } from "react-icons/io5";
 import AddressPage from "./pages/Address/AddressPage";
+import OrderSuccess from "./pages/Checkout/OrderSuccess";
 
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState({
@@ -69,6 +70,9 @@ function App() {
 		}
 		if (status === "error") {
 			toast.error(msg);
+		}
+		if (status === "info") {
+			toast(msg); // ✅ neutral info toast
 		}
 	};
 
@@ -225,10 +229,6 @@ function App() {
 				// 8. 🔥 Update Product Stock in DB
 				// ----------------------------------
 				const newStock = product.countInStock - quantity;
-
-				await putData(`/api/product/updateProduct/${product._id}`, {
-					countInStock: newStock,
-				});
 
 				// ----------------------------------
 				// 9. Refresh Cart + Product Details
@@ -432,6 +432,15 @@ function App() {
 						element={
 							<PrivateRoutes>
 								<Orders />
+							</PrivateRoutes>
+						}
+					/>
+					<Route
+						path={"/order-success"}
+						exact={true}
+						element={
+							<PrivateRoutes>
+								<OrderSuccess />
 							</PrivateRoutes>
 						}
 					/>
