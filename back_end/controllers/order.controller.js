@@ -166,6 +166,58 @@ export const getOrderDetailsController = async (req, res, next) => {
 	}
 };
 
+export const getAllOrdersController = async (req, res, next) => {
+	try {
+		const orders = await OrderModel.find()
+			.populate({
+				path: "userId",
+				select: "name email mobile avatar", // 🔐 safe fields only
+			})
+			.populate({
+				path: "delivery_address",
+				select: "-__v",
+			})
+			.sort({ createdAt: -1 });
+
+		return sendSuccess(res, "All orders fetched", { orders });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const updateOrderController = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const updates = { ...req.body };
+
+		const order = await OrderModel.findById(id);
+		if (!order) {
+			return res.status(404).json({
+				error: true,
+				message: "Order not found",
+			});
+		}
+
+		// ✅ AUTO PAYMENT SUCCESS FOR COD
+		if (
+			order.payment_method === "cod" &&
+			updates.order_status === "delivered"
+		) {
+			updates.payment_status = "success";
+		}
+
+		const updatedOrder = await OrderModel.findByIdAndUpdate(
+			id,
+			{ $set: updates },
+			{ new: true }
+		);
+
+		return sendSuccess(res, "Order updated", updatedOrder);
+	} catch (error) {
+		next(error);
+	}
+};
+
 export function getPayPalClient() {
 	const environment =
 		process.env.PAYPAL_MODE === "live"
