@@ -762,3 +762,21 @@ export async function userDetails(req, res, next) {
 		next(error);
 	}
 }
+
+export async function userCount(req, res, next) {
+	try {
+		const [count, users] = await Promise.all([
+			UserModel.countDocuments({ role: "USER" }),
+			UserModel.find({ role: "USER" }).select("-password -refreshToken"),
+		]);
+
+		const safeCount = Number.isInteger(count) ? count : 0;
+
+		return sendSuccess(res, "User count fetched successfully", {
+			count: safeCount,
+			users,
+		});
+	} catch (error) {
+		next(error);
+	}
+}

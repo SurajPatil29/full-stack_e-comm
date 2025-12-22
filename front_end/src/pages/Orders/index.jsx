@@ -6,10 +6,54 @@ import { useEffect, useState } from "react";
 import { fetchDataFromApi } from "../../utils/api";
 import Pagination from "@mui/material/Pagination";
 
+const OrderTableSkeleton = (rows = 5) => {
+	return (
+		<div className="space-y-4 mt-5 animate-pulse">
+			{Array.from({ length: rows }).map((_, i) => (
+				<div
+					key={i}
+					className="border rounded-md bg-white shadow-sm overflow-hidden"
+				>
+					<div className="flex gap-4 p-4">
+						<div className="w-8 h-8 bg-gray-200 rounded-full" />
+						<div className="flex-1 space-y-2">
+							<div className="h-4 bg-gray-200 rounded w-[40%]" />
+							<div className="h-4 bg-gray-200 rounded w-[60%]" />
+						</div>
+					</div>
+
+					<div className="grid grid-cols-6 gap-4 px-6 pb-4">
+						{Array.from({ length: 6 }).map((_, j) => (
+							<div key={j} className="h-4 bg-gray-200 rounded" />
+						))}
+					</div>
+				</div>
+			))}
+		</div>
+	);
+};
+
+const EmptyOrders = () => {
+	return (
+		<div className="flex flex-col items-center justify-center py-20 text-center">
+			<img
+				src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
+				alt="No Orders"
+				className="w-28 mb-4 opacity-80"
+			/>
+			<h3 className="text-lg font-semibold text-gray-700">No orders found</h3>
+			<p className="text-sm text-gray-500 mt-1">
+				Looks like you haven’t placed any orders yet.
+			</p>
+		</div>
+	);
+};
+
 const Orders = () => {
 	const [openOrderIndex, setOpenOrderIndex] = useState(null);
 
 	const [orders, setOrders] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	const toggleOrder = (index) => {
 		setOpenOrderIndex(openOrderIndex === index ? null : index);
@@ -31,12 +75,18 @@ const Orders = () => {
 	};
 
 	useEffect(() => {
-		fetchDataFromApi("/api/order/order-list").then((res) => {
-			// console.log(res);
+		const fetchOrders = async () => {
+			setLoading(true);
+			const res = await fetchDataFromApi("/api/order/order-list");
+
 			if (res?.error === false) {
-				setOrders(res?.orders);
+				setOrders(res.orders || []);
 			}
-		});
+
+			setLoading(false);
+		};
+
+		fetchOrders();
 		window.scrollTo(0, 0);
 	}, []);
 	return (
@@ -52,11 +102,19 @@ const Orders = () => {
 							<p className="mt-0">
 								There are{" "}
 								<span className="font-bold text-[#ff5151]">
-									{orders.length}
+									{loading ? "..." : orders.length}
 								</span>{" "}
 								orders
 							</p>
-							{currentOrders.length > 0 &&
+							{/* 🔹 SKELETON */}
+							{loading && OrderTableSkeleton()}
+
+							{/* 🔹 EMPTY FALLBACK */}
+							{!loading && orders.length === 0 && EmptyOrders()}
+
+							{/* 🔹 ORDERS TABLE */}
+							{!loading &&
+								currentOrders.length > 0 &&
 								currentOrders.map((order, i) => {
 									const actualIndex = i + indexOfFirst;
 
@@ -84,7 +142,7 @@ const Orders = () => {
 															scope="col"
 															className="px-6 py-3 whitespace-nowrap"
 														>
-															Customer
+															user
 														</th>
 														<th
 															scope="col"
@@ -135,7 +193,13 @@ const Orders = () => {
 																{openOrderIndex === actualIndex ? (
 																	<FaAngleUp className="text-[16px] text-[rgba(0,0,0,0.7)] " />
 																) : (
-																	<FaAngleDown className="text-[16px] text-[rgba(0,0,0,0.7)] " />
+																	<FaAngleDown
+																		className={`transition-transform duration-300 ${
+																			openOrderIndex === actualIndex
+																				? "rotate-180"
+																				: ""
+																		}`}
+																	/>
 																)}
 															</Button>
 														</td>
@@ -178,90 +242,99 @@ const Orders = () => {
 														</td>
 													</tr>
 
-													{openOrderIndex === actualIndex && (
-														<tr>
-															<td className=" pl-20 " colSpan="6">
-																<div className="relative overflow-x-auto ">
-																	<table className="w-full text-sm text-left rtl:text-right text-gray-500">
-																		<thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
-																			<tr>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Product Id
-																				</th>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Product Title
-																				</th>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Image
-																				</th>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Quantity
-																				</th>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Price
-																				</th>
-																				<th
-																					scope="col"
-																					className="px-6 py-3 whitespace-nowrap"
-																				>
-																					Sub Total
-																				</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			{order.products.map((p) => (
-																				<tr
-																					key={p._id}
-																					className="bg-white border-b"
-																				>
-																					<td className="px-6 py-4 text-[#ff5151]">
-																						{p.productId}
-																					</td>
-
-																					<td className="px-6 py-4">
-																						{p.productsTitle}
-																					</td>
-
-																					<td className="px-6 py-4">
-																						<img
-																							src={p.image}
-																							alt={p.productsTitle}
-																							className="w-[40px] h-[40px] rounded-md object-cover"
-																						/>
-																					</td>
-
-																					<td className="px-6 py-4">
-																						{p.quantity}
-																					</td>
-																					<td className="px-6 py-4">
-																						₹{p.price}
-																					</td>
-																					<td className="px-6 py-4">
-																						₹{p.subTotal}
-																					</td>
+													<tr>
+														<td colSpan="10" className="bg-gray-50">
+															<div
+																className={`overflow-hidden transition-all duration-300 ease-in-out
+			${
+				openOrderIndex === actualIndex
+					? "max-h-[500px] opacity-100 translate-y-0"
+					: "max-h-0 opacity-0 -translate-y-2"
+			}`}
+															>
+																<div className="pl-20 py-4">
+																	<div className="relative overflow-x-auto ">
+																		<table className="w-full text-sm text-left rtl:text-right text-gray-500">
+																			<thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+																				<tr>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Product Id
+																					</th>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Product Title
+																					</th>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Image
+																					</th>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Quantity
+																					</th>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Price
+																					</th>
+																					<th
+																						scope="col"
+																						className="px-6 py-3 whitespace-nowrap"
+																					>
+																						Sub Total
+																					</th>
 																				</tr>
-																			))}
-																		</tbody>
-																	</table>
+																			</thead>
+																			<tbody>
+																				{order.products.map((p) => (
+																					<tr
+																						key={p._id}
+																						className="bg-white border-b"
+																					>
+																						<td className="px-6 py-4 text-[#ff5151]">
+																							{p.productId}
+																						</td>
+
+																						<td className="px-6 py-4">
+																							{p.productsTitle}
+																						</td>
+
+																						<td className="px-6 py-4">
+																							<img
+																								src={p.image}
+																								alt={p.productsTitle}
+																								className="w-[40px] h-[40px] rounded-md object-cover"
+																							/>
+																						</td>
+
+																						<td className="px-6 py-4">
+																							{p.quantity}
+																						</td>
+																						<td className="px-6 py-4">
+																							₹{p.price}
+																						</td>
+																						<td className="px-6 py-4">
+																							₹{p.subTotal}
+																						</td>
+																					</tr>
+																				))}
+																			</tbody>
+																		</table>
+																	</div>
 																</div>
-															</td>
-														</tr>
-													)}
+															</div>
+														</td>
+													</tr>
 												</tbody>
 											</table>
 										</div>
@@ -271,16 +344,18 @@ const Orders = () => {
 					</div>
 				</div>
 			</div>
-			<div className="flex justify-center mt-8">
-				<Pagination
-					count={totalPages}
-					page={currentPage}
-					onChange={handlePageChange}
-					shape="rounded"
-					showFirstButton
-					showLastButton
-				/>
-			</div>
+			{!loading && orders.length > itemsPerPage && (
+				<div className="flex justify-center mt-8">
+					<Pagination
+						count={totalPages}
+						page={currentPage}
+						onChange={handlePageChange}
+						shape="rounded"
+						showFirstButton
+						showLastButton
+					/>
+				</div>
+			)}
 		</section>
 	);
 };

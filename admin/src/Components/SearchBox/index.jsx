@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useRef } from "react";
 import { FiSearch } from "react-icons/fi";
 
-function SearchBox() {
+function SearchBox({ searchQuery, setSearchQuery, setPageOrder }) {
+	const searchInput = useRef(null);
+
+	const onChangeInput = (e) => {
+		const value = e.target.value;
+		setSearchQuery(value);
+		setPageOrder(0); // reset to page 1 on search
+	};
+
 	return (
-		<div className="w-full h-auto relative overflow-hidden ">
-			<FiSearch className="absolute left-2 top-[13px] z-50 pointer-events-none text-[15px] opacity-30 " />
+		<div className="w-full relative">
+			<FiSearch className="absolute left-2 top-[13px] text-[15px] opacity-40" />
 
 			<input
+				ref={searchInput}
 				type="text"
-				className="w-full h-[40px] bg-[#f1f1f1] border border-[rgba(0,0,0,0.1)] p-2 pl-8 focus:outline-none focus:border-[rgba(0,0,0,0.5)] rounded-md text-[15px]  "
-				placeholder="Search here..."
+				value={searchQuery}
+				onChange={onChangeInput}
+				placeholder="Search... "
+				className="w-full h-[40px] bg-[#f1f1f1] border p-2 pl-8 rounded-md text-[15px] focus:outline-none"
 			/>
 		</div>
 	);

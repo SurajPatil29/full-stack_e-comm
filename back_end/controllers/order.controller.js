@@ -3,6 +3,7 @@ import ProductModel from "../models/product.model.js";
 import AddressModel from "../models/address.model.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 import paypal from "@paypal/checkout-server-sdk";
+import UserModel from "../models/user.model.js";
 
 /**
  * ✅ CREATE ORDER CONTROLLER
@@ -131,9 +132,16 @@ export const createOrderController = async (req, res, next) => {
 		/* ================== OPTIONAL: REDUCE STOCK ================== */
 		// (recommended for production)
 		for (const item of sanitizedProducts) {
-			await ProductModel.findByIdAndUpdate(item.productId, {
-				$inc: { countInStock: -item.quantity },
-			});
+			await ProductModel.findByIdAndUpdate(
+				item.productId,
+				{
+					$inc: {
+						countInStock: -item.quantity, // reduce stock
+						sale: item.quantity, // increase sales
+					},
+				},
+				{ new: true }
+			);
 		}
 
 		return sendSuccess(res, "Order placed successfully", { order });
@@ -301,6 +309,116 @@ export const capturePaypalOrderController = async (req, res, next) => {
 		};
 
 		return createOrderController(req, res, next);
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const totalSalesController = async (req, res, next) => {
+	try {
+		const currentYear = new Date().getFullYear();
+
+		const sales = await OrderModel.aggregate([
+			{
+				$match: {
+					createdAt: {
+						$gte: new Date(`${currentYear}-01-01`),
+						$lt: new Date(`${currentYear + 1}-01-01`),
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { $month: "$createdAt" },
+					TotalSales: { $sum: "$totalAmt" },
+				},
+			},
+		]);
+
+		const monthlySales = [
+			{ name: "JAN", TotalSales: 0 },
+			{ name: "FEB", TotalSales: 0 },
+			{ name: "MAR", TotalSales: 0 },
+			{ name: "APR", TotalSales: 0 },
+			{ name: "MAY", TotalSales: 0 },
+			{ name: "JUN", TotalSales: 0 },
+			{ name: "JUL", TotalSales: 0 },
+			{ name: "AUG", TotalSales: 0 },
+			{ name: "SEP", TotalSales: 0 },
+			{ name: "OCT", TotalSales: 0 },
+			{ name: "NOV", TotalSales: 0 },
+			{ name: "DEC", TotalSales: 0 },
+		];
+
+		let totalSales = 0;
+
+		for (const item of sales) {
+			const index = item._id - 1;
+			monthlySales[index].TotalSales = item.TotalSales;
+			totalSales += item.TotalSales;
+		}
+
+		return sendSuccess(res, "Total sales fetched successfully", {
+			totalSales,
+			monthlySales,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const totalUsersController = async (req, res, next) => {
+	try {
+		const currentYear = new Date().getFullYear();
+
+		const users = await UserModel.aggregate([
+			{
+				$match: {
+					role: "USER",
+					createdAt: {
+						$gte: new Date(`${currentYear}-01-01`),
+						$lt: new Date(`${currentYear + 1}-01-01`),
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { month: { $month: "$createdAt" } },
+					TotalUsers: { $sum: 1 },
+				},
+			},
+			{
+				$sort: { "_id.month": 1 },
+			},
+		]);
+
+		const monthlyUsers = [
+			{ name: "JAN", TotalUsers: 0 },
+			{ name: "FEB", TotalUsers: 0 },
+			{ name: "MAR", TotalUsers: 0 },
+			{ name: "APR", TotalUsers: 0 },
+			{ name: "MAY", TotalUsers: 0 },
+			{ name: "JUN", TotalUsers: 0 },
+			{ name: "JUL", TotalUsers: 0 },
+			{ name: "AUG", TotalUsers: 0 },
+			{ name: "SEP", TotalUsers: 0 },
+			{ name: "OCT", TotalUsers: 0 },
+			{ name: "NOV", TotalUsers: 0 },
+			{ name: "DEC", TotalUsers: 0 },
+		];
+
+		let totalUsers = 0;
+
+		for (const item of users) {
+			const index = item._id.month - 1; // 0-based
+			monthlyUsers[index].TotalUsers = item.TotalUsers;
+			totalUsers += item.TotalUsers;
+		}
+
+		return sendSuccess(res, "Total users fetched successfully", {
+			totalUsers,
+			monthlyUsers,
+		});
 	} catch (error) {
 		next(error);
 	}

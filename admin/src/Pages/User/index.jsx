@@ -19,6 +19,9 @@ import TableRow from "@mui/material/TableRow";
 // use for category
 
 import SearchBox from "../../Components/SearchBox";
+import { useEffect } from "react";
+import { fetchDataFromApi } from "../../utils/api";
+import { useState } from "react";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } }; // this is talwind css table variable and also in mui
 
@@ -46,19 +49,58 @@ const columns = [
 // this is use for material ui table
 
 function User() {
-	// this for mui table functions
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [users, setUsers] = useState([]);
+	const [totalUsers, setTotalUsers] = useState(0);
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [loading, setLoading] = useState(false);
 
-	const handleChangePage = (event, newPage) => {
-		setPage(newPage);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const fetchUsers = async () => {
+		setLoading(true);
+		try {
+			const res = await fetchDataFromApi(`/api/user/userCount`);
+
+			setUsers(res?.users || []);
+			setTotalUsers(res?.totalUsers || 0);
+		} catch (error) {
+			console.error("User fetch error:", error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(+event.target.value);
+	useEffect(() => {
+		fetchUsers();
+	}, []);
+
+	useEffect(() => {
 		setPage(0);
+	}, [searchQuery]);
+
+	const filterUsers = (users, query) => {
+		if (!query) return users;
+
+		const q = query.toLowerCase();
+
+		return users.filter((user) => {
+			return (
+				user.name?.toLowerCase().includes(q) ||
+				user.email?.toLowerCase().includes(q) ||
+				String(user.mobile || "").includes(q)
+			);
+		});
 	};
-	// this for mui table functions
+
+	// 🔹 LOCAL PAGINATION
+	const filteredUsers = filterUsers(users, searchQuery);
+
+	// local pagination
+	const startIndex = page * rowsPerPage;
+	const endIndex = startIndex + rowsPerPage;
+
+	const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
 	//
 	return (
@@ -71,7 +113,11 @@ function User() {
 						<h2 className="text-[18px] font-[600] ">Users List</h2>
 					</div>
 					<div className="col w-[40%] ml-auto ">
-						<SearchBox />
+						<SearchBox
+							searchQuery={searchQuery}
+							setSearchQuery={setSearchQuery}
+							setPageOrder={setPage} // reset pagination on search
+						/>
 					</div>
 				</div>
 				<br />
@@ -79,9 +125,6 @@ function User() {
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead className="!bg-gray-50">
 							<TableRow className="">
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
 								{columns.map((column) => (
 									<TableCell
 										key={column.id}
@@ -94,321 +137,65 @@ function User() {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<Checkbox {...label} size="small" />
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<div className="w-[70px] flex items-center gap-4">
-										<div className="img w-[45px] h-[45px] rounded-md overflow-hidden group">
-											<Link to="/product/474557">
-												<img
-													src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1746614266/userImg_pqx7zy.jpg"
-													alt=""
-													className="w-full group-hover:scale-105 transition-all "
-												/>
-											</Link>
-										</div>
-									</div>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									Tom
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdOutlineMarkEmailRead /> tom@email.com
-									</span>
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdLocalPhone />
-										91 90123456789
-									</span>{" "}
-								</TableCell>
-								<TableCell style={{ minWidth: columns.minWidth }}>
-									<span className="flex items-center gap-2">
-										<MdDateRange />
-										10-12-2024
-									</span>
-								</TableCell>
-							</TableRow>
+							{!loading &&
+								paginatedUsers.map((user) => (
+									<TableRow hover key={user._id}>
+										<TableCell>
+											<img
+												src={
+													user.avatar ||
+													"https://cdn-icons-png.flaticon.com/512/149/149071.png"
+												}
+												className="w-[45px] h-[45px] rounded-md object-cover"
+											/>
+										</TableCell>
+
+										<TableCell>{user.name}</TableCell>
+
+										<TableCell>
+											<span className="flex items-center gap-2">
+												<MdOutlineMarkEmailRead />
+												{user.email}
+											</span>
+										</TableCell>
+
+										<TableCell>
+											<span className="flex items-center gap-2">
+												<MdLocalPhone />
+												{user.mobile || "N/A"}
+											</span>
+										</TableCell>
+
+										<TableCell>
+											<span className="flex items-center gap-2">
+												<MdDateRange />
+												{new Date(user.createdAt).toLocaleDateString()}
+											</span>
+										</TableCell>
+									</TableRow>
+								))}
+
+							{!loading && users.length === 0 && (
+								<TableRow>
+									<TableCell colSpan={6} align="center">
+										No users found
+									</TableCell>
+								</TableRow>
+							)}
 						</TableBody>
 					</Table>
 				</TableContainer>
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"
-					count={10}
+					count={filteredUsers.length} // 🔥 important
 					rowsPerPage={rowsPerPage}
 					page={page}
-					onPageChange={handleChangePage}
-					onRowsPerPageChange={handleChangeRowsPerPage}
+					onPageChange={(e, newPage) => setPage(newPage)}
+					onRowsPerPageChange={(e) => {
+						setRowsPerPage(parseInt(e.target.value, 10));
+						setPage(0);
+					}}
 				/>
 			</div>
 

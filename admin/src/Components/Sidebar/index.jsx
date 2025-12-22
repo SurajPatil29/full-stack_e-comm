@@ -132,13 +132,6 @@ function Sidebar() {
 								</Collapse>
 							</li>
 							<li>
-								<Link to="/user">
-									<Button className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] ">
-										<FiUsers className="text-[20px] " /> <span>User</span>
-									</Button>
-								</Link>
-							</li>
-							<li>
 								<Button
 									className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] "
 									onClick={() => isOpenSubMenu(3)}
@@ -276,7 +269,7 @@ function Sidebar() {
 									className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] "
 									onClick={() => isOpenSubMenu(5)}
 								>
-									<GrGallery className="text-[20px] " /> <span>Banner Box</span>
+									<GrGallery className="text-[20px] " /> <span>Banners</span>
 									<span className="ml-auto w-[30px] flex items-center justify-center ">
 										<FaAngleDown
 											className={`transition-all ${
@@ -406,6 +399,13 @@ function Sidebar() {
 										</li> */}
 									</ul>
 								</Collapse>
+							</li>
+							<li>
+								<Link to="/user">
+									<Button className="w-full !capitalize !justify-start flex gap-3 text-[14px] !text-[rgba(0,0,0,0.8)] !font-[500] items-center py-2 hover:!bg-[#f1f1f1] ">
+										<FiUsers className="text-[20px] " /> <span>Users</span>
+									</Button>
+								</Link>
 							</li>
 							<li>
 								<Link to="/orders">

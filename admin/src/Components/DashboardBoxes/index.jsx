@@ -14,8 +14,46 @@ import { IoStatsChartSharp } from "react-icons/io5";
 import { AiOutlinePieChart } from "react-icons/ai";
 import { BsBank } from "react-icons/bs";
 import { RiProductHuntLine } from "react-icons/ri";
+import { useState } from "react";
+import { useEffect } from "react";
+import { fetchDataFromApi } from "../../utils/api";
 
 function DashboardBoxes() {
+	const [totalUsers, setTotalUsers] = useState(0);
+	const [totalOrders, setTotalOrders] = useState(0);
+	const [totalProducts, setTotalProducts] = useState(0);
+	const [totalCategories, setTotalCategories] = useState(0);
+
+	useEffect(() => {
+		let isMounted = true; // prevent state update after unmount
+
+		const fetchDashboardCounts = async () => {
+			try {
+				const [users, orders, products, categories] = await Promise.all([
+					fetchDataFromApi("/api/user/userCount"),
+					fetchDataFromApi("/api/order/all-order-list"),
+					fetchDataFromApi("/api/product/getAllProducts"),
+					fetchDataFromApi("/api/category/get/count"),
+				]);
+
+				if (!isMounted) return;
+
+				setTotalUsers(users?.count || 0);
+				setTotalOrders(orders?.orders?.length || 0);
+				setTotalProducts(products?.products?.length || 0);
+				setTotalCategories(categories?.categoryCount || 0);
+			} catch (error) {
+				console.error("Dashboard fetch error:", error);
+			}
+		};
+
+		fetchDashboardCounts();
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
 	return (
 		<>
 			<Swiper
@@ -26,31 +64,32 @@ function DashboardBoxes() {
 				className="dashboardBoxesSlider"
 			>
 				<SwiperSlide>
-					<div className="box p-5 bg-[#2E6BEE] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">
-						<GoGift className="text-[30px]  " />
-						<div className="info w-[70%]">
-							<h3>New Orders</h3>
-							<b>1,390</b>
-						</div>
-						<IoStatsChartSharp className="text-[50px] " />
-					</div>
-				</SwiperSlide>
-				<SwiperSlide>
 					<div className="box p-5 bg-[#00A27D] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">
 						<AiOutlinePieChart className="text-[40px]   " />
 						<div className="info w-[70%]">
-							<h3>Sales</h3>
-							<b>$57,890</b>
+							<h3>Total Users</h3>
+							<b>{totalUsers}</b>
 						</div>
 						<IoStatsChartSharp className="text-[50px]  " />
 					</div>
 				</SwiperSlide>
 				<SwiperSlide>
+					<div className="box p-5 bg-[#2E6BEE] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">
+						<GoGift className="text-[30px]  " />
+						<div className="info w-[70%]">
+							<h3>Total Orders</h3>
+							<b>{totalOrders}</b>
+						</div>
+						<IoStatsChartSharp className="text-[50px] " />
+					</div>
+				</SwiperSlide>
+
+				<SwiperSlide>
 					<div className="box p-5 bg-[#FF425D] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">
 						<BsBank className="text-[40px]   " />
 						<div className="info w-[70%]">
-							<h3>Revenue</h3>
-							<b>$12,390</b>
+							<h3>Total Products</h3>
+							<b>{totalProducts}</b>
 						</div>
 						<IoStatsChartSharp className="text-[50px]  " />
 					</div>
@@ -59,8 +98,8 @@ function DashboardBoxes() {
 					<div className="box p-5 bg-[#454CDA] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">
 						<RiProductHuntLine className="text-[40px]   " />
 						<div className="info w-[70%]">
-							<h3>Total Products</h3>
-							<b>1,390</b>
+							<h3>Total Categories</h3>
+							<b>{totalCategories}</b>
 						</div>
 						<IoStatsChartSharp className="text-[50px]  " />
 					</div>

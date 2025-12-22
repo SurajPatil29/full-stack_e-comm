@@ -10,6 +10,7 @@ import {
 	resetPassword,
 	updateUserDetails,
 	userAvatarController,
+	userCount,
 	userDetails,
 	verifyEmailsController,
 	verifyForgotPasswordOtp,
@@ -36,5 +37,6 @@ userRouter.post("/reset-password", resetPassword);
 userRouter.post("/refresh-token", refreshToken);
 userRouter.get("/user-details", auth, userDetails);
 userRouter.post("/:id", auth, updateUserDetails);
+userRouter.get("/userCount", auth, userCount);
 
 export default userRouter;
