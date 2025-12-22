@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+	deleteMultipleUsers,
+	deleteUser,
 	forgotPasswordController,
 	googleLoginController,
 	loginUserController,
@@ -38,5 +40,7 @@ userRouter.post("/refresh-token", refreshToken);
 userRouter.get("/user-details", auth, userDetails);
 userRouter.post("/:id", auth, updateUserDetails);
 userRouter.get("/userCount", auth, userCount);
+userRouter.delete("/userDelete/:id", auth, deleteUser);
+userRouter.delete("/multiUserDelete", auth, deleteMultipleUsers);
 
 export default userRouter;

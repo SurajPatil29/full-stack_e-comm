@@ -2,10 +2,12 @@ import React from "react";
 
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
+import Button from "@mui/material/Button";
 import {
 	MdDateRange,
 	MdLocalPhone,
 	MdOutlineMarkEmailRead,
+	MdOutlineDelete,
 } from "react-icons/md";
 
 import Table from "@mui/material/Table";
@@ -56,6 +58,7 @@ function User() {
 	const [loading, setLoading] = useState(false);
 
 	const [searchQuery, setSearchQuery] = useState("");
+	const [selected, setSelected] = useState([]);
 
 	const fetchUsers = async () => {
 		setLoading(true);
@@ -103,6 +106,46 @@ function User() {
 	const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
 	//
+	/* ================= CHECKBOX LOGIC ================= */
+
+	const handleSelectAll = (e) => {
+		if (e.target.checked) {
+			setSelected(paginatedUsers.map((u) => u._id));
+		} else {
+			setSelected([]);
+		}
+	};
+
+	const handleSelectOne = (id) => {
+		setSelected((prev) =>
+			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+		);
+	};
+
+	const isAllSelected =
+		paginatedUsers.length > 0 &&
+		paginatedUsers.every((u) => selected.includes(u._id));
+
+	/* ================= DELETE MULTIPLE USERS ================= */
+
+	const deleteMultipleUsers = async () => {
+		try {
+			setLoading(true);
+
+			const res = await deleteMultiple(`/api/user/multiUserDelete`, {
+				ids: selected,
+			});
+
+			if (res?.success) {
+				setUsers((prev) => prev.filter((u) => !selected.includes(u._id)));
+				setSelected([]);
+			}
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 	return (
 		<>
 			{/* this is material ui table v2 */}
@@ -112,12 +155,24 @@ function User() {
 					<div className="col w-[20%] ">
 						<h2 className="text-[18px] font-[600] ">Users List</h2>
 					</div>
-					<div className="col w-[40%] ml-auto ">
-						<SearchBox
-							searchQuery={searchQuery}
-							setSearchQuery={setSearchQuery}
-							setPageOrder={setPage} // reset pagination on search
-						/>
+					<div className="ml-auto flex items-center gap-3 w-[50%] ">
+						{selected.length > 0 && (
+							<Button
+								onClick={deleteMultipleUsers}
+								className="!bg-red-600 !text-white gap-2"
+								size="small"
+							>
+								<MdOutlineDelete />
+								Delete ({selected.length})
+							</Button>
+						)}
+						<div className="w-[80%]">
+							<SearchBox
+								searchQuery={searchQuery}
+								setSearchQuery={setSearchQuery}
+								setPageOrder={setPage} // reset pagination on search
+							/>
+						</div>
 					</div>
 				</div>
 				<br />
@@ -125,6 +180,13 @@ function User() {
 					<Table stickyHeader aria-label="sticky table">
 						<TableHead className="!bg-gray-50">
 							<TableRow className="">
+								<TableCell padding="checkbox">
+									<Checkbox
+										size="small"
+										checked={isAllSelected}
+										onChange={handleSelectAll}
+									/>
+								</TableCell>
 								{columns.map((column) => (
 									<TableCell
 										key={column.id}
@@ -140,6 +202,13 @@ function User() {
 							{!loading &&
 								paginatedUsers.map((user) => (
 									<TableRow hover key={user._id}>
+										<TableCell padding="checkbox">
+											<Checkbox
+												size="small"
+												checked={selected.includes(user._id)}
+												onChange={() => handleSelectOne(user._id)}
+											/>
+										</TableCell>
 										<TableCell>
 											<img
 												src={

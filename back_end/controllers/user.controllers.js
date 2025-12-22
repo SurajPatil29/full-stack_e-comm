@@ -780,3 +780,70 @@ export async function userCount(req, res, next) {
 		next(error);
 	}
 }
+
+export async function deleteUser(req, res, next) {
+	try {
+		const { id } = req.params;
+
+		// ✅ Validate ID
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return sendError(res, "Invalid user ID", 400);
+		}
+
+		// ✅ Find user
+		const user = await UserModel.findById(id);
+		if (!user) {
+			return sendError(res, "User not found", 404);
+		}
+
+		// ✅ Delete avatar from Cloudinary
+		if (user.avatar) {
+			const publicId = extractPublicIdFromUrl(user.avatar);
+			if (publicId) {
+				await cloudinary.uploader.destroy(publicId);
+			}
+		}
+
+		// ✅ Delete user from DB
+		await user.deleteOne();
+
+		return sendSuccess(res, "User deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function deleteMultipleUsers(req, res, next) {
+	try {
+		const { ids } = req.body;
+
+		// ✅ Validate input
+		if (!ids || !Array.isArray(ids) || ids.length === 0) {
+			return sendError(res, "Invalid input", 400);
+		}
+
+		// ✅ Fetch users (to get avatar URLs)
+		const users = await UserModel.find({ _id: { $in: ids } });
+
+		// ✅ Delete all avatars in parallel
+		const deleteAvatarPromises = [];
+
+		for (const user of users) {
+			if (user?.avatar) {
+				const publicId = extractPublicIdFromUrl(user.avatar);
+				if (publicId) {
+					deleteAvatarPromises.push(cloudinary.uploader.destroy(publicId));
+				}
+			}
+		}
+
+		await Promise.all(deleteAvatarPromises);
+
+		// ✅ Delete users from DB
+		await UserModel.deleteMany({ _id: { $in: ids } });
+
+		return sendSuccess(res, "Users deleted successfully");
+	} catch (error) {
+		next(error);
+	}
+}
