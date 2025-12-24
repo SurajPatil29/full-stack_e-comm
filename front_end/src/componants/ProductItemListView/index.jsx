@@ -114,12 +114,6 @@ function ProductItemListView({ item }) {
 							/>
 						</Button>
 					</Tooltip>
-
-					<Tooltip title="Compair" placement="left-start">
-						<Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white text-black hover:!bg-[#ff5151] hover:text-white group ">
-							<IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white hover:!text-white " />
-						</Button>
-					</Tooltip>
 				</div>
 			</div>
 

@@ -111,7 +111,7 @@ function Sidebar({ data, originalData, catId, setProductsData, showLoader }) {
 	return (
 		<aside className="sidebar py-5 w-full">
 			{/* ---------------------- MAIN SUBCATEGORY FILTER ---------------------- */}
-			<div className="box w-full">
+			{/* <div className="box w-full">
 				<h3 className="w-full mb-3 text-[16px] font-[600] flex items-center ">
 					Shop By Sub Category
 					<Button
@@ -151,10 +151,10 @@ function Sidebar({ data, originalData, catId, setProductsData, showLoader }) {
 						</FormGroup>
 					</div>
 				</Collapse>
-			</div>
+			</div> */}
 
 			{/* ---------------------- SECOND LEVEL FILTER ---------------------- */}
-
+			{/* 
 			{subCatChildren.length > 0 && selectedSubCat && (
 				<div className="box w-full mt-5">
 					<h3 className="w-full mb-3 text-[16px] font-[600] flex items-center ">
@@ -191,6 +191,92 @@ function Sidebar({ data, originalData, catId, setProductsData, showLoader }) {
 						</div>
 					</Collapse>
 				</div>
+			)} */}
+
+			{subCategories.length > 0 && (
+				<>
+					{/* ---------------------- MAIN SUBCATEGORY FILTER ---------------------- */}
+					<div className="box w-full">
+						<h3 className="w-full mb-3 text-[16px] font-[600] flex items-center">
+							Shop By Sub Category
+							<Button
+								onClick={() => setIsOpenedCatFilter(!isOpenedCatFilter)}
+								className="link !ml-auto"
+							>
+								{isOpenedCatFilter ? (
+									<FaAngleUp className="text-[#ff5252]" />
+								) : (
+									<FaAngleDown className="text-[#ff5252]" />
+								)}
+							</Button>
+						</h3>
+
+						<Collapse isOpened={isOpenedCatFilter}>
+							<div className="scroll px-3 relative -left-[10px]">
+								<FormGroup>
+									{subCategories.length > 0 ? (
+										subCategories.map((sub) => (
+											<FormControlLabel
+												key={sub._id}
+												control={
+													<Checkbox
+														size="small"
+														checked={selectedSubCat?._id === sub._id}
+														onChange={() => handleSubCatSelect(sub)}
+													/>
+												}
+												label={sub.name}
+											/>
+										))
+									) : (
+										<p className="text-gray-500 text-[14px]">
+											No sub-categories found
+										</p>
+									)}
+								</FormGroup>
+							</div>
+						</Collapse>
+					</div>
+
+					{/* ---------------------- SECOND LEVEL FILTER ---------------------- */}
+					{subCatChildren.length > 0 && selectedSubCat && (
+						<div className="box w-full mt-5">
+							<h3 className="w-full mb-3 text-[16px] font-[600] flex items-center">
+								{selectedSubCat.name} Options
+								<Button
+									onClick={() => setIsOpenedSubCatFilter(!isOpenedSubCatFilter)}
+									className="link !ml-auto"
+								>
+									{isOpenedSubCatFilter ? (
+										<FaAngleUp className="text-[#ff5252]" />
+									) : (
+										<FaAngleDown className="text-[#ff5252]" />
+									)}
+								</Button>
+							</h3>
+
+							<Collapse isOpened={isOpenedSubCatFilter}>
+								<div className="scroll px-3 relative -left-[10px]">
+									<FormGroup>
+										{subCatChildren.map((child) => (
+											<FormControlLabel
+												key={child._id}
+												control={
+													<Checkbox
+														size="small"
+														checked={selectedThirdCat?._id === child._id}
+														onChange={() => handleThirdCatSelect(child)}
+													/>
+												}
+												label={child.name}
+											/>
+										))}
+									</FormGroup>
+								</div>
+							</Collapse>
+						</div>
+					)}
+				</>
 			)}
 
 			{/* <div className="box w-full">

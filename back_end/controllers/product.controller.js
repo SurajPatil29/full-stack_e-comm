@@ -1052,3 +1052,34 @@ export async function deleteReview(req, res, next) {
 		next(error);
 	}
 }
+
+export async function searchProductController(req, res, next) {
+	try {
+		const query = req.query.q?.trim();
+
+		if (!query) {
+			return res.status(400).json({
+				error: true,
+				success: false,
+				message: "Query is required",
+			});
+		}
+
+		const items = await ProductModel.find({
+			$or: [
+				{ name: { $regex: query, $options: "i" } },
+				{ brand: { $regex: query, $options: "i" } },
+				{ catName: { $regex: query, $options: "i" } },
+				{ subCat: { $regex: query, $options: "i" } },
+				{ thirdsubCat: { $regex: query, $options: "i" } },
+			],
+		});
+
+		return sendSuccess(res, "Seach result", {
+			count: items.length,
+			data: items,
+		});
+	} catch (error) {
+		next(error);
+	}
+}

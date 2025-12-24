@@ -242,16 +242,6 @@ function Header() {
 							)}
 
 							<li>
-								<Tooltip title="Compair">
-									<IconButton aria-label="cart">
-										<StyledBadge badgeContent={5} color="secondary">
-											<GoGitCompare />
-										</StyledBadge>
-									</IconButton>
-								</Tooltip>
-							</li>
-
-							<li>
 								<Tooltip title="Favorite">
 									<IconButton aria-label="cart">
 										<StyledBadge

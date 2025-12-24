@@ -34,6 +34,7 @@ import {
 	getProductSizes,
 	getProductWeights,
 	removeImageFromCloudinary,
+	searchProductController,
 	updateProduct,
 	updateProductRAMs,
 	updateProductSize,
@@ -80,6 +81,7 @@ productRouter.get("/getAllProductsByPrice", getAllProductsByPrice);
 productRouter.get("/getAllProductByRating", getAllProductsByRating);
 productRouter.get("/getAllProductCount", getProductsCount);
 productRouter.get("/getAllFeaturedProduct", getFeaturesProducts);
+productRouter.get("/search", searchProductController);
 productRouter.delete("/deleteImage", auth, removeImageFromCloudinary);
 productRouter.delete("/deleteMultiple", deleteMultipleProduct);
 productRouter.delete("/productRAMs/deleteMultiple", deleteMultipleProductRAMs);

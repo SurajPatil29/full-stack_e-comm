@@ -31,6 +31,7 @@ import Address from "./pages/Address";
 import { IoCartOutline } from "react-icons/io5";
 import AddressPage from "./pages/Address/AddressPage";
 import OrderSuccess from "./pages/Checkout/OrderSuccess";
+import SearchPage from "./pages/Search";
 
 function App() {
 	const [openProductDetailsModel, setOpenProductDetailsModel] = useState({
@@ -46,6 +47,7 @@ function App() {
 	const [isLoadingAddToCart, setIsLoadingAddToCart] = useState(false);
 	const [myListData, setMyListData] = useState([]);
 	const [isLoadingAddToMyList, setIsLoadingAddToMyList] = useState(false);
+	const [searchData, setSearchData] = useState([]);
 
 	const [openAddressPanel, setOpenAddressPanel] = useState(false);
 
@@ -353,6 +355,8 @@ function App() {
 		setIsLoadingAddToMyList: setIsLoadingAddToMyList,
 		openAddressPanel: openAddressPanel,
 		setOpenAddressPanel: setOpenAddressPanel,
+		searchData: searchData,
+		setSearchData: setSearchData,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -385,6 +389,7 @@ function App() {
 						exact={true}
 						element={<ProductListing />}
 					/>
+					<Route path={"/search-page"} exact={true} element={<SearchPage />} />
 					<Route
 						path={"/productDetails/:id"}
 						exact={true}
