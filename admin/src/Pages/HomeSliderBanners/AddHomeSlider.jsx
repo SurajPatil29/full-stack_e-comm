@@ -130,9 +130,9 @@ function AddHomeSlider() {
 	const isFormValid = formFields.images;
 
 	return (
-		<section className="p-2 bg-gray-50">
-			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll">
+		<section className="p-2 sm:p-4 bg-gray-50">
+			<form className="form py-3 p-2 max-w-4xl mx-auto" onSubmit={handleSave}>
+				<div className="scroll max-h-[65vh] sm:max-h-[72vh] pr-2 sm:pr-4  overflow-y-scroll">
 					<div className="col w-full px-5">
 						{formFields.productId ? (
 							<InputBox label="Product Name" value={product.name} readOnly />
@@ -152,7 +152,7 @@ function AddHomeSlider() {
 
 								{/* DROPDOWN LIST */}
 								{showDropdown && (
-									<div className="absolute left-0 top-[75px] w-full max-h-[250px] overflow-y-auto bg-white shadow-lg z-50 border rounded-md">
+									<div className="absolute left-0 top-full mt-1 w-full max-h-[250px] overflow-y-auto bg-white shadow-lg z-50 border rounded-md">
 										{allProducts
 											.filter((p) =>
 												p.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -184,7 +184,7 @@ function AddHomeSlider() {
 
 						<h3 className="font-[700] text-[18px] mb-3">Banner Images</h3>
 
-						<div className="grid grid-cols-7 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
 							{formFields.images ? (
 								<div className="uploadBoxWrapper relative">
 									<button
@@ -196,7 +196,7 @@ function AddHomeSlider() {
 										<IoMdCloseCircle className="text-red-700 text-[20px]" />
 									</button>
 
-									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed h-[150px] bg-gray-100 flex items-center justify-center">
+									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed h-[120px] sm:h-[150px] bg-gray-100 flex items-center justify-center">
 										<LazyLoadImage
 											className="w-full h-full object-cover"
 											alt="image"
@@ -233,7 +233,7 @@ function AddHomeSlider() {
 				<hr />
 				<br />
 
-				<div className="w-[250px]">
+				<div className="w-full sm:w-[250px]">
 					<Button
 						type="submit"
 						className="btn-blue btn-lg w-full gap-2"

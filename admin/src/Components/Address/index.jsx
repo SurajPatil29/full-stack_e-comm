@@ -85,12 +85,12 @@ function Address() {
 		});
 	};
 	return (
-		<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white px-5 pb-5 w-[80%]">
+		<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white px-3 sm:px-5 pb-5 w-full lg:w-[80%]">
 			<h3 className="mb-4">Address Details</h3>
 
 			<form className="space-y-6" onSubmit={handleSubmit}>
 				{/* Row 0 - Name */}
-				<div className="flex items-center gap-5">
+				<div className="flex flex-col sm:flex-row gap-4">
 					<TextField
 						label="Full Name"
 						name="name"
@@ -135,7 +135,7 @@ function Address() {
 				</div>
 
 				{/* Row 2 */}
-				<div className="flex items-center gap-5">
+				<div className="flex flex-col lg:flex-row gap-4">
 					<TextField
 						label="Pincode"
 						name="pincode"
@@ -143,7 +143,7 @@ function Address() {
 						onChange={onChangeInput}
 						variant="outlined"
 						size="small"
-						className="w-[33%]"
+						className="w-full lg:w-[33%]"
 					/>
 
 					<TextField
@@ -153,7 +153,7 @@ function Address() {
 						onChange={onChangeInput}
 						variant="outlined"
 						size="small"
-						className="w-[33%]"
+						className="w-full lg:w-[33%]"
 					/>
 
 					<TextField
@@ -163,12 +163,12 @@ function Address() {
 						onChange={onChangeInput}
 						variant="outlined"
 						size="small"
-						className="w-[33%]"
+						className="w-full lg:w-[33%]"
 					/>
 				</div>
 
 				{/* ⭐ Row 3 — Landmark + Address Type */}
-				<div className="flex items-center gap-5">
+				<div className="flex flex-col lg:flex-row gap-4">
 					<TextField
 						label="Landmark"
 						name="landmark"
@@ -195,9 +195,9 @@ function Address() {
 				</div>
 
 				{/* Row 4 — Mobile + Status */}
-				<div className="flex items-center gap-5">
+				<div className="flex flex-col lg:flex-row gap-4">
 					{/* ⭐ Status */}
-					<div className="w-[50%]">
+					<div className="w-full lg:w-[50%]">
 						<FormControl size="small" className="w-full">
 							<InputLabel>Status</InputLabel>
 							<Select
@@ -212,7 +212,7 @@ function Address() {
 						</FormControl>
 					</div>
 
-					<div className="w-[50%] flex justify-center">
+					<div className="w-full lg:w-[50%] flex lg:justify-center">
 						<FormControl>
 							<p className="text-sm mb-1 font-medium text-gray-700 text-center">
 								Address Type
@@ -258,7 +258,7 @@ function Address() {
 				<div className="flex items-center gap-4 mt-3">
 					<Button
 						type="submit"
-						className="btn-blue btn-lg w-[100px]"
+						className="btn-blue btn-lg w-full sm:w-[100px]"
 						disabled={isLoading}
 					>
 						{isLoading ? (
@@ -271,7 +271,7 @@ function Address() {
 					<Button
 						type="button"
 						onClick={() => window.location.reload()}
-						className="btn-blue btn-lg btn-border w-[100px]"
+						className="btn-blue btn-lg btn-border w-full sm:w-[100px]"
 					>
 						Cancel
 					</Button>

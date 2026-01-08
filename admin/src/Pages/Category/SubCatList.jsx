@@ -177,20 +177,17 @@ function SubCatList() {
 	return (
 		<>
 			{/* Header */}
-			<div className="flex items-center justify-between px-2 py-0">
-				<h2 className="text-[18px] font-[600]">Sub Category List</h2>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
+				<h2 className="text-[16px] sm:text-[18px] font-[600]">
+					Sub Category List
+				</h2>
 
-				<div className="w-[40%] ml-auto flex items-center justify-end gap-3">
-					<Button className="btn-sm !bg-green-600 !text-white gap-2 flex items-center">
-						<PiExport className="text-white text-[20px]" />
-						Export
-					</Button>
-
+				<div className="flex flex-col sm:flex-row sm:ml-auto w-full sm:w-auto items-stretch sm:items-center gap-2 sm:gap-3">
 					{/* ✅ Delete Selected Button (only shows if selected) */}
 					{selected.length > 0 && (
 						<Button
 							onClick={handleDeleteSelected}
-							className="btn-sm !bg-red-600 !text-white gap-2 flex items-center"
+							className="btn-sm !bg-red-600 !text-white gap-2 flex items-center justify-center"
 						>
 							<MdOutlineDelete className="text-white text-[20px]" />
 							Delete Selected ({selected.length})
@@ -198,7 +195,7 @@ function SubCatList() {
 					)}
 
 					<Button
-						className="btn-blue btn-sm !text-white gap-2 flex items-center"
+						className="btn-blue btn-sm !text-white gap-2 flex items-center justify-center"
 						onClick={() =>
 							context.setIsOpenFullScreenPanel({
 								open: true,
@@ -214,69 +211,71 @@ function SubCatList() {
 
 			{/* Table */}
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
-					<Table stickyHeader>
-						<TableHead>
-							<TableRow>
-								<TableCell width={50} align="center">
-									<Checkbox
-										{...label}
-										size="small"
-										indeterminate={
-											selected.length > 0 && selected.length < catData.length
-										}
-										checked={
-											catData.length > 0 && selected.length === catData.length
-										}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-								{columns.map((col) => (
-									<TableCell key={col.id} width={col.minWidth}>
-										{col.label}
+				<div className="overflow-x-auto">
+					<TableContainer sx={{ minWidth: 900, maxHeight: 440 }}>
+						<Table stickyHeader>
+							<TableHead>
+								<TableRow>
+									<TableCell width={50} align="center">
+										<Checkbox
+											{...label}
+											size="small"
+											indeterminate={
+												selected.length > 0 && selected.length < catData.length
+											}
+											checked={
+												catData.length > 0 && selected.length === catData.length
+											}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{catData
-								.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-								.map((cat) => (
-									<TableRow key={cat._id}>
-										<TableCell width={50} align="center">
-											<Checkbox
-												{...label}
-												size="small"
-												checked={selected.includes(cat._id)}
-												onChange={() => handleSelect(cat._id)}
-											/>
+									{columns.map((col) => (
+										<TableCell key={col.id} width={col.minWidth}>
+											{col.label}
 										</TableCell>
+									))}
+								</TableRow>
+							</TableHead>
 
-										<TableCell width={150}>
-											<img
-												src={cat.images?.[0] || "/no-image.png"}
-												alt={cat.name}
-												className="w-[80px] h-[60px] object-cover rounded-md"
-											/>
-										</TableCell>
+							<TableBody>
+								{catData
+									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+									.map((cat) => (
+										<TableRow key={cat._id}>
+											<TableCell width={50} align="center">
+												<Checkbox
+													{...label}
+													size="small"
+													checked={selected.includes(cat._id)}
+													onChange={() => handleSelect(cat._id)}
+												/>
+											</TableCell>
 
-										<TableCell width={200}>
-											<Chip label={cat.name} />
-										</TableCell>
+											<TableCell width={150}>
+												<img
+													src={cat.images?.[0] || "/no-image.png"}
+													alt={cat.name}
+													className="w-[80px] h-[60px] object-cover rounded-md"
+												/>
+											</TableCell>
 
-										<TableCell width={400}>
-											<NestedCategories
-												children={cat.children}
-												onDeleteSub={handleDeleteSub}
-												onDeleteThird={handleDeleteThird}
-											/>
-										</TableCell>
-									</TableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
+											<TableCell width={200}>
+												<Chip label={cat.name} />
+											</TableCell>
+
+											<TableCell width={400}>
+												<NestedCategories
+													children={cat.children}
+													onDeleteSub={handleDeleteSub}
+													onDeleteThird={handleDeleteThird}
+												/>
+											</TableCell>
+										</TableRow>
+									))}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
@@ -288,6 +287,11 @@ function SubCatList() {
 					onRowsPerPageChange={(e) => {
 						setRowsPerPage(+e.target.value);
 						setPage(0);
+					}}
+					sx={{
+						"& .MuiTablePagination-toolbar": {
+							flexWrap: "wrap",
+						},
 					}}
 				/>
 			</div>

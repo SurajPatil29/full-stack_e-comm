@@ -76,8 +76,8 @@ function ChangePassword() {
 	};
 
 	return (
-		<section className="  w-full ">
-			<header className="w-full fixed top-0 left-0  px-4 py-3 flex items-center justify-between ">
+		<section className="w-full pt-[70px] sm:pt-0">
+			<header className="w-full fixed top-0 left-0 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 				<Link to="/">
 					<img
 						src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
@@ -85,7 +85,7 @@ function ChangePassword() {
 						className="w-[200px] z-50 "
 					/>{" "}
 				</Link>
-				<div className="flex items-center gap-4 ">
+				<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
 					<NavLink
 						to="/login"
 						className={({ isActive }) => (isActive ? "isActive" : "")}
@@ -111,10 +111,10 @@ function ChangePassword() {
 			<img
 				src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745725205/bgimg3_xuxtpc.jpg"
 				alt="signupbg"
-				className="w-full h-full fixed top-0 left-0 opacity-5 -z-10"
+				className="w-full h-screen fixed top-0 left-0 object-cover opacity-5 -z-10"
 			/>
 
-			<div className="loginBox card w-[600px] h-auto mx-auto py-20 mt-20 relative z-50  ">
+			<div className="loginBox card w-full sm:w-[600px] h-auto mx-auto py-10 sm:py-20 mt-24 sm:mt-20 relative z-50 px-4 sm:px-0">
 				<div className="text-center">
 					<img
 						src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745725680/logocrop_brgoqw.png"
@@ -124,13 +124,13 @@ function ChangePassword() {
 				</div>
 
 				<div className="">
-					<h1 className="text-center text-[35px] font-[800] ">
+					<h1 className="text-center text-[24px] sm:text-[35px] font-[800]">
 						Welcom Back! <br />
 						You can change your password from here
 					</h1>
 				</div>
 
-				<form className="w-full px-8 py-4" onSubmit={changePass}>
+				<form className="w-full px-4 sm:px-8 py-4" onSubmit={changePass}>
 					<div className="form-group mb-4 w-full">
 						<h4 className="text-[14px] font-[500] mb-1 ">New Password</h4>
 						<div className="relative w-full">

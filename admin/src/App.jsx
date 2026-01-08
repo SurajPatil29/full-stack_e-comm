@@ -1,4 +1,5 @@
 import "./App.css";
+import "./responsive.css";
 import {
 	createBrowserRouter,
 	Navigate,
@@ -83,6 +84,18 @@ function App() {
 			toast.error(msg);
 		}
 	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+
+			setIsSidebarOpen(width > 1080);
+		};
+
+		handleResize();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	useEffect(() => {
 		const token = localStorage.getItem("accessToken");

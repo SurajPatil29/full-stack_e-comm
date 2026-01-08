@@ -2,8 +2,8 @@ function AddressCard({ address, onSelect, onDelete }) {
 	const fullAddress = `${address.address_line}, ${address.city}, ${address.state} - ${address.pincode}`;
 
 	return (
-		<div className="border rounded-lg p-4 bg-white shadow-md hover:shadow-lg transition cursor-pointer">
-			<div className="flex items-start gap-3">
+		<div className="border rounded-lg p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition cursor-pointer">
+			<div className="flex items-start gap-3 sm:gap-4">
 				{/* RADIO BUTTON */}
 				<input
 					type="radio"
@@ -16,7 +16,7 @@ function AddressCard({ address, onSelect, onDelete }) {
 				{/* ADDRESS DETAILS */}
 				<div className="flex-1">
 					{/* Title + Default Badge */}
-					<div className="flex items-center gap-2">
+					<div className="flex flex-wrap items-center gap-2">
 						<p className="text-[15px] font-semibold text-gray-900 capitalize">
 							{address.addressType} Address
 						</p>
@@ -34,7 +34,9 @@ function AddressCard({ address, onSelect, onDelete }) {
 					</p>
 
 					{/* Address text */}
-					<p className="text-gray-700 text-sm mt-1 leading-5">{fullAddress}</p>
+					<p className="text-gray-700 text-sm mt-1 leading-5 break-words">
+						{fullAddress}
+					</p>
 
 					{/* Landmark */}
 					{address.landmark && (
@@ -54,7 +56,7 @@ function AddressCard({ address, onSelect, onDelete }) {
 			<div className="border-t my-3"></div>
 
 			{/* DELETE BUTTON */}
-			<div className="flex justify-end">
+			<div className="flex justify-end pt-1">
 				<button
 					onClick={() => onDelete(address._id)}
 					className="text-red-500 hover:text-red-700 font-semibold text-sm"

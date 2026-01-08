@@ -23,11 +23,32 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 // ADD NEW COLUMNS HERE
 const columns = [
-	{ id: "image", label: "IMAGE", minWidth: 250 },
-	{ id: "title", label: "TITLE", minWidth: 200 },
-	{ id: "isActive", label: "ACTIVE STATUS", minWidth: 120 },
-	{ id: "action", label: "ACTION", minWidth: 100 },
+	{
+		id: "image",
+		label: "IMAGE",
+		minWidth: { xs: 140, sm: 200, md: 250 },
+	},
+	{
+		id: "title",
+		label: "TITLE",
+		minWidth: { xs: 140, sm: 180, md: 200 },
+	},
+	{
+		id: "isActive",
+		label: "ACTIVE STATUS",
+		minWidth: { xs: 90, sm: 110, md: 120 },
+	},
+	{
+		id: "action",
+		label: "ACTION",
+		minWidth: { xs: 80, sm: 90, md: 100 },
+	},
 ];
+
+const cellSX = {
+	padding: { xs: "6px 8px", sm: "10px 12px" },
+	whiteSpace: "nowrap",
+};
 
 function HomeSliderBannersV2() {
 	const context = useContext(MyContext);
@@ -112,12 +133,14 @@ function HomeSliderBannersV2() {
 
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0">
-				<h2 className="text-[18px] font-[600]">Home Slider BannersV2</h2>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
+				<h2 className="text-[16px] sm:text-[18px] font-[600]">
+					Home Slider BannersV2
+				</h2>
 
-				<div className="col w-[30%] ml-auto flex items-center justify-end gap-3 ">
+				<div className="flex flex-col sm:flex-row sm:ml-auto w-full sm:w-auto items-stretch sm:items-center gap-2 sm:gap-3">
 					<Button
-						className="btn-blue btn-sm !text-white gap-2 flex items-center"
+						className="btn-blue btn-sm !text-white gap-2 flex items-center justify-center sm:justify-start"
 						onClick={() =>
 							context.setIsOpenFullScreenPanel({
 								open: true,
@@ -125,7 +148,7 @@ function HomeSliderBannersV2() {
 							})
 						}
 					>
-						<TfiLayoutSliderAlt className="text-white text-[20px]" />
+						<TfiLayoutSliderAlt className="text-white text-[18px] sm:text-[20px]" />
 						Add Home SlideV2
 					</Button>
 
@@ -140,7 +163,12 @@ function HomeSliderBannersV2() {
 			</div>
 
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
+				<TableContainer
+					sx={{
+						maxHeight: 440,
+						minWidth: { xs: "100%", md: 800 },
+					}}
+				>
 					<Table stickyHeader>
 						<TableHead>
 							<TableRow>
@@ -157,7 +185,16 @@ function HomeSliderBannersV2() {
 								</TableCell>
 
 								{columns.map((col) => (
-									<TableCell key={col.id}>{col.label}</TableCell>
+									<TableCell
+										key={col.id}
+										sx={{
+											minWidth: col.minWidth,
+											padding: { xs: "6px 8px", sm: "10px 12px" },
+											whiteSpace: "nowrap",
+										}}
+									>
+										{col.label}
+									</TableCell>
 								))}
 							</TableRow>
 						</TableHead>
@@ -184,22 +221,33 @@ function HomeSliderBannersV2() {
 											</TableCell>
 
 											{/* Image */}
-											<TableCell>
+											<TableCell
+												sx={{ ...cellSX, minWidth: columns[0].minWidth }}
+											>
 												<img
 													src={banner.images?.[0]}
 													alt="banner"
-													className="w-[200px] h-[120px] object-cover rounded-md"
+													className="
+	w-[140px] h-[80px]
+	sm:w-[180px] sm:h-[100px]
+	md:w-[200px] md:h-[120px]
+	object-cover rounded-md
+"
 												/>
 											</TableCell>
 
 											{/* Title */}
-											<TableCell>
+											<TableCell
+												sx={{ ...cellSX, minWidth: columns[1].minWidth }}
+											>
 												<p className="font-medium">{banner.title}</p>
 												<p className="text-sm text-gray-600">₹{banner.price}</p>
 											</TableCell>
 
 											{/* Active Toggle */}
-											<TableCell>
+											<TableCell
+												sx={{ ...cellSX, minWidth: columns[2].minWidth }}
+											>
 												<Switch
 													checked={banner.isActive}
 													onChange={() =>
@@ -209,7 +257,9 @@ function HomeSliderBannersV2() {
 											</TableCell>
 
 											{/* Actions */}
-											<TableCell>
+											<TableCell
+												sx={{ ...cellSX, minWidth: columns[3].minWidth }}
+											>
 												<div className="flex items-center gap-2">
 													<Tooltip title="Edit Banner" placement="top">
 														<Button

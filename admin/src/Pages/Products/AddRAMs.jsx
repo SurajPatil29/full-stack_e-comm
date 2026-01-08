@@ -132,8 +132,8 @@ function AddRAMs() {
 	};
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0 mt-3 w-[65%]">
-				<h2 className="text=[18px] font[600] ">Add Product RAMs</h2>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 py-2 mt-3 w-full lg:w-[65%]">
+				<h2 className="text-[18px] font[600] ">Add Product RAMs</h2>
 				{selectedIds.length > 0 && (
 					<Button
 						onClick={deleteMultipleRams}
@@ -144,19 +144,21 @@ function AddRAMs() {
 				)}
 			</div>
 
-			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white w-[65%] ">
-				<form className="form py-3 p-8" onSubmit={handleSubmit}>
+			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white w-full lg:w-[65%] ">
+				<form className="form py-3 p-4 sm:p-8" onSubmit={handleSubmit}>
 					<div className="col mb-4">
 						<h3 className="text-[14px] font-[500] mb-1 text-black ">
 							PRODUCT RAM
 						</h3>
-						<input
-							type="text"
-							className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm "
-							name="name"
-							onChange={(e) => setName(e.target.value)}
-							value={name}
-						/>
+						<div className="col mb-4 w-full">
+							<input
+								type="text"
+								className="w-full h-[40px] border border-[rgba(0,0,0,0.2)] focus:outline-none focus:border-[rgba(0,0,0,0.4)] rounded-sm p-3 text-sm "
+								name="name"
+								onChange={(e) => setName(e.target.value)}
+								value={name}
+							/>
+						</div>
 					</div>
 
 					<Button type="submit" className="btn-blue btn-lg w-full flex gap-2 ">
@@ -166,7 +168,7 @@ function AddRAMs() {
 				</form>
 			</div>
 
-			<div className="card my-4 pt-5 pb-5 shadow-md sm:rounded-lg bg-white w-[65%]">
+			<div className="card my-4 pt-5 pb-5 shadow-md sm:rounded-lg bg-white w-full lg:w-[65%]">
 				<div className="relative overflow-x-auto mt-5 pb-5">
 					{loading ? (
 						<div className="flex justify-center items-center py-10">
@@ -177,10 +179,14 @@ function AddRAMs() {
 							No Product RAMs availble
 						</p>
 					) : (
-						<table className="w-full text-sm text-left rtl:text-right text-gray-500">
+						<table className="min-w-[500px] w-full text-sm text-left text-gray-500">
 							<thead className="text-xs text-gray-800 uppercase bg-gray-100">
 								<tr>
-									<th scope="col" className="px-6 pr-0 py-3" width="10%">
+									<th
+										scope="col"
+										className="px-2 sm:px-6 py-2 sm:py-3"
+										width="10%"
+									>
 										<div className="w-[60px]">
 											<Checkbox
 												size="small"
@@ -210,7 +216,7 @@ function AddRAMs() {
 								{/* {console.log(RAMs)} */}
 								{RAMs.map((ram, i) => (
 									<tr className="odd:bg-white even:bg-gray-50 border-b" key={i}>
-										<td className="px-6 pr-0 py-2">
+										<td className="px-2 sm:px-6 py-2">
 											<div>
 												<Checkbox
 													size="small"
@@ -244,7 +250,7 @@ function AddRAMs() {
 										</td>
 
 										<td className="px-6 py-2">
-											<div className="flex items-center gap-1">
+											<div className="flex items-center gap-1 whitespace-nowrap">
 												<Button
 													disabled={editId === ram._id}
 													className="!w-[35px] !h-[35px] bg-[#f1f1f1] !border !border-gray-400 !rounded-full hover:!bg-[#f1f1f1] !min-w-[35px]"

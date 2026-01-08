@@ -251,10 +251,10 @@ function Profile() {
 
 	return (
 		<>
-			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white px-5 pb-5 w-[80%]">
-				<div className="flex justify-between items-center">
+			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white px-3 sm:px-5 pb-5 w-full lg:w-[80%]">
+				<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
 					<h2 className="pb-3">My Profile</h2>
-					<div className="gap-3">
+					<div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
 						{!isGoogleLogIn && (
 							<Button
 								className="!text-[#ff5252] !text-[13px] !hover:underline cursor-pointer capitalize gap-1"
@@ -332,9 +332,9 @@ function Profile() {
 						hidden
 					/>
 
-					<div className="flex items-center gap-5">
+					<div className="flex flex-col lg:flex-row gap-4">
 						{/* Name */}
-						<div className={`w-[50%] ${getFieldClass("name")}`}>
+						<div className={`w-full lg:w-[50%] ${getFieldClass("name")}`}>
 							<TextField
 								label="Name"
 								name="name"
@@ -360,7 +360,11 @@ function Profile() {
 						</div>
 
 						{/* Mobile */}
-						<div className={`w-[33%] relative ${getFieldClass("mobile")}`}>
+						<div
+							className={`w-full lg:w-[33%] relative ${getFieldClass(
+								"mobile"
+							)}`}
+						>
 							<PhoneInput
 								defaultCountry="in"
 								value={userDetails.mobile}
@@ -503,7 +507,7 @@ function Profile() {
 						open={openDrawer}
 						onClose={() => setOpenDrawer(false)}
 					>
-						<div className="w-[350px] p-4">
+						<div className="w-[90vw] sm:w-[350px] p-4">
 							<h3 className="text-lg font-semibold mb-4">Select Address</h3>
 
 							<div className="space-y-3">
@@ -547,7 +551,7 @@ function Profile() {
 					{changePass && (
 						<div>
 							<h4 className="text-[13px] mt-5">Change Password</h4>
-							<div className="flex items-center gap-5 mt-4">
+							<div className="flex flex-col lg:flex-row gap-4 mt-4">
 								{/* Old */}
 								<div className="w-[33%]">
 									<TextField
@@ -646,7 +650,7 @@ function Profile() {
 					<div className="flex items-center gap-4 mt-3">
 						<Button
 							type="submit"
-							className="btn-blue btn-lg w-[100px]"
+							className="btn-blue btn-lg w-full sm:w-[100px]"
 							disabled={isLoading}
 						>
 							{isLoading ? (
@@ -659,7 +663,7 @@ function Profile() {
 						<Button
 							type="button"
 							onClick={() => window.location.reload()}
-							className="btn-blue btn-lg btn-border w-[100px]"
+							className="btn-blue btn-lg btn-border w-full sm:w-[100px]"
 						>
 							Cancel
 						</Button>

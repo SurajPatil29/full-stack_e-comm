@@ -5,8 +5,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
+import "./index.css";
 
-import { Navigation } from "swiper/modules";
+import { Navigation, Scrollbar } from "swiper/modules";
 // import navmodule
 
 import { GoGift } from "react-icons/go";
@@ -60,8 +61,31 @@ function DashboardBoxes() {
 				slidesPerView={4}
 				spaceBetween={10}
 				navigation={true}
-				modules={[Navigation]}
+				scrollbar={{
+					draggable: true, // 👈 enable drag
+					hide: false, // 👈 always visible (optional)
+				}}
+				grabCursor={true} // 👈 mouse drag on desktop
+				allowTouchMove={true}
+				modules={[Navigation, Scrollbar]}
 				className="dashboardBoxesSlider"
+				breakpoints={{
+					0: {
+						slidesPerView: 1, // below 480px
+					},
+					480: {
+						slidesPerView: 2, // 480px – 719px
+					},
+					720: {
+						slidesPerView: 2, // keep 2 till 1080
+					},
+					1080: {
+						slidesPerView: 3, // 720px – 1079px
+					},
+					1280: {
+						slidesPerView: 4, // desktop
+					},
+				}}
 			>
 				<SwiperSlide>
 					<div className="box p-5 bg-[#00A27D] text-white cursor-pointer  rounded-md border border-[rgba(0,0,0,0.1)] flex items-center gap-4 ">

@@ -5,8 +5,20 @@ import Sidebar from "../Sidebar";
 import MyContext from "../../context/MyContext";
 
 export default function MainLayout() {
-	const { isSidebarOpen } = useContext(MyContext);
+	const { isSidebarOpen, setIsSidebarOpen } = useContext(MyContext);
 	const [showSidebar, setShowSidebar] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
+
+	// Detect screen size
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 1080);
+		};
+
+		handleResize();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	useEffect(() => {
 		let timeoutId;
@@ -23,20 +35,44 @@ export default function MainLayout() {
 	}, [isSidebarOpen]);
 
 	return (
-		<section className="main">
+		<section className="main relative">
 			<Header />
-			<div className="contentMain flex">
+			<div className="contentMain flex relative">
+				{/* ===== OVERLAY MODE (MOBILE/TABLET) ===== */}
+				{isMobile && isSidebarOpen && (
+					<div
+						className="fixed inset-0 bg-black/40 z-40"
+						onClick={() => setIsSidebarOpen(false)}
+					/>
+				)}
+
+				{/* ===== SIDEBAR ===== */}
 				<div
-					className={`sidebarWrapper ${
-						isSidebarOpen ? "w-[18%]" : "w-[0%]"
-					} transition-all duration-300 overflow-hidden`}
+					className={`
+						sidebarWrapper
+						${
+							isMobile
+								? `fixed top-0 left-0 h-full z-50
+							   ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+							   w-[260px]`
+								: `${isSidebarOpen ? "w-[18%]" : "w-[0%]"}`
+						}
+						bg-white
+						transition-all duration-300 ease-in-out
+						overflow-hidden
+					`}
 				>
 					{showSidebar && <Sidebar />}
 				</div>
+
+				{/* ===== MAIN CONTENT ===== */}
 				<div
-					className={`contentRight py-4 px-5 ${
-						isSidebarOpen ? "w-[82%]" : "w-[100%]"
-					} transition-all duration-300 `}
+					className={`
+						contentRight
+						py-4 px-5
+						transition-all duration-300
+						${isMobile ? "w-full" : isSidebarOpen ? "w-[82%]" : "w-full"}
+					`}
 				>
 					<Outlet />
 				</div>

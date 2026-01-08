@@ -117,10 +117,10 @@ function BannerBoxListV2() {
 	return (
 		<>
 			{/* Header */}
-			<div className="flex items-center justify-between px-2 py-2">
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
 				<h2 className="text-[20px] font-semibold">Home Slider Banners V2</h2>
 
-				<div className="flex items-center gap-3">
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
 					<Button
 						className="btn-blue btn-sm !text-white gap-2 flex items-center"
 						onClick={() =>
@@ -146,115 +146,117 @@ function BannerBoxListV2() {
 
 			{/* Table */}
 			<div className="card my-4 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 450 }}>
-					<Table stickyHeader>
-						<TableHead>
-							<TableRow>
-								<TableCell width={60}>
-									<Checkbox
-										{...label}
-										size="small"
-										checked={
-											selected.length === bannerData.length &&
-											bannerData.length > 0
-										}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-
-								{columns.map((col) => (
-									<TableCell key={col.id}>{col.label}</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{bannerData.length === 0 ? (
+				<div className="overflow-x-auto">
+					<TableContainer sx={{ maxHeight: 450, minWidth: 850 }}>
+						<Table stickyHeader>
+							<TableHead>
 								<TableRow>
-									<TableCell colSpan={6} align="center">
-										No banners found.
+									<TableCell width={60}>
+										<Checkbox
+											{...label}
+											size="small"
+											checked={
+												selected.length === bannerData.length &&
+												bannerData.length > 0
+											}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
+
+									{columns.map((col) => (
+										<TableCell key={col.id}>{col.label}</TableCell>
+									))}
 								</TableRow>
-							) : (
-								bannerData
-									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-									.map((banner) => (
-										<TableRow key={banner._id} hover>
-											<TableCell>
-												<Checkbox
-													{...label}
-													size="small"
-													checked={selected.includes(banner._id)}
-													onChange={() => handleSelect(banner._id)}
-												/>
-											</TableCell>
+							</TableHead>
 
-											{/* Image */}
-											<TableCell>
-												<img
-													src={banner.images?.[0]}
-													alt="banner"
-													className="w-[200px] h-[120px] object-cover rounded-md shadow-sm border"
-												/>
-											</TableCell>
+							<TableBody>
+								{bannerData.length === 0 ? (
+									<TableRow>
+										<TableCell colSpan={6} align="center">
+											No banners found.
+										</TableCell>
+									</TableRow>
+								) : (
+									bannerData
+										.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+										.map((banner) => (
+											<TableRow key={banner._id} hover>
+												<TableCell>
+													<Checkbox
+														{...label}
+														size="small"
+														checked={selected.includes(banner._id)}
+														onChange={() => handleSelect(banner._id)}
+													/>
+												</TableCell>
 
-											{/* Product Type */}
-											<TableCell>
-												<span
-													className={`px-3 py-1 rounded-full text-xs font-semibold ${
-														banner.prodType === "latest"
-															? "bg-blue-100 text-blue-700"
-															: "bg-green-100 text-green-700"
-													}`}
-												>
-													{banner.prodType?.toUpperCase()}
-												</span>
-											</TableCell>
+												{/* Image */}
+												<TableCell>
+													<img
+														src={banner.images?.[0]}
+														alt="banner"
+														className="w-[140px] sm:w-[200px] h-[90px] sm:h-[120px] object-cover rounded-md shadow-sm border"
+													/>
+												</TableCell>
 
-											{/* Active Toggle */}
-											<TableCell>
-												<Switch
-													checked={banner.isActive}
-													onChange={() =>
-														handleToggleActive(banner._id, banner.isActive)
-													}
-												/>
-											</TableCell>
+												{/* Product Type */}
+												<TableCell>
+													<span
+														className={`px-3 py-1 rounded-full text-xs font-semibold ${
+															banner.prodType === "latest"
+																? "bg-blue-100 text-blue-700"
+																: "bg-green-100 text-green-700"
+														}`}
+													>
+														{banner.prodType?.toUpperCase()}
+													</span>
+												</TableCell>
 
-											{/* Actions */}
-											<TableCell>
-												<div className="flex items-center gap-3">
-													<Tooltip title="Edit Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
-															onClick={() =>
-																context.setIsOpenFullScreenPanel({
-																	open: true,
-																	model: "Edit Banner BoxV2",
-																	id: banner._id,
-																})
-															}
-														>
-															<AiOutlineEdit className="text-[18px]" />
-														</Button>
-													</Tooltip>
+												{/* Active Toggle */}
+												<TableCell>
+													<Switch
+														checked={banner.isActive}
+														onChange={() =>
+															handleToggleActive(banner._id, banner.isActive)
+														}
+													/>
+												</TableCell>
 
-													<Tooltip title="Delete Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
-															onClick={() => handleDeleteBanner(banner._id)}
-														>
-															<MdOutlineDelete className="text-[18px] text-red-600" />
-														</Button>
-													</Tooltip>
-												</div>
-											</TableCell>
-										</TableRow>
-									))
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
+												{/* Actions */}
+												<TableCell>
+													<div className="flex items-center gap-3">
+														<Tooltip title="Edit Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
+																onClick={() =>
+																	context.setIsOpenFullScreenPanel({
+																		open: true,
+																		model: "Edit Banner BoxV2",
+																		id: banner._id,
+																	})
+																}
+															>
+																<AiOutlineEdit className="text-[18px]" />
+															</Button>
+														</Tooltip>
+
+														<Tooltip title="Delete Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f4f4f4]"
+																onClick={() => handleDeleteBanner(banner._id)}
+															>
+																<MdOutlineDelete className="text-[18px] text-red-600" />
+															</Button>
+														</Tooltip>
+													</div>
+												</TableCell>
+											</TableRow>
+										))
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
@@ -264,6 +266,11 @@ function BannerBoxListV2() {
 					page={page}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
+					sx={{
+						"& .MuiTablePagination-toolbar": {
+							flexWrap: "wrap",
+						},
+					}}
 				/>
 			</div>
 		</>

@@ -141,10 +141,10 @@ function Blog() {
 
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0">
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
 				<h2 className="text-[18px] font-[600]">Blogs</h2>
 
-				<div className="flex items-center gap-3">
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
 					<Button
 						className="btn-blue btn-sm !text-white gap-2"
 						onClick={() =>
@@ -168,112 +168,115 @@ function Blog() {
 			</div>
 
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
-					<Table stickyHeader>
-						<TableHead>
-							<TableRow>
-								<TableCell width={60}>
-									<Checkbox
-										{...label}
-										size="small"
-										checked={
-											selected.length === blogData.length && blogData.length > 0
-										}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-
-								{columns.map((col) => (
-									<TableCell key={col.id}>{col.label}</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{blogData.length === 0 ? (
+				<div className="overflow-x-auto">
+					<TableContainer sx={{ maxHeight: 440, minWidth: 900 }}>
+						<Table stickyHeader>
+							<TableHead>
 								<TableRow>
-									<TableCell colSpan={6} align="center">
-										No blogs found.
+									<TableCell width={60}>
+										<Checkbox
+											{...label}
+											size="small"
+											checked={
+												selected.length === blogData.length &&
+												blogData.length > 0
+											}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
+
+									{columns.map((col) => (
+										<TableCell key={col.id}>{col.label}</TableCell>
+									))}
 								</TableRow>
-							) : (
-								blogData
-									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-									.map((blog) => (
-										<TableRow key={blog._id} hover>
-											<TableCell>
-												<Checkbox
-													{...label}
-													size="small"
-													checked={selected.includes(blog._id)}
-													onChange={() => handleSelect(blog._id)}
-												/>
-											</TableCell>
+							</TableHead>
 
-											{/* ✅ Image */}
-											<TableCell>
-												<img
-													src={blog.images?.[0]}
-													alt="blog"
-													className="w-[200px] h-[120px] object-cover rounded-md"
-												/>
-											</TableCell>
+							<TableBody>
+								{blogData.length === 0 ? (
+									<TableRow>
+										<TableCell colSpan={6} align="center">
+											No blogs found.
+										</TableCell>
+									</TableRow>
+								) : (
+									blogData
+										.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+										.map((blog) => (
+											<TableRow key={blog._id} hover>
+												<TableCell>
+													<Checkbox
+														{...label}
+														size="small"
+														checked={selected.includes(blog._id)}
+														onChange={() => handleSelect(blog._id)}
+													/>
+												</TableCell>
 
-											{/* ✅ Title + Description */}
-											<TableCell>
-												<p className="font-semibold text-[15px]">
-													{blog.title}
-												</p>
-											</TableCell>
+												{/* ✅ Image */}
+												<TableCell>
+													<img
+														src={blog.images?.[0]}
+														alt="blog"
+														className="w-[140px] sm:w-[200px] h-[90px] sm:h-[120px] object-cover rounded-md"
+													/>
+												</TableCell>
 
-											<TableCell>
-												<BlogDescription description={blog.description} />
-											</TableCell>
+												{/* ✅ Title + Description */}
+												<TableCell>
+													<p className="font-semibold text-[15px]">
+														{blog.title}
+													</p>
+												</TableCell>
 
-											{/* ✅ Active Toggle */}
-											<TableCell>
-												<Switch
-													checked={blog.isActive}
-													onChange={() =>
-														handleToggleActive(blog._id, blog.isActive)
-													}
-												/>
-											</TableCell>
+												<TableCell>
+													<BlogDescription description={blog.description} />
+												</TableCell>
 
-											{/* ✅ Actions */}
-											<TableCell>
-												<div className="flex items-center gap-2">
-													<Tooltip title="Edit Blog" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() =>
-																context.setIsOpenFullScreenPanel({
-																	open: true,
-																	model: "Edit Blog",
-																	id: blog._id,
-																})
-															}
-														>
-															<AiOutlineEdit className="text-[18px]" />
-														</Button>
-													</Tooltip>
+												{/* ✅ Active Toggle */}
+												<TableCell>
+													<Switch
+														checked={blog.isActive}
+														onChange={() =>
+															handleToggleActive(blog._id, blog.isActive)
+														}
+													/>
+												</TableCell>
 
-													<Tooltip title="Delete Blog" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() => handleDeleteBlog(blog._id)}
-														>
-															<MdOutlineDelete className="text-[18px]" />
-														</Button>
-													</Tooltip>
-												</div>
-											</TableCell>
-										</TableRow>
-									))
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
+												{/* ✅ Actions */}
+												<TableCell>
+													<div className="flex items-center gap-2">
+														<Tooltip title="Edit Blog" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() =>
+																	context.setIsOpenFullScreenPanel({
+																		open: true,
+																		model: "Edit Blog",
+																		id: blog._id,
+																	})
+																}
+															>
+																<AiOutlineEdit className="text-[18px]" />
+															</Button>
+														</Tooltip>
+
+														<Tooltip title="Delete Blog" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() => handleDeleteBlog(blog._id)}
+															>
+																<MdOutlineDelete className="text-[18px]" />
+															</Button>
+														</Tooltip>
+													</div>
+												</TableCell>
+											</TableRow>
+										))
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
@@ -283,6 +286,11 @@ function Blog() {
 					page={page}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
+					sx={{
+						"& .MuiTablePagination-toolbar": {
+							flexWrap: "wrap",
+						},
+					}}
 				/>
 			</div>
 		</>

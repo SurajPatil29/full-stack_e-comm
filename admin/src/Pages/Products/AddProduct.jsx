@@ -371,9 +371,12 @@ function AddProduct() {
 	};
 
 	return (
-		<section className="p-5 bg-gray-50">
-			<form className="form py-3 p-8" onSubmit={handleSubmitForm}>
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll">
+		<section className="p-2 sm:p-5 bg-gray-50">
+			<form
+				className="form py-3 p-4 sm:p-8 max-w-6xl mx-auto"
+				onSubmit={handleSubmitForm}
+			>
+				<div className="scroll max-h-[60vh] sm:max-h-[72vh] pr-2 sm:pr-4 overflow-y-auto">
 					{/* Product Name */}
 					<InputBox
 						label="Product Name"
@@ -384,19 +387,21 @@ function AddProduct() {
 					/>
 
 					{/* Product Description */}
-					<div className="mb-3">
+					<div className="mb-3 w-full">
 						<h3 className="text-[14px] font-[500] mb-1">Product Description</h3>
 
-						<Editor
-							value={formFields.description}
-							onChange={(e) =>
-								setFormFields({ ...formFields, description: e.target.value })
-							}
-						/>
+						<div className="rounded border bg-white">
+							<Editor
+								value={formFields.description}
+								onChange={(e) =>
+									setFormFields({ ...formFields, description: e.target.value })
+								}
+							/>
+						</div>
 					</div>
 
 					{/* Category Selects */}
-					<div className="grid grid-cols-4 gap-4 mb-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
 						<SelectBox
 							label="Product Category"
 							value={formFields.catId}
@@ -438,7 +443,7 @@ function AddProduct() {
 					</div>
 
 					{/* Price, Brand, Discount */}
-					<div className="grid grid-cols-4 gap-4 mb-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
 						<InputBox
 							label="Product Price"
 							name="price"
@@ -467,7 +472,7 @@ function AddProduct() {
 					</div>
 
 					{/* RAM, Weight, Size, Stock */}
-					<div className="grid grid-cols-4 gap-4 mb-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
 						{productRAMsData.length > 0 && (
 							<div>
 								<h3 className="text-[14px] font-[500] mb-1">Product RAM</h3>
@@ -571,7 +576,7 @@ function AddProduct() {
 					{/* Images */}
 					<div className="p-5">
 						<h3 className="font-[700] text-[18px] mb-3">Media & Images</h3>
-						<div className="grid grid-cols-7 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
 							{formFields.images.map((img, i) => (
 								<div key={i} className="relative">
 									{deletingImg === img ? (
@@ -585,7 +590,7 @@ function AddProduct() {
 										/>
 									)}
 									<LazyLoadImage
-										className="w-full h-[150px] object-cover rounded"
+										className="w-full h-[120px] sm:h-[150px] object-cover rounded"
 										src={img}
 										effect="blur"
 									/>
@@ -610,7 +615,7 @@ function AddProduct() {
 				<hr className="my-4" />
 				<Button
 					type="submit"
-					className="btn-blue w-full gap-2"
+					className="btn-blue w-full gap-2 py-3"
 					disabled={loading}
 				>
 					{loading ? (

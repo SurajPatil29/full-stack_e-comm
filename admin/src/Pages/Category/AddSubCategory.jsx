@@ -136,127 +136,130 @@ function AddSubCategory() {
 	};
 
 	return (
-		<Paper elevation={2} className="p-6 bg-white rounded-xl space-y-8">
-			{/* ---------- FORM 1 ---------- */}
-			<form onSubmit={handleSubmitSubCat} className="space-y-4">
-				<Typography variant="h6" fontWeight="bold" color="primary">
-					Add Subcategory
-				</Typography>
+		<Paper elevation={2} className="p-4 sm:p-6 bg-white rounded-xl">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+				{/* ---------- FORM 1 ---------- */}
+				<form onSubmit={handleSubmitSubCat} className="space-y-4">
+					<Typography variant="h6" fontWeight="bold" color="primary">
+						Add Subcategory
+					</Typography>
 
-				<Select
-					fullWidth
-					size="small"
-					value={subCatForm.parentId}
-					onChange={handleSubCatChange}
-					displayEmpty
-				>
-					<MenuItem value="">
-						<em>Select Main Category</em>
-					</MenuItem>
-					{categories.map((cat) => (
-						<MenuItem key={cat._id} value={cat._id}>
-							{cat.name}
-						</MenuItem>
-					))}
-				</Select>
-
-				<TextField
-					fullWidth
-					size="small"
-					variant="outlined"
-					value={subCatForm.name}
-					onChange={handleSubCatInput}
-					placeholder="Enter subcategory name"
-				/>
-
-				<Button
-					type="submit"
-					variant="contained"
-					fullWidth
-					disabled={isLoading}
-					startIcon={!isLoading && <FaCloudUploadAlt />}
-				>
-					{isLoading ? (
-						<CircularProgress size={20} color="inherit" />
-					) : (
-						"Publish Subcategory"
-					)}
-				</Button>
-			</form>
-
-			<Divider />
-
-			{/* ---------- FORM 2 ---------- */}
-			<form onSubmit={handleSubmitThirdCat} className="space-y-4">
-				<Typography variant="h6" fontWeight="bold" color="primary">
-					Add Third Level Category
-				</Typography>
-
-				<Select
-					fullWidth
-					size="small"
-					value={thirdCatForm.mainCatId}
-					onChange={handleMainCatChange}
-					displayEmpty
-				>
-					<MenuItem value="">
-						<em>Select Main Category</em>
-					</MenuItem>
-					{categories.map((cat) => (
-						<MenuItem key={cat._id} value={cat._id}>
-							{cat.name}
-						</MenuItem>
-					))}
-				</Select>
-
-				{subCategories.length > 0 && (
 					<Select
 						fullWidth
 						size="small"
-						value={thirdCatForm.subCatId}
-						onChange={handleSubCatSelect}
+						value={subCatForm.parentId}
+						onChange={handleSubCatChange}
 						displayEmpty
 					>
 						<MenuItem value="">
-							<em>Select Subcategory</em>
+							<em>Select Main Category</em>
 						</MenuItem>
-						{subCategories.map((sub) => (
-							<MenuItem key={sub._id} value={sub._id}>
-								{sub.name}
+						{categories.map((cat) => (
+							<MenuItem key={cat._id} value={cat._id}>
+								{cat.name}
 							</MenuItem>
 						))}
 					</Select>
-				)}
 
-				<TextField
-					fullWidth
-					size="small"
-					variant="outlined"
-					value={thirdCatForm.name}
-					onChange={handleThirdCatInput}
-					placeholder="Enter third level category name"
-				/>
+					<TextField
+						fullWidth
+						size="small"
+						variant="outlined"
+						value={subCatForm.name}
+						onChange={handleSubCatInput}
+						placeholder="Enter subcategory name"
+					/>
 
-				<Button
-					type="submit"
-					variant="contained"
-					fullWidth
-					disabled={isLoading}
-					startIcon={!isLoading && <FaCloudUploadAlt />}
-				>
-					{isLoading ? (
-						<CircularProgress size={20} color="inherit" />
-					) : (
-						"Publish Third Level Category"
+					<Button
+						type="submit"
+						variant="contained"
+						fullWidth
+						disabled={isLoading}
+						startIcon={!isLoading && <FaCloudUploadAlt />}
+					>
+						{isLoading ? (
+							<CircularProgress size={20} color="inherit" />
+						) : (
+							"Publish Subcategory"
+						)}
+					</Button>
+				</form>
+
+				<div className="lg:hidden">
+					<Divider />
+				</div>
+
+				{/* ---------- FORM 2 ---------- */}
+				<form onSubmit={handleSubmitThirdCat} className="space-y-4">
+					<Typography variant="h6" fontWeight="bold" color="primary">
+						Add Third Level Category
+					</Typography>
+
+					<Select
+						fullWidth
+						size="small"
+						value={thirdCatForm.mainCatId}
+						onChange={handleMainCatChange}
+						displayEmpty
+					>
+						<MenuItem value="">
+							<em>Select Main Category</em>
+						</MenuItem>
+						{categories.map((cat) => (
+							<MenuItem key={cat._id} value={cat._id}>
+								{cat.name}
+							</MenuItem>
+						))}
+					</Select>
+
+					{subCategories.length > 0 && (
+						<Select
+							fullWidth
+							size="small"
+							value={thirdCatForm.subCatId}
+							onChange={handleSubCatSelect}
+							displayEmpty
+						>
+							<MenuItem value="">
+								<em>Select Subcategory</em>
+							</MenuItem>
+							{subCategories.map((sub) => (
+								<MenuItem key={sub._id} value={sub._id}>
+									{sub.name}
+								</MenuItem>
+							))}
+						</Select>
 					)}
-				</Button>
-			</form>
 
+					<TextField
+						fullWidth
+						size="small"
+						variant="outlined"
+						value={thirdCatForm.name}
+						onChange={handleThirdCatInput}
+						placeholder="Enter third level category name"
+					/>
+
+					<Button
+						type="submit"
+						variant="contained"
+						fullWidth
+						disabled={isLoading}
+						startIcon={!isLoading && <FaCloudUploadAlt />}
+					>
+						{isLoading ? (
+							<CircularProgress size={20} color="inherit" />
+						) : (
+							"Publish Third Level Category"
+						)}
+					</Button>
+				</form>
+			</div>
 			{/* ---------- MESSAGE ---------- */}
 			{message && (
 				<Typography
 					variant="body2"
-					className={`pt-2 ${
+					className={`pt-4 text-center font-medium ${
 						message.startsWith("✅")
 							? "text-green-600"
 							: message.startsWith("⚠️")

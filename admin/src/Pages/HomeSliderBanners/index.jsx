@@ -23,9 +23,21 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 // ⭐ NEW COLUMNS (NO TITLE)
 const columns = [
-	{ id: "image", label: "IMAGE", minWidth: 350 }, // increased width
-	{ id: "isActive", label: "ACTIVE", minWidth: 120 },
-	{ id: "action", label: "ACTION", minWidth: 120 },
+	{
+		id: "image",
+		label: "IMAGE",
+		minWidth: { xs: 200, sm: 220, md: 300, lg: 350 },
+	},
+	{
+		id: "isActive",
+		label: "ACTIVE",
+		minWidth: { xs: 80, sm: 100, md: 120 },
+	},
+	{
+		id: "action",
+		label: "ACTION",
+		minWidth: { xs: 90, sm: 110, md: 120 },
+	},
 ];
 
 function HomeSliderBanners() {
@@ -101,12 +113,14 @@ function HomeSliderBanners() {
 	return (
 		<>
 			{/* Header */}
-			<div className="flex items-center justify-between px-2 py-0">
-				<h2 className="text-[18px] font-[600]">Home Slider Banners</h2>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
+				<h2 className="text-[16px] sm:text-[18px] font-[600]">
+					Home Slider Banners
+				</h2>
 
-				<div className="col w-[30%] ml-auto flex items-center justify-end gap-3">
+				<div className="flex flex-col sm:flex-row sm:ml-auto items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
 					<Button
-						className="btn-blue btn-sm !text-white gap-2 flex items-center"
+						className="btn-blue btn-sm !text-white gap-2 flex items-center justify-center sm:justify-start"
 						onClick={() =>
 							context.setIsOpenFullScreenPanel({
 								open: true,
@@ -114,7 +128,7 @@ function HomeSliderBanners() {
 							})
 						}
 					>
-						<TfiLayoutSliderAlt className="text-white text-[20px]" />
+						<TfiLayoutSliderAlt className="text-white text-[18px] sm:text-[20px]" />
 						Add Home Slide
 					</Button>
 
@@ -130,117 +144,189 @@ function HomeSliderBanners() {
 
 			{/* Table */}
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
-					<Table stickyHeader>
-						<TableHead className="!bg-gray-50">
-							<TableRow>
-								<TableCell width={60}>
-									<Checkbox
-										{...label}
-										size="small"
-										checked={
-											selected.length === bannerData.length &&
-											bannerData.length > 0
-										}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-
-								{columns.map((col) => (
-									<TableCell key={col.id} width={col.minWidth}>
-										{col.label}
-									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{bannerData.length === 0 ? (
+				<div className="relative overflow-x-auto">
+					<TableContainer
+						sx={{
+							maxHeight: 440,
+							minWidth: { xs: "100%", md: 900 },
+						}}
+					>
+						<Table stickyHeader>
+							<TableHead className="!bg-gray-50">
 								<TableRow>
-									<TableCell colSpan={6} align="center">
-										No banners found.
+									<TableCell
+										sx={{
+											padding: {
+												xs: "6px 8px",
+												sm: "10px 12px",
+												md: "14px 16px",
+											},
+											whiteSpace: "nowrap",
+										}}
+										width={60}
+										className="hidden sm:table-cell"
+									>
+										<Checkbox
+											{...label}
+											size="small"
+											checked={
+												selected.length === bannerData.length &&
+												bannerData.length > 0
+											}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
+
+									{columns.map((col) => (
+										<TableCell
+											key={col.id}
+											sx={{
+												minWidth: col.minWidth, // ✅ responsive works here
+												padding: {
+													xs: "6px 8px",
+													sm: "10px 12px",
+													md: "14px 16px",
+												},
+												whiteSpace: "nowrap",
+											}}
+										>
+											{col.label}
+										</TableCell>
+									))}
 								</TableRow>
-							) : (
-								bannerData
-									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-									.map((banner) => (
-										<TableRow key={banner._id} hover>
-											<TableCell>
-												<Checkbox
-													{...label}
-													size="small"
-													checked={selected.includes(banner._id)}
-													onChange={() => handleSelect(banner._id)}
-												/>
-											</TableCell>
+							</TableHead>
 
-											{/* ⭐ BIGGER IMAGE */}
-											<TableCell>
-												<img
-													src={banner.images?.[0] || "/no-image.png"}
-													alt="banner"
-													className="w-[350px] h-[160px] object-cover rounded-md"
-												/>
-											</TableCell>
+							<TableBody>
+								{bannerData.length === 0 ? (
+									<TableRow>
+										<TableCell colSpan={6} align="center">
+											No banners found.
+										</TableCell>
+									</TableRow>
+								) : (
+									bannerData
+										.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+										.map((banner) => (
+											<TableRow key={banner._id} hover>
+												<TableCell
+													sx={{
+														padding: {
+															xs: "6px 8px",
+															sm: "10px 12px",
+															md: "14px 16px",
+														},
+														whiteSpace: "nowrap",
+													}}
+													width={60}
+													className="hidden sm:table-cell"
+												>
+													<Checkbox
+														{...label}
+														size="small"
+														checked={selected.includes(banner._id)}
+														onChange={() => handleSelect(banner._id)}
+													/>
+												</TableCell>
 
-											{/* ⭐ ACTIVE SWITCH */}
-											<TableCell>
-												<Switch
-													checked={banner.isActive}
-													onChange={() =>
-														handleToggleActive(banner._id, banner.isActive)
-													}
-												/>
-											</TableCell>
+												{/* ⭐ BIGGER IMAGE */}
+												<TableCell
+													sx={{
+														minWidth: columns[0].minWidth,
+														padding: {
+															xs: "6px 8px",
+															sm: "10px 12px",
+															md: "14px 16px",
+														},
+													}}
+												>
+													<img
+														src={banner.images?.[0] || "/no-image.png"}
+														alt="banner"
+														className="
+			w-[180px] h-[90px]
+			sm:w-[260px] sm:h-[120px]
+			lg:w-[350px] lg:h-[160px]
+			object-cover rounded-md
+		"
+													/>
+												</TableCell>
 
-											{/* ⭐ ACTION BUTTONS */}
-											<TableCell>
-												<div className="flex items-center gap-2">
-													<Tooltip title="Edit Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() =>
-																context.setIsOpenFullScreenPanel({
-																	open: true,
-																	model: "Edit Banner",
-																	id: banner._id,
-																})
-															}
-														>
-															<AiOutlineEdit className="text-[18px]" />
-														</Button>
-													</Tooltip>
+												{/* ⭐ ACTIVE SWITCH */}
+												<TableCell
+													sx={{
+														minWidth: columns[1].minWidth,
+														padding: {
+															xs: "6px 8px",
+															sm: "10px 12px",
+															md: "14px 16px",
+														},
+													}}
+												>
+													<Switch
+														checked={banner.isActive}
+														onChange={() =>
+															handleToggleActive(banner._id, banner.isActive)
+														}
+													/>
+												</TableCell>
 
-													<Tooltip title="Delete Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() => handleDeleteBanner(banner._id)}
-														>
-															<MdOutlineDelete className="text-[18px]" />
-														</Button>
-													</Tooltip>
-												</div>
-											</TableCell>
-										</TableRow>
-									))
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
+												{/* ⭐ ACTION BUTTONS */}
+												<TableCell
+													sx={{
+														minWidth: columns[2].minWidth,
+														padding: {
+															xs: "6px 8px",
+															sm: "10px 12px",
+															md: "14px 16px",
+														},
+													}}
+												>
+													<div className="flex items-center gap-2 whitespace-nowrap">
+														<Tooltip title="Edit Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() =>
+																	context.setIsOpenFullScreenPanel({
+																		open: true,
+																		model: "Edit Banner",
+																		id: banner._id,
+																	})
+																}
+															>
+																<AiOutlineEdit className="text-[18px]" />
+															</Button>
+														</Tooltip>
 
-				<TablePagination
-					rowsPerPageOptions={[10, 25, 100]}
-					component="div"
-					count={bannerData.length}
-					rowsPerPage={rowsPerPage}
-					page={page}
-					onPageChange={(e, newPage) => setPage(newPage)}
-					onRowsPerPageChange={(e) => {
-						setRowsPerPage(+e.target.value);
-						setPage(0);
-					}}
-				/>
+														<Tooltip title="Delete Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() => handleDeleteBanner(banner._id)}
+															>
+																<MdOutlineDelete className="text-[18px]" />
+															</Button>
+														</Tooltip>
+													</div>
+												</TableCell>
+											</TableRow>
+										))
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+
+					<TablePagination
+						rowsPerPageOptions={[10, 25, 100]}
+						component="div"
+						count={bannerData.length}
+						rowsPerPage={rowsPerPage}
+						page={page}
+						onPageChange={(e, newPage) => setPage(newPage)}
+						onRowsPerPageChange={(e) => {
+							setRowsPerPage(+e.target.value);
+							setPage(0);
+						}}
+					/>
+				</div>
 			</div>
 		</>
 	);

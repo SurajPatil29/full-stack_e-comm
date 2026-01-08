@@ -316,14 +316,17 @@ export const capturePaypalOrderController = async (req, res, next) => {
 
 export const totalSalesController = async (req, res, next) => {
 	try {
-		const currentYear = new Date().getFullYear();
+		const year = Number(req.query.year) || new Date().getFullYear();
+
+		const startDate = new Date(`${year}-01-01`);
+		const endDate = new Date(`${year + 1}-01-01`);
 
 		const sales = await OrderModel.aggregate([
 			{
 				$match: {
 					createdAt: {
-						$gte: new Date(`${currentYear}-01-01`),
-						$lt: new Date(`${currentYear + 1}-01-01`),
+						$gte: startDate,
+						$lt: endDate,
 					},
 				},
 			},
@@ -359,6 +362,7 @@ export const totalSalesController = async (req, res, next) => {
 		}
 
 		return sendSuccess(res, "Total sales fetched successfully", {
+			year,
 			totalSales,
 			monthlySales,
 		});
@@ -369,15 +373,18 @@ export const totalSalesController = async (req, res, next) => {
 
 export const totalUsersController = async (req, res, next) => {
 	try {
-		const currentYear = new Date().getFullYear();
+		const year = Number(req.query.year) || new Date().getFullYear();
+
+		const startDate = new Date(`${year}-01-01`);
+		const endDate = new Date(`${year + 1}-01-01`);
 
 		const users = await UserModel.aggregate([
 			{
 				$match: {
 					role: "USER",
 					createdAt: {
-						$gte: new Date(`${currentYear}-01-01`),
-						$lt: new Date(`${currentYear + 1}-01-01`),
+						$gte: startDate,
+						$lt: endDate,
 					},
 				},
 			},
@@ -410,12 +417,13 @@ export const totalUsersController = async (req, res, next) => {
 		let totalUsers = 0;
 
 		for (const item of users) {
-			const index = item._id.month - 1; // 0-based
+			const index = item._id.month - 1;
 			monthlyUsers[index].TotalUsers = item.TotalUsers;
 			totalUsers += item.TotalUsers;
 		}
 
 		return sendSuccess(res, "Total users fetched successfully", {
+			year,
 			totalUsers,
 			monthlyUsers,
 		});

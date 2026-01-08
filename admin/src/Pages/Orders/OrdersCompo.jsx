@@ -150,9 +150,9 @@ function OrdersCompo() {
 	return (
 		<div>
 			<div className="shadow-md rounded-md bg-white">
-				<div className="flex items-center justify-between px-5 py-5">
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-5 gap-4">
 					<h2 className="text-[18px] font-[600] ">Recent Orders</h2>
-					<div className="w-[40%] ">
+					<div className="w-full sm:w-[60%] lg:w-[40%] ">
 						<SearchBox
 							searchQuery={searchQuery}
 							setSearchQuery={setSearchQuery}

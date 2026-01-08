@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Divider } from "@mui/material";
 import { RiMenu2Line } from "react-icons/ri";
 import Badge from "@mui/material/Badge";
@@ -24,6 +24,23 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 function Header() {
 	const [anchorMyAcc, setAnchorMyAcc] = useState(null);
+
+	const [isMobile, setIsMobile] = useState(false);
+	const [isMobile2, setIsMobile2] = useState(false);
+
+	useEffect(() => {
+		const handleResize = () => {
+			const width = window.innerWidth;
+
+			setIsMobile(width < 1080);
+			setIsMobile2(width < 720);
+		};
+
+		handleResize();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
 	const openMyAcc = Boolean(anchorMyAcc);
 	const handleClickMyAcc = (event) => {
 		setAnchorMyAcc(event.currentTarget);
@@ -52,18 +69,29 @@ function Header() {
 	};
 	return (
 		<header
-			className={`w-full bg-white h-[auto] py-2 ${
-				context.isSidebarOpen ? "pl-[19%]" : "pl-2 "
-			} pr-7 shadow-md flex items-center justify-between sticky top-0 z-50`}
+			className={`
+		w-full bg-white py-2 pr-7 shadow-md
+		flex items-center justify-between
+		sticky top-0 z-50
+		transition-all duration-300
+		${!isMobile && context.isSidebarOpen ? "pl-[19%]" : "pl-2"}
+	`}
 		>
 			<div className="flex items-center gap-2 w-[50%]">
 				{!context.isSidebarOpen && (
-					<div className="py-2 w-[35%]">
+					<div className="py-2 ">
 						<Link to="/">
 							<img
-								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
+								src={
+									isMobile2
+										? "https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745725680/logocrop_brgoqw.png"
+										: "https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
+								}
 								alt="site_logo"
-								className="w-[100%] max-w-[150px] "
+								className={`
+				transition-all duration-300
+				${isMobile2 ? "w-[40px]" : context.isSidebarOpen ? "hidden" : "w-[150px]"}
+			`}
 							/>
 						</Link>
 					</div>
@@ -82,7 +110,7 @@ function Header() {
 				</div>
 			</div>
 
-			<div className="part2 w-[40%] flex items-center justify-end gap-4 ">
+			<div className="part2 w-[50%] flex items-center justify-end gap-4 ">
 				<IconButton aria-label="cart">
 					<StyledBadge badgeContent={4} color="secondary">
 						<FaRegBell />
@@ -194,7 +222,9 @@ function Header() {
 					</div>
 				) : (
 					<Link to="/signup">
-						<Button className="btn-blue btn-sm !rounded-full">Sign In</Button>
+						<Button className="btn-blue btn-sm !rounded-full !capitalize">
+							Sign In
+						</Button>
 					</Link>
 				)}
 			</div>

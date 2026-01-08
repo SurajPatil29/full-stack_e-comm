@@ -116,7 +116,7 @@ function AddSize() {
 
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0 mt-3 w-[65%]">
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 py-2 mt-3 w-full lg:w-[65%]">
 				<h2 className="text-[18px] font-[600]">Add Product Sizes</h2>
 				{selectedIds.length > 0 && (
 					<Button
@@ -128,8 +128,8 @@ function AddSize() {
 				)}
 			</div>
 
-			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white w-[65%]">
-				<form className="py-3 p-8" onSubmit={handleSubmit}>
+			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white w-full lg:w-[65%]">
+				<form className="py-3 p-4 sm:p-8" onSubmit={handleSubmit}>
 					<div className="mb-4">
 						<h3 className="text-[14px] font-[500] mb-1 text-black">
 							PRODUCT SIZE
@@ -148,7 +148,7 @@ function AddSize() {
 				</form>
 			</div>
 
-			<div className="card my-4 shadow-md sm:rounded-lg bg-white w-[65%] pb-5">
+			<div className="card my-4 shadow-md sm:rounded-lg bg-white w-full lg:w-[65%] pb-5">
 				<div className="relative overflow-x-auto mt-5">
 					{loading ? (
 						<div className="flex justify-center py-10">
@@ -159,10 +159,10 @@ function AddSize() {
 							No Product Sizes available
 						</p>
 					) : (
-						<table className="w-full text-sm text-left text-gray-500">
+						<table className="min-w-[500px] w-full text-sm text-left text-gray-500">
 							<thead className="text-xs text-gray-800 uppercase bg-gray-100">
 								<tr>
-									<th className="px-6 pr-0 py-3 w-[10%]">
+									<th className="px-2 sm:px-6 py-2 sm:py-3 whitespace-nowrap w-[10%]">
 										<Checkbox
 											size="small"
 											checked={selectAll}
@@ -179,7 +179,7 @@ function AddSize() {
 										key={s._id}
 										className="odd:bg-white even:bg-gray-50 border-b"
 									>
-										<td className="px-6 pr-0 py-2">
+										<td className="px-2 sm:px-6 py-2">
 											<Checkbox
 												size="small"
 												checked={selectedIds.includes(s._id)}
@@ -209,7 +209,7 @@ function AddSize() {
 											)}
 										</td>
 										<td className="px-6 py-2">
-											<div className="flex items-center gap-1">
+											<div className="flex items-center gap-1 whitespace-nowrap">
 												<Button
 													disabled={editId === s._id}
 													className="!w-[35px] !h-[35px] bg-[#f1f1f1] !border !border-gray-400 !rounded-full"

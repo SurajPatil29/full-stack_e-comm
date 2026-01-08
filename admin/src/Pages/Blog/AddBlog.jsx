@@ -86,11 +86,11 @@ function AddBlog() {
 	// ========================================================================
 
 	return (
-		<section className="p-2 bg-gray-50">
+		<section className="p-2 sm:p-4 bg-gray-50">
 			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="max-h-[72vh] pr-4 overflow-y-scroll">
+				<div className="max-h-[65vh] sm:max-h-[72vh] pr-2 sm:pr-4 overflow-y-auto">
 					{/* Title */}
-					<div className="m-3">
+					<div className="m-3 sm:m-4">
 						<h3 className="font-[500] text-[18px] mb-1">Blog Title</h3>
 						<input
 							type="text"
@@ -104,7 +104,7 @@ function AddBlog() {
 					</div>
 
 					{/* Description */}
-					<div className="m-3">
+					<div className="m-3 sm:m-4">
 						<h3 className="text-[14px] font-[500] mb-1 text-black ">
 							Description
 						</h3>
@@ -120,7 +120,7 @@ function AddBlog() {
 					<div className="col w-full px-5">
 						<h3 className="font-[500] text-[18px] mb-3">Blog Images</h3>
 
-						<div className="grid grid-cols-4 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
 							{/* ✅ Preview all images */}
 							{formFields.images.map((img, index) => (
 								<div key={index} className="relative">
@@ -133,7 +133,7 @@ function AddBlog() {
 										<IoMdCloseCircle className="text-red-700 text-[22px]" />
 									</button>
 
-									<div className="uploadBox rounded-md overflow-hidden border h-[130px] bg-gray-100 flex items-center justify-center">
+									<div className="uploadBox rounded-md overflow-hidden border h-[110px] sm:h-[130px] bg-gray-100 flex items-center justify-center">
 										<LazyLoadImage
 											className="w-full h-full object-cover"
 											alt="image"
@@ -180,7 +180,7 @@ function AddBlog() {
 				<br />
 
 				{/* Submit */}
-				<div className="w-[250px]">
+				<div className="w-full sm:w-[250px]">
 					<Button
 						type="submit"
 						className="btn-blue btn-lg w-full gap-2"

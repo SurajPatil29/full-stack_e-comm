@@ -151,11 +151,11 @@ function User() {
 			{/* this is material ui table v2 */}
 
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white ">
-				<div className="flex items-center w-full px-5 justify-between ">
-					<div className="col w-[20%] ">
+				<div className="flex flex-col sm:flex-row sm:items-center w-full px-5 gap-3 sm:justify-between">
+					<div className="w-full sm:w-[20%]">
 						<h2 className="text-[18px] font-[600] ">Users List</h2>
 					</div>
-					<div className="ml-auto flex items-center gap-3 w-[50%] ">
+					<div className="ml-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-[50%]">
 						{selected.length > 0 && (
 							<Button
 								onClick={deleteMultipleUsers}
@@ -166,7 +166,7 @@ function User() {
 								Delete ({selected.length})
 							</Button>
 						)}
-						<div className="w-[80%]">
+						<div className="w-full sm:w-[80%]">
 							<SearchBox
 								searchQuery={searchQuery}
 								setSearchQuery={setSearchQuery}
@@ -176,84 +176,87 @@ function User() {
 					</div>
 				</div>
 				<br />
-				<TableContainer sx={{ maxHeight: 440 }}>
-					<Table stickyHeader aria-label="sticky table">
-						<TableHead className="!bg-gray-50">
-							<TableRow className="">
-								<TableCell padding="checkbox">
-									<Checkbox
-										size="small"
-										checked={isAllSelected}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-								{columns.map((column) => (
-									<TableCell
-										key={column.id}
-										align={column.align}
-										style={{ minWidth: column.minWidth }}
-									>
-										{column.label}
+				<div className="overflow-x-auto">
+					<TableContainer sx={{ maxHeight: 440, minWidth: 900 }}>
+						<Table stickyHeader aria-label="sticky table">
+							<TableHead className="!bg-gray-50">
+								<TableRow className="">
+									<TableCell padding="checkbox">
+										<Checkbox
+											size="small"
+											checked={isAllSelected}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{!loading &&
-								paginatedUsers.map((user) => (
-									<TableRow hover key={user._id}>
-										<TableCell padding="checkbox">
-											<Checkbox
-												size="small"
-												checked={selected.includes(user._id)}
-												onChange={() => handleSelectOne(user._id)}
-											/>
+									{columns.map((column) => (
+										<TableCell
+											key={column.id}
+											align={column.align}
+											style={{ minWidth: column.minWidth }}
+										>
+											{column.label}
 										</TableCell>
-										<TableCell>
-											<img
-												src={
-													user.avatar ||
-													"https://cdn-icons-png.flaticon.com/512/149/149071.png"
-												}
-												className="w-[45px] h-[45px] rounded-md object-cover"
-											/>
-										</TableCell>
+									))}
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{!loading &&
+									paginatedUsers.map((user) => (
+										<TableRow hover key={user._id}>
+											<TableCell padding="checkbox">
+												<Checkbox
+													size="small"
+													checked={selected.includes(user._id)}
+													onChange={() => handleSelectOne(user._id)}
+												/>
+											</TableCell>
+											<TableCell>
+												<img
+													src={
+														user.avatar ||
+														"https://cdn-icons-png.flaticon.com/512/149/149071.png"
+													}
+													className="w-[45px] h-[45px] rounded-md object-cover"
+												/>
+											</TableCell>
 
-										<TableCell>{user.name}</TableCell>
+											<TableCell>{user.name}</TableCell>
 
-										<TableCell>
-											<span className="flex items-center gap-2">
-												<MdOutlineMarkEmailRead />
-												{user.email}
-											</span>
-										</TableCell>
+											<TableCell>
+												<span className="flex items-center gap-2">
+													<MdOutlineMarkEmailRead />
+													{user.email}
+												</span>
+											</TableCell>
 
-										<TableCell>
-											<span className="flex items-center gap-2">
-												<MdLocalPhone />
-												{user.mobile || "N/A"}
-											</span>
-										</TableCell>
+											<TableCell>
+												<span className="flex items-center gap-2">
+													<MdLocalPhone />
+													{user.mobile || "N/A"}
+												</span>
+											</TableCell>
 
-										<TableCell>
-											<span className="flex items-center gap-2">
-												<MdDateRange />
-												{new Date(user.createdAt).toLocaleDateString()}
-											</span>
+											<TableCell>
+												<span className="flex items-center gap-2">
+													<MdDateRange />
+													{new Date(user.createdAt).toLocaleDateString()}
+												</span>
+											</TableCell>
+										</TableRow>
+									))}
+
+								{!loading && users.length === 0 && (
+									<TableRow>
+										<TableCell colSpan={6} align="center">
+											No users found
 										</TableCell>
 									</TableRow>
-								))}
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 
-							{!loading && users.length === 0 && (
-								<TableRow>
-									<TableCell colSpan={6} align="center">
-										No users found
-									</TableCell>
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
 					component="div"
@@ -264,6 +267,11 @@ function User() {
 					onRowsPerPageChange={(e) => {
 						setRowsPerPage(parseInt(e.target.value, 10));
 						setPage(0);
+					}}
+					sx={{
+						"& .MuiTablePagination-toolbar": {
+							flexWrap: "wrap",
+						},
 					}}
 				/>
 			</div>

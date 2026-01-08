@@ -68,8 +68,8 @@ function VerifyAccount() {
 		}
 	};
 	return (
-		<section className=" otpPage w-full ">
-			<header className="w-full fixed top-0 left-0  px-4 py-3 flex items-center justify-between ">
+		<section className="otpPage w-full pt-[70px] sm:pt-0">
+			<header className="w-full fixed top-0 left-0 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 				<Link to="/">
 					<img
 						src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
@@ -77,7 +77,7 @@ function VerifyAccount() {
 						className="w-[200px] z-50 "
 					/>{" "}
 				</Link>
-				<div className="flex items-center gap-4 ">
+				<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
 					<NavLink
 						to="/login"
 						className={({ isActive }) => (isActive ? "isActive" : "")}
@@ -103,10 +103,10 @@ function VerifyAccount() {
 			<img
 				src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745725205/bgimg3_xuxtpc.jpg"
 				alt="signupbg"
-				className="w-full h-full fixed top-0 left-0 opacity-5 -z-10"
+				className="w-full h-screen fixed top-0 left-0 object-cover opacity-5 -z-10"
 			/>
 
-			<div className="loginBox card w-[600px] h-auto mx-auto py-20 mt-20 relative z-50  ">
+			<div className="loginBox card w-full sm:w-[600px] h-auto mx-auto py-10 sm:py-20 mt-24 sm:mt-20 relative z-50 px-4 sm:px-0">
 				<div className="text-center">
 					<img
 						src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1738133133/verify2_s6t1cv.png"
@@ -116,7 +116,7 @@ function VerifyAccount() {
 				</div>
 
 				<div className="">
-					<h1 className="text-center text-[35px] font-[800] ">
+					<h1 className="text-center text-[26px] sm:text-[35px] font-[800]">
 						Welcom <br />
 						Please verify your Email
 					</h1>
@@ -132,7 +132,7 @@ function VerifyAccount() {
 							<OtpBox length={6} onChange={handleOtpChange} />
 						</div>
 						<br />
-						<div className="w-[300px] m-auto ">
+						<div className="w-full sm:w-[300px] m-auto px-2">
 							{" "}
 							<Button type="submit" className="btn-blue btn-lg w-full">
 								{isLoading === true ? (

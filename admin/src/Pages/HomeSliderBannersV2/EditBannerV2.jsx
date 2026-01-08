@@ -160,11 +160,11 @@ function EditBannerV2() {
 		formFields.price.trim() !== "";
 
 	return (
-		<section className="p-2 bg-gray-50">
-			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll">
+		<section className="p-2 sm:p-4 bg-gray-50">
+			<form className="form py-3 p-2 max-w-5xl mx-auto" onSubmit={handleSave}>
+				<div className="scroll max-h-[60vh] sm:max-h-[72vh] pr-2 sm:pr-4 overflow-y-auto">
 					{/* TITLE & PRICE */}
-					<div className="flex items-center gap-5 m-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 m-3">
 						<InputBox
 							label="Banner Title"
 							name="title"
@@ -195,10 +195,10 @@ function EditBannerV2() {
 					</div>
 
 					{/* IMAGE */}
-					<div className="col w-full px-5">
+					<div className="col w-full px-2 sm:px-5">
 						<h3 className="font-[700] text-[18px] mb-3">Banner Images V2</h3>
 
-						<div className="grid grid-cols-7 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
 							{formFields.images ? (
 								<div className="uploadBoxWrapper relative">
 									<button
@@ -210,7 +210,7 @@ function EditBannerV2() {
 										<IoMdCloseCircle className="text-red-700 text-[20px]" />
 									</button>
 
-									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-[rgba(0,0,0,0.3)] h-[150px] w-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-[rgba(0,0,0,0.3)] h-[120px] sm:h-[150px] w-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
 										<LazyLoadImage
 											src={formFields.images}
 											alt="banner"
@@ -246,7 +246,7 @@ function EditBannerV2() {
 				<hr className="my-4" />
 
 				{/* SAVE BUTTON */}
-				<div className="w-[250px]">
+				<div className="w-full sm:w-[250px]">
 					<Button
 						type="submit"
 						className="btn-blue btn-lg w-full gap-2"

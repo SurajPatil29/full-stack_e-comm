@@ -269,10 +269,10 @@ function ProductListCompo() {
 					</Button>
 				)}
 			</div>
-			<div className="flex items-center w-full px-5 justify-between ">
-				<div className="flex items-center gap-5 w-full">
+			<div className="flex flex-col lg:flex-row w-full px-5 gap-4 lg:gap-0">
+				<div className="flex flex-col sm:flex-row gap-4 w-full">
 					{/* MAIN CATEGORY */}
-					<div className="col w-[15%]">
+					<div className="w-full sm:w-1/2 lg:w-[20%]">
 						<h4 className="font-[600] text-[13px] mb-2">Category by</h4>
 						<Select
 							className="w-full"
@@ -293,7 +293,7 @@ function ProductListCompo() {
 					</div>
 
 					{/* SUB CATEGORY */}
-					<div className="col w-[15%]">
+					<div className="w-full sm:w-1/2 lg:w-[20%]">
 						<h4 className="font-[600] text-[13px] mb-2">Sub Category by</h4>
 						<Select
 							className="w-full"
@@ -315,7 +315,7 @@ function ProductListCompo() {
 					</div>
 
 					{/* THIRD LEVEL CATEGORY */}
-					<div className="col w-[15%]">
+					<div className="w-full sm:w-1/2 lg:w-[20%]">
 						<h4 className="font-[600] text-[13px] mb-2">
 							Third Level Category by
 						</h4>
@@ -339,7 +339,7 @@ function ProductListCompo() {
 					</div>
 				</div>
 
-				<div className="col w-[20%] ml-auto ">
+				<div className="w-full sm:w-1/2 lg:w-[20%] lg:ml-auto ">
 					<SearchBox
 						searchQuery={searchQuery}
 						setSearchQuery={setSearchQuery}
@@ -403,7 +403,7 @@ function ProductListCompo() {
 										<TableCell>
 											<div className="flex items-center gap-4">
 												<div className="img w-[65px] h-[65px] rounded-md overflow-hidden group">
-													<Link to={`/product/${product._id}`}>
+													<Link to={`/productDetails/${product._id}`}>
 														<img
 															src={
 																product.images?.[0] ||
@@ -416,7 +416,7 @@ function ProductListCompo() {
 												</div>
 												<div>
 													<h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
-														<Link to={`/product/${product._id}`}>
+														<Link to={`/productDetails/${product._id}`}>
 															{product.name}
 														</Link>
 													</h3>

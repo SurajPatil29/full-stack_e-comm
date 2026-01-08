@@ -116,10 +116,10 @@ function BannerBoxListV1() {
 
 	return (
 		<>
-			<div className="flex items-center justify-between px-2 py-0">
-				<h2 className="text-[18px] font-[600]">Home Slider BannersV2</h2>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-2 py-2 gap-3">
+				<h2 className="text-[18px] font-[600]">Home Slider BannersV1</h2>
 
-				<div className="col w-[30%] ml-auto flex items-center justify-end gap-3 ">
+				<div className="w-full sm:w-auto ml-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
 					<Button
 						className="btn-blue btn-sm !text-white gap-2 flex items-center"
 						onClick={() =>
@@ -144,145 +144,149 @@ function BannerBoxListV1() {
 			</div>
 
 			<div className="card my-4 pt-5 shadow-md sm:rounded-lg bg-white">
-				<TableContainer sx={{ maxHeight: 440 }}>
-					<Table stickyHeader>
-						<TableHead>
-							<TableRow>
-								<TableCell width={60}>
-									<Checkbox
-										{...label}
-										size="small"
-										checked={
-											selected.length === bannerData.length &&
-											bannerData.length > 0
-										}
-										onChange={handleSelectAll}
-									/>
-								</TableCell>
-
-								{columns.map((col) => (
-									<TableCell key={col.id}>{col.label}</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{bannerData.length === 0 ? (
+				<div className="overflow-x-auto">
+					<TableContainer sx={{ maxHeight: 440, minWidth: 900 }}>
+						<Table stickyHeader>
+							<TableHead>
 								<TableRow>
-									<TableCell colSpan={6} align="center">
-										No banners found.
+									<TableCell width={60}>
+										<Checkbox
+											{...label}
+											size="small"
+											checked={
+												selected.length === bannerData.length &&
+												bannerData.length > 0
+											}
+											onChange={handleSelectAll}
+										/>
 									</TableCell>
+
+									{columns.map((col) => (
+										<TableCell key={col.id}>{col.label}</TableCell>
+									))}
 								</TableRow>
-							) : (
-								bannerData
-									.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-									.map((banner) => (
-										<TableRow key={banner._id} hover>
-											<TableCell>
-												<Checkbox
-													{...label}
-													size="small"
-													checked={selected.includes(banner._id)}
-													onChange={() => handleSelect(banner._id)}
-												/>
-											</TableCell>
+							</TableHead>
 
-											{/* Image */}
-											<TableCell>
-												<img
-													src={banner.images?.[0]}
-													alt="banner"
-													className="w-[200px] h-[120px] object-cover rounded-md"
-												/>
-											</TableCell>
+							<TableBody>
+								{bannerData.length === 0 ? (
+									<TableRow>
+										<TableCell colSpan={6} align="center">
+											No banners found.
+										</TableCell>
+									</TableRow>
+								) : (
+									bannerData
+										.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+										.map((banner) => (
+											<TableRow key={banner._id} hover>
+												<TableCell>
+													<Checkbox
+														{...label}
+														size="small"
+														checked={selected.includes(banner._id)}
+														onChange={() => handleSelect(banner._id)}
+													/>
+												</TableCell>
 
-											{/* Title Block */}
-											<TableCell>
-												{/* Title */}
-												<p className="font-semibold text-[15px]">
-													{banner.title}
-												</p>
+												{/* Image */}
+												<TableCell>
+													<img
+														src={banner.images?.[0]}
+														alt="banner"
+														className="w-[140px] sm:w-[200px] h-[90px] sm:h-[120px] object-cover rounded-md"
+													/>
+												</TableCell>
 
-												{/* Price */}
-												<p className="text-sm text-gray-500">₹{banner.price}</p>
+												{/* Title Block */}
+												<TableCell>
+													{/* Title */}
+													<p className="font-semibold text-[15px]">
+														{banner.title}
+													</p>
 
-												{/* SLIDE ORIENTATION */}
-												<div className="flex items-center gap-2 mt-2">
-													{banner.slide === "horizontal" ? (
-														<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-blue-100 text-blue-700">
-															<LuArrowLeftRight className="text-lg" />
-															<span className="text-xs font-medium">
-																Horizontal
+													{/* Price */}
+													<p className="text-sm text-gray-500">
+														₹{banner.price}
+													</p>
+
+													{/* SLIDE ORIENTATION */}
+													<div className="flex items-center gap-2 mt-2">
+														{banner.slide === "horizontal" ? (
+															<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-blue-100 text-blue-700">
+																<LuArrowLeftRight className="text-lg" />
+																<span className="text-xs font-medium">
+																	Horizontal
+																</span>
+															</div>
+														) : (
+															<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-green-100 text-green-700">
+																<LuArrowUpDown className="text-lg" />
+																<span className="text-xs font-medium">
+																	Vertical
+																</span>
+															</div>
+														)}
+													</div>
+
+													{/* ANGLE POSITION BADGE */}
+													<div className="mt-2">
+														{banner.angle === "Left" ? (
+															<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-purple-100 text-purple-700">
+																Angle: Left
 															</span>
-														</div>
-													) : (
-														<div className="flex items-center gap-1 px-2 py-[2px] rounded-md bg-green-100 text-green-700">
-															<LuArrowUpDown className="text-lg" />
-															<span className="text-xs font-medium">
-																Vertical
+														) : (
+															<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-orange-100 text-orange-700">
+																Angle: Right
 															</span>
-														</div>
-													)}
-												</div>
+														)}
+													</div>
+												</TableCell>
 
-												{/* ANGLE POSITION BADGE */}
-												<div className="mt-2">
-													{banner.angle === "Left" ? (
-														<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-purple-100 text-purple-700">
-															Angle: Left
-														</span>
-													) : (
-														<span className="px-2 py-[2px] text-xs font-medium rounded-md bg-orange-100 text-orange-700">
-															Angle: Right
-														</span>
-													)}
-												</div>
-											</TableCell>
+												{/* Active Toggle */}
+												<TableCell>
+													<Switch
+														checked={banner.isActive}
+														onChange={() =>
+															handleToggleActive(banner._id, banner.isActive)
+														}
+													/>
+												</TableCell>
 
-											{/* Active Toggle */}
-											<TableCell>
-												<Switch
-													checked={banner.isActive}
-													onChange={() =>
-														handleToggleActive(banner._id, banner.isActive)
-													}
-												/>
-											</TableCell>
+												{/* Actions */}
+												<TableCell>
+													<div className="flex items-center gap-2">
+														<Tooltip title="Edit Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() =>
+																	context.setIsOpenFullScreenPanel({
+																		open: true,
+																		model: "Edit Banner BoxV1",
+																		id: banner._id,
+																	})
+																}
+															>
+																<AiOutlineEdit className="text-[18px]" />
+															</Button>
+														</Tooltip>
 
-											{/* Actions */}
-											<TableCell>
-												<div className="flex items-center gap-2">
-													<Tooltip title="Edit Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() =>
-																context.setIsOpenFullScreenPanel({
-																	open: true,
-																	model: "Edit Banner BoxV1",
-																	id: banner._id,
-																})
-															}
-														>
-															<AiOutlineEdit className="text-[18px]" />
-														</Button>
-													</Tooltip>
-
-													<Tooltip title="Delete Banner" placement="top">
-														<Button
-															className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
-															onClick={() => handleDeleteBanner(banner._id)}
-														>
-															<MdOutlineDelete className="text-[18px]" />
-														</Button>
-													</Tooltip>
-												</div>
-											</TableCell>
-										</TableRow>
-									))
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
+														<Tooltip title="Delete Banner" placement="top">
+															<Button
+																className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full bg-[#f1f1f1]"
+																onClick={() => handleDeleteBanner(banner._id)}
+															>
+																<MdOutlineDelete className="text-[18px]" />
+															</Button>
+														</Tooltip>
+													</div>
+												</TableCell>
+											</TableRow>
+										))
+								)}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 
 				<TablePagination
 					rowsPerPageOptions={[10, 25, 100]}
@@ -292,6 +296,11 @@ function BannerBoxListV1() {
 					page={page}
 					onPageChange={handleChangePage}
 					onRowsPerPageChange={handleChangeRowsPerPage}
+					sx={{
+						"& .MuiTablePagination-toolbar": {
+							flexWrap: "wrap",
+						},
+					}}
 				/>
 			</div>
 		</>

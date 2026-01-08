@@ -96,9 +96,9 @@ function EditCategory() {
 	};
 	const isFormValid = Boolean(formFields.name.trim() && formFields.image);
 	return (
-		<section className="p-2 bggray-50">
-			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="scroll max-h-[72vh] pr-4 overflow-y-scroll ">
+		<section className="p-2 sm:p-4 bg-gray-50">
+			<form className="form py-3 p-2 max-w-4xl " onSubmit={handleSave}>
+				<div className="scroll max-h-[60vh] sm:max-h-[72vh] pr-2 sm:pr-4 overflow-y-auto">
 					<div className="mb-3">
 						<h3 className="text-[14px] font-[500] mb-1 text-black ">
 							Product Category name
@@ -106,7 +106,7 @@ function EditCategory() {
 
 						<input
 							type="text"
-							className="w-[25%] h-[40%] border border-gray-300 focus:outline-none focus:border-gray-500 rounded-sm p-3 text-sm "
+							className="w-full sm:w-[60%] lg:w-[25%] h-[40px] border border-gray-300 focus:outline-none focus:border-gray-500 rounded-sm p-3 text-sm"
 							name="name"
 							onChange={onChangeInput}
 							value={formFields.name}
@@ -114,9 +114,9 @@ function EditCategory() {
 							required
 						/>
 					</div>
-					<div className="px-5">
+					<div className="px-2 sm:px-5">
 						<h3 className="font-[700] text-[18px] mb-3 ">category Image</h3>
-						<div className="grid grid-cols-7 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3">
 							{formFields.image ? (
 								<div className="relative">
 									<button
@@ -127,7 +127,7 @@ function EditCategory() {
 									>
 										<IoMdCloseCircle className="text-red-700 text-[20px] " />
 									</button>
-									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-gray-400 h-[150px] w-full bg-gray-100 flex items-center justify-center ">
+									<div className="uploadBox p-0 rounded-md overflow-hidden border border-dashed border-gray-400 h-[120px] sm:h-[150px] w-full bg-gray-100 flex items-center justify-center ">
 										<LazyLoadImage
 											className="w-full h-full object-cover "
 											alt="Category"
@@ -160,7 +160,7 @@ function EditCategory() {
 				<hr className="my-4" />
 
 				{/* Submit Button */}
-				<div className="w-[250px]">
+				<div className="w-full sm:w-[250px]">
 					<Button
 						type="submit"
 						className="btn-blue btn-lg w-full gap-2"

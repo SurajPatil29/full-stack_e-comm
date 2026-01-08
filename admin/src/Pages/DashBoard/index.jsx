@@ -21,6 +21,7 @@ import ProductListCompo from "../Products/ProductListCompo";
 import { useState } from "react";
 import { fetchDataFromApi } from "../../utils/api";
 import { useEffect } from "react";
+import Chart from "./Chart";
 // here was 2 tooltip because i rename tooltip
 
 // custom tooltip for chart
@@ -58,61 +59,41 @@ function Dashboard() {
 	// ];
 	// this is chart data
 
-	const [chartData, setChartData] = useState([]);
-	const [year, setYear] = useState(new Date().getFullYear());
+	const getGreeting = () => {
+		const hour = new Date().getHours();
 
-	const [showUsers, setShowUsers] = useState(true);
-	const [showSales, setShowSales] = useState(true);
-
-	/* ================= FETCH & MERGE DATA ================= */
-	const getChartData = async (selectedYear = year) => {
-		try {
-			const [usersRes, salesRes] = await Promise.all([
-				fetchDataFromApi(`/api/order/users?year=${selectedYear}`),
-				fetchDataFromApi(`/api/order/sales?year=${selectedYear}`),
-			]);
-
-			const users = usersRes?.monthlyUsers || [];
-			const sales = salesRes?.monthlySales || [];
-			console.log(usersRes, salesRes);
-			const merged = users.map((item, index) => ({
-				name: item.name,
-				TotalUsers: item.TotalUsers || 0,
-				TotalSales: sales[index]?.TotalSales || 0,
-			}));
-
-			setChartData(merged);
-		} catch (error) {
-			console.error("Chart fetch error:", error);
-		}
+		if (hour < 12) return "Good Morning";
+		if (hour < 17) return "Good Afternoon";
+		if (hour < 21) return "Good Evening";
+		return "Good Night";
 	};
 
-	useEffect(() => {
-		getChartData();
-	}, []);
-
-	/* ================= YEAR CHANGE ================= */
-	const handleChangeYear = (e) => {
-		const selectedYear = e.target.value;
-		setYear(selectedYear);
-		getChartData(selectedYear);
+	const getFirstName = (name = "") => {
+		return name.trim().split(" ")[0];
 	};
 
 	return (
 		<>
-			<div className="dashboard w-full bg-[#f1faff] py-2 p-5 border border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 justify-between rounded-md">
-				<div className="info">
-					<h1 className="text-[35px] font-bold leading-10 mb-3 ">
-						Good Morning, <br />
+			<div
+				className="dashboard w-full bg-[#f1faff] py-4 px-5 border border-[rgba(0,0,0,0.1)]
+flex md:flex-row items-center gap-6 mb-5 justify-between rounded-md"
+			>
+				{/* LEFT CONTENT */}
+				<div className="info w-full md:w-[70%]">
+					<h1 className="text-[26px] sm:text-[30px] md:text-[35px] font-bold leading-tight mb-3">
+						{getGreeting()}, <br />
 						{context.isLogin
-							? `${context?.userData?.name}👋`
-							: "User Please sign up"}
+							? `${getFirstName(context?.userData?.name)} 👋`
+							: "Please sign up"}
 					</h1>
-					<p>
-						here's what happening on your tore today. see the statistics at once
+
+					<p className="text-sm sm:text-base mb-4">
+						Here’s what’s happening in your store today. See the statistics at
+						once.
 					</p>
+
 					<Button
-						className="btn-blue !capitalize gap-3 "
+						className="btn-blue !capitalize gap-3 w-full sm:w-auto"
 						onClick={() =>
 							context.setIsOpenFullScreenPanel({
 								open: true,
@@ -123,12 +104,15 @@ function Dashboard() {
 						<FaPlus /> Add Product
 					</Button>
 				</div>
+
+				{/* RIGHT IMAGE */}
 				<img
 					src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745128504/shop-illustration_ozvk0h.webp"
 					alt="shop-illustration"
-					className="w-[300px] "
+					className="hidden min-[650px]:block w-[220px] md:w-[300px]"
 				/>
 			</div>
+
 			<DashboardBoxes />
 
 			{/* Product Table */}
@@ -140,77 +124,7 @@ function Dashboard() {
 
 			{/* recent order table */}
 
-			{/* ================= BAR CHART ================= */}
-			<div className="card my-4 shadow-md sm:rounded-lg bg-white">
-				<div className="flex items-center justify-between px-5 py-5 pb-0">
-					<h2 className="text-[18px] font-[600]">Total Users & Total Sales</h2>
-
-					<select
-						value={year}
-						onChange={handleChangeYear}
-						className="border rounded px-2 py-1"
-					>
-						<option value={2025}>2025</option>
-						<option value={2024}>2024</option>
-						<option value={2023}>2023</option>
-					</select>
-				</div>
-
-				{/* Legend */}
-				<div className="flex items-center gap-5 px-5 py-3">
-					<span
-						onClick={() => {
-							setShowUsers(true);
-							setShowSales(false);
-						}}
-						className={`flex items-center gap-2 text-sm cursor-pointer select-none
-			${showUsers ? "opacity-100" : "opacity-40"}`}
-					>
-						<span className="w-3 h-3 bg-green-600 rounded-full"></span>
-						Total Users
-					</span>
-
-					<span
-						onClick={() => {
-							setShowSales(true);
-							setShowUsers(false);
-						}}
-						className={`flex items-center gap-2 text-sm cursor-pointer select-none
-			${showSales ? "opacity-100" : "opacity-40"}`}
-					>
-						<span className="w-3 h-3 bg-[#3872fa] rounded-full"></span>
-						Total Sales
-					</span>
-				</div>
-
-				<div className="w-full h-[400px] px-5 pb-5">
-					<ResponsiveContainer width="100%" height="100%">
-						<BarChart data={chartData}>
-							<CartesianGrid strokeDasharray="3 3" />
-							<XAxis dataKey="name" />
-							<YAxis />
-							<RechartsTooltip />
-							<Legend />
-
-							{showUsers && (
-								<Bar
-									dataKey="TotalUsers"
-									fill="#16a34a"
-									radius={[4, 4, 0, 0]}
-								/>
-							)}
-
-							{showSales && (
-								<Bar
-									dataKey="TotalSales"
-									fill="#3872fa"
-									radius={[4, 4, 0, 0]}
-								/>
-							)}
-						</BarChart>
-					</ResponsiveContainer>
-				</div>
-			</div>
+			<Chart />
 		</>
 	);
 }

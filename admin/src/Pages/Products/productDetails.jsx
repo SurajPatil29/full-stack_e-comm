@@ -57,7 +57,7 @@ function ProductDetails() {
 	}
 
 	return (
-		<div className="p-4">
+		<div className="p-2 sm:p-4">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-4">
 				<h2 className="text-[20px] font-semibold text-gray-800">
@@ -117,14 +117,14 @@ function ProductDetails() {
 							</div>
 
 							{/* Main Image */}
-							<div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl h-[500px] overflow-hidden">
+							<div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl h-[280px] sm:h-[400px] lg:h-[500px] overflow-hidden">
 								<Swiper ref={zoomSliderBig} slidesPerView={1} spaceBetween={0}>
 									{product.images.map((img, i) => (
 										<SwiperSlide key={i} className="w-full h-full">
 											<div className="w-full h-full relative">
 												<InnerImageZoom
 													src={img}
-													zoomType="hover"
+													zoomType={window.innerWidth < 640 ? "click" : "hover"}
 													zoomScale={1.2}
 													zoomSrc={img}
 													style={{
@@ -150,10 +150,10 @@ function ProductDetails() {
 				</div>
 
 				{/* ✅ INFO SECTION */}
-				<div className="lg:w-[55%] bg-white rounded-xl shadow-md p-6 flex flex-col gap-6">
+				<div className="lg:w-[55%] bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
 					{/* Product Title */}
 					<div>
-						<h1 className="text-3xl font-semibold text-gray-900 mb-1">
+						<h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-1">
 							{product?.name || "Unnamed Product"}
 						</h1>
 						{product?.brand && (
@@ -165,7 +165,7 @@ function ProductDetails() {
 
 					{/* Price Section */}
 					<div className="flex items-end gap-3">
-						<p className="text-3xl font-bold text-green-600">
+						<p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
 							₹{product?.price?.toLocaleString()}
 						</p>
 						{product?.oldPrice && (
@@ -192,17 +192,26 @@ function ProductDetails() {
 								Description
 							</h3>
 							<div
-								className="description-content text-gray-700 leading-relaxed"
+								className="
+		description-content
+		text-gray-700
+		leading-relaxed
+		text-sm sm:text-base
+		max-w-full
+		overflow-hidden
+		break-words
+		whitespace-normal
+	"
 								dangerouslySetInnerHTML={{ __html: product.description }}
 							></div>
 						</div>
 					)}
 
 					{/* Category & Type Info */}
-					<div className="grid grid-cols-2 gap-y-3 text-[15px] leading-6">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 sm:gap-y-3 text-[14px] sm:text-[15px] leading-6">
 						{product?.catName && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									Category:
 								</span>
 								<span className="text-gray-500 font-medium">
@@ -212,7 +221,7 @@ function ProductDetails() {
 						)}
 						{product?.subCat && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									Subcategory:
 								</span>
 								<span className="text-gray-500 font-medium">
@@ -222,7 +231,7 @@ function ProductDetails() {
 						)}
 						{product?.thirdsubCat && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									Type:
 								</span>
 								<span className="text-gray-500 font-medium">
@@ -233,10 +242,10 @@ function ProductDetails() {
 					</div>
 
 					{/* Specifications */}
-					<div className="grid grid-cols-2 gap-y-3 text-[15px] leading-6 mt-2">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 sm:gap-y-3 text-[14px] sm:text-[15px] leading-6 mt-2">
 						{productRams.length > 0 && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									RAM:
 								</span>
 								<span className="text-gray-500 font-medium">
@@ -246,28 +255,28 @@ function ProductDetails() {
 						)}
 						{product?.size && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									Size:
 								</span>
 								<span className="text-gray-500 font-medium">
-									{product.size}
+									{product.size.join(", ")}
 								</span>
 							</p>
 						)}
 						{product?.productWeight && (
 							<p className="flex items-center">
-								<span className="text-gray-900 font-semibold w-[120px]">
+								<span className="text-gray-900 font-semibold min-w-[90px] sm:min-w-[120px]]">
 									Weight:
 								</span>
 								<span className="text-gray-500 font-medium">
-									{product.productWeight}
+									{product.productWeight.join(", ")}
 								</span>
 							</p>
 						)}
 					</div>
 
 					{/* Review & Date */}
-					<div className="flex items-center gap-8 mt-4 border-t pt-4 text-sm text-gray-600">
+					<div className="flex flex-wrap items-center gap-4 mt-4 border-t pt-4 text-sm text-gray-600">
 						{product?.rating && (
 							<div className="flex items-center gap-1">
 								<i className="fa-solid fa-star text-yellow-400"></i>

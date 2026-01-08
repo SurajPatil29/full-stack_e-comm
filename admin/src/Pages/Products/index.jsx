@@ -718,7 +718,7 @@ function Products() {
 	return (
 		<>
 			<div className="flex items-center justify-between px-2 py-0 ">
-				<div className="col w-[50%] ml-auto flex items-center justify-end gap-3 ">
+				<div className="col w-full ml-auto flex items-center justify-end gap-3 ">
 					<Button
 						className="btn-blue btn-sm !text-white gap-2 flex items-center"
 						onClick={() =>

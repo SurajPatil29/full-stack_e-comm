@@ -243,11 +243,11 @@ function EditBannerBoxV2() {
 	// ========================================================================
 
 	return (
-		<section className="p-2 bg-gray-50">
+		<section className="p-2 sm:p-4 bg-gray-50">
 			<form className="form py-3 p-2" onSubmit={handleSave}>
-				<div className="max-h-[72vh] pr-4 overflow-y-scroll">
+				<div className="max-h-[65vh] sm:max-h-[72vh] pr-2 sm:pr-4 overflow-y-auto">
 					{/* Inputs */}
-					<div className="flex items-center gap-5 m-3">
+					<div className="flex flex-col lg:flex-row lg:items-center gap-4 m-3">
 						<SelectBox
 							label="Product Category"
 							value={formFields.catId}
@@ -286,7 +286,7 @@ function EditBannerBoxV2() {
 					<div className="col w-full px-5">
 						<h3 className="font-[500] text-[18px] mb-3">Banner Image</h3>
 
-						<div className="grid grid-cols-7 gap-4">
+						<div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
 							{formFields.images ? (
 								<div className="uploadBoxWrapper relative">
 									<button
@@ -298,7 +298,7 @@ function EditBannerBoxV2() {
 										<IoMdCloseCircle className="text-red-700 text-[20px]" />
 									</button>
 
-									<div className="uploadBox p-0 Rounded border border-dashed h-[150px] bg-gray-100">
+									<div className="uploadBox p-0 Rounded border border-dashed h-[120px] sm:h-[150px] bg-gray-100">
 										<LazyLoadImage
 											className="w-full h-full object-cover"
 											src={formFields.images}
@@ -336,7 +336,7 @@ function EditBannerBoxV2() {
 				<br />
 
 				{/* Save Button */}
-				<div className="w-[250px]">
+				<div className="w-full sm:w-[250px]">
 					<Button
 						type="submit"
 						className="btn-blue btn-lg w-full gap-2"

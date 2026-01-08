@@ -1,0 +1,23 @@
+/* Swiper navigation buttons */
+.dashboardBoxesSlider .swiper-button-next,
+.dashboardBoxesSlider .swiper-button-prev {
+	width: 32px;
+	height: 32px;
+	background-color: #ffffff;
+	border-radius: 9999px; /* fully rounded */
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	color: #000000; /* arrow color */
+}
+
+/* Arrow icon size */
+.dashboardBoxesSlider .swiper-button-next::after,
+.dashboardBoxesSlider .swiper-button-prev::after {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+/* Hover effect (optional) */
+.dashboardBoxesSlider .swiper-button-next:hover,
+.dashboardBoxesSlider .swiper-button-prev:hover {
+	background-color: #f1f1f1;
+}
