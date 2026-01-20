@@ -51,8 +51,8 @@ function CartPage() {
 
 	return (
 		<section className="section py-10 px-5">
-			<div className="container w-[80%] min-w-[80%] flex gap-5">
-				<div className="leftPart w-[70%]">
+			<div className="container w-full lg:w-[80%] flex flex-col lg:flex-row gap-5">
+				<div className="leftPart w-full lg:w-[70%]">
 					<div className="shadow-md rounded-md  bg-white">
 						<div className="py-2 px-3 border-b border-[rgba(0,0,0,0.2)] ">
 							<h2>Your Cart</h2>
@@ -113,11 +113,11 @@ function CartPage() {
 					</div>
 				</div>
 
-				<div className="rightPart w-[30%]">
+				<div className="rightPart w-full lg:w-[30%]">
 					{localLoading ? (
 						<SkeletonCartTotal />
 					) : (
-						<div className="shadow-md rounded-md bg-white p-5 sticky top-[155px]">
+						<div className="shadow-md rounded-md bg-white p-5 lg:sticky lg:top-[80px]">
 							<h3>Cart Total</h3>
 							<hr />
 

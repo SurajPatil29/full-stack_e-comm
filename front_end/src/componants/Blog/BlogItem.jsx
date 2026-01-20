@@ -12,31 +12,57 @@ function BlogItem({ data }) {
 		return `${day} ${month}, ${year}`;
 	};
 	return (
-		<div className="blogItem">
-			<div className="imgWrapper w-full h-[220px] overflow-hidden rounded-md cursor-pointer relative group">
+		<div className="blogItem bg-white rounded-md overflow-hidden">
+			<div className="imgWrapper w-full h-[180px] sm:h-[220px] overflow-hidden rounded-md cursor-pointer relative group">
 				<img
 					src={data?.images?.[0]}
 					alt="blogImg"
-					className="w-full h-full object-cover transition-all group-hover:scale-105 group-hover:rotate-1"
+					className="
+				w-full 
+				h-full 
+				object-cover 
+				transition-all 
+				duration-300
+				group-hover:scale-105 
+				group-hover:rotate-1
+			"
 				/>
-				<span className="flex items-center justify-center text-white absolute bottom-[15px] right-[15px] z-50 bg-[#ff5151] rounded-md p-1 text-[11px] font-[500] gap-1">
-					<IoTimeOutline className="text-[16px]" />{" "}
+
+				<span
+					className="
+				flex items-center gap-1
+				text-white
+				absolute bottom-3 right-3
+				bg-[#ff5151]
+				rounded-md
+				px-2 py-1
+				text-[10px] sm:text-[11px]
+				font-[500]
+			"
+				>
+					<IoTimeOutline className="text-[14px]" />
 					{formatDate(data?.createdAt)}
 				</span>
 			</div>
 
-			<div className="info py-4">
-				<h2 className="text-[16px] font-[500] text-black">
-					<Link className="link"> {data.title}</Link>
+			<div className="info py-3 sm:py-4">
+				<h2 className="text-[14px] sm:text-[16px] font-[500] text-black mb-2">
+					<Link className="link line-clamp-2">{data.title}</Link>
 				</h2>
+
 				<div
-					className="description-content text-gray-700 leading-relaxed"
+					className="description-content text-gray-700 text-[13px] sm:text-[14px] leading-relaxed line-clamp-3"
 					dangerouslySetInnerHTML={{
-						__html: (data.description || "").substr(0, 150) + "...",
+						__html: data.description || "",
 					}}
-				></div>
-				<Link to="/" className="link font-[500] flex items-center gap-1">
-					Read More <IoIosArrowDroprightCircle className="link" />
+				/>
+
+				<Link
+					to="/"
+					className="link font-[500] text-[13px] sm:text-[14px] flex items-center gap-1 mt-2"
+				>
+					Read More
+					<IoIosArrowDroprightCircle className="text-[18px]" />
 				</Link>
 			</div>
 		</div>

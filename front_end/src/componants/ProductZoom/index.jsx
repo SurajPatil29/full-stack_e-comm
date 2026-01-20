@@ -18,28 +18,38 @@ function ProductZoom({ images = [] }) {
 	};
 
 	return (
-		<div className="flex gap-3">
-			<div className="slider w-[15%]">
+		<div className="flex flex-col sm:flex-row gap-3">
+			<div className="w-full sm:w-[10%] order-2 hidden sm:block sm:order-1">
 				<Swiper
 					ref={zoomSliderSml}
-					direction={"vertical"}
-					slidesPerView={5}
+					breakpoints={{
+						0: {
+							direction: "horizontal",
+							slidesPerView: 4,
+							navigation: "false",
+						},
+						640: {
+							direction: "vertical",
+							slidesPerView: 6,
+							navigation: "true",
+						},
+					}}
 					mousewheel={true}
 					spaceBetween={10}
-					navigation={true}
+					// navigation={true}
 					modules={[Mousewheel, Navigation]}
-					className="zoomProductSliderThumbs h-[500px] overflow-hidden"
+					className="zoomProductSliderThumbs h-[90px] sm:h-[420px] overflow-hidden"
 				>
 					{images.map((img, index) => (
 						<SwiperSlide key={index}>
 							<div
 								onClick={() => goto(index)}
 								className={`item rounded-md overflow-hidden cursor-pointer group ${
-									sliderIndex === index ? "opacity-100" : "opacity-30"
+									sliderIndex === index ? "opacity-100" : "opacity-60"
 								}`}
 							>
 								<img
-									className="w-full transition-all group-hover:scale-105"
+									className="w-full h-full object-cover transition group-hover:scale-105"
 									src={img}
 								/>
 							</div>
@@ -48,11 +58,18 @@ function ProductZoom({ images = [] }) {
 				</Swiper>
 			</div>
 
-			<div className="w-[85%] h-[500px] overflow-hidden rounded-xl">
+			<div className="w-full sm:w-[90%] h-[300px] sm:h-[420px] lg:h-[500px] overflow-hidden rounded-xl order-1 sm:order-2">
 				<Swiper ref={zoomSliderBig} slidesPerView={1} spaceBetween={0}>
 					{images.map((img, idx) => (
 						<SwiperSlide key={idx}>
-							<InnerImageZoom zoomType="hover" zoomScale={1} src={img} />
+							<div className="w-full h-full flex items-center justify-center">
+								<InnerImageZoom
+									zoomType="hover"
+									zoomScale={1.1}
+									src={img}
+									className="w-full h-full "
+								/>
+							</div>
 						</SwiperSlide>
 					))}
 				</Swiper>

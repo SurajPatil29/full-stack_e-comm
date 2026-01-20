@@ -155,15 +155,15 @@ function Login() {
 		}
 	};
 	return (
-		<section className="section py-10">
-			<div className="container">
-				<div className="card shadow-md w-[400px] m-auto rounded-md bg-white p-5 px-10 ">
-					<h3 className="text-center text-[18px] text-black ">
+		<section className="section py-6 sm:py-10">
+			<div className="container px-3 sm:px-0">
+				<div className="card bg-white shadow-md rounded-md w-full max-w-[400px] lg:max-w-[450px] mx-auto p-4 sm:p-6 lg:p-8">
+					{" "}
+					<h3 className="text-center text-[16px] sm:text-[18px] lg:text-[20px] font-semibold text-black">
 						Login to our account
 					</h3>
-
-					<form className="w-full mt-5" onSubmit={handleSubmit}>
-						<div className="form-group w-full mb-5">
+					<form className="w-full mt-4 sm:mt-6" onSubmit={handleSubmit}>
+						<div className="form-group w-full mb-4 sm:mb-5">
 							<TextField
 								type="email"
 								id="outlined-suffix-shrink1"
@@ -209,33 +209,28 @@ function Login() {
 									},
 								}}
 							/>
-							{isShowPassword === false ? (
-								<Button
-									onClick={() => setIsShowPassWord(!isShowPassword)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibility className="16px" />
-								</Button>
-							) : (
-								<Button
-									onClick={() => setIsShowPassWord(!isShowPassword)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibilityOff className="16px" />
-								</Button>
-							)}
+							<Button
+								onClick={() => setIsShowPassWord(!isShowPassword)}
+								className="!absolute top-[10px] right-[10px] !w-[32px] !h-[32px] sm:!w-[35px] sm:!h-[35px] !min-w-0 !rounded-md !text-black"
+							>
+								{isShowPassword ? (
+									<MdVisibilityOff className="text-[16px]" />
+								) : (
+									<MdVisibility className="text-[16px]" />
+								)}
+							</Button>
 						</div>
 
 						<a
 							onClick={forgotPassword}
-							className="link cursor-pointer text-[14px] font-[600] "
+							className="link cursor-pointer text-[14px] sm:text-[14px] font-semibold "
 						>
 							Forgot Password
 						</a>
 
 						<div className="flex items-center w-full mt-3 mb-3">
 							<Button
-								className="btn-org btn-lg w-full flex gap-3"
+								className="btn-org btn-lg w-full flex gap-3 text-sm sm:text-base"
 								type="submit"
 								// disabled={!valideValue}
 							>
@@ -247,23 +242,25 @@ function Login() {
 							</Button>
 						</div>
 
-						<p className="text-center">
+						<p className="text-center text-[13px] sm:text-[14px] mt-3">
 							Not Registered?{" "}
 							<Link
-								className="link text-[14px] font-[600] text-[#ff5151] "
+								className="link text-[14px] font-semibold text-[#ff5151] "
 								to="/register"
 							>
 								Sign Up
 							</Link>{" "}
 						</p>
 
-						<p className="text-center">Or continue with social account</p>
+						<p className="text-center text-[13px] sm:text-[14px] mt-3">
+							Or continue with social account
+						</p>
 
 						<Button
-							className="flex w-full !bg-[#f1f1f1] btn-lg !text-black gap-3"
+							className="flex w-full !bg-[#f1f1f1] btn-lg !text-black gap-3 text-sm sm:text-base mt-3"
 							onClick={authWithGoogle}
 						>
-							<FcGoogle className="text-[22px]" />
+							<FcGoogle className="text-[20px] sm:text-[22px]" />
 							Login with Google
 						</Button>
 					</form>

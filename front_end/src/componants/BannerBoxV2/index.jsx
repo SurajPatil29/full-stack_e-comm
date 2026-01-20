@@ -5,7 +5,7 @@ function BannerBoxV2(props) {
 	const side = (props.info || "").toLowerCase();
 
 	return (
-		<div className="bannerBoxV2 w-full overflow-hidden rounded-md group relative">
+		<div className="bannerBoxV2 w-full overflow-hidden rounded-[6px] group relative">
 			<img
 				src={props.image}
 				alt="sideBan"
@@ -15,16 +15,26 @@ function BannerBoxV2(props) {
 			<div
 				className={`info p-2 absolute top-0 ${
 					side === "left" ? "left-0" : "right-0"
-				} w-[50%] h-[100%] z-50 flex items-center justify-center flex-col`}
+				} w-[50%] h-[100%] z-50 flex items-start justify-center flex-col`}
 			>
-				<h2 className="text-[18px] font-[600]">{props.title}</h2>
+				<h2
+					title={props.title}
+					className="text-[11px] sm:text-[18px] md:text-[22px] lg:text-[18px] font-[600]"
+				>
+					{props.title?.length > 20
+						? props.title.slice(0, 20) + "..."
+						: props.title}
+				</h2>
 
-				<span className="text-[20px] text-[#ff5151] font-[600] w-full">
+				<span className="text-[13px] sm:text-[20px] md:text-[22px] lg:text-[20px] text-[#ff5151] font-[600] w-full">
 					₹{props.price}
 				</span>
 
 				<div className="w-full">
-					<Link to="/" className="link text-[16px] font-[500]">
+					<Link
+						to="/"
+						className="link text-[11px] sm:text-[18px] md:text-[20px]  lg:text-[16px] font-[500]"
+					>
 						SHOP NOW
 					</Link>
 				</div>

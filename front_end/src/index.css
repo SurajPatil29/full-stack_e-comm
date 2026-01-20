@@ -53,6 +53,11 @@ body {
 	width: 90%;
 	margin: auto;
 }
+@media (max-width: 1200px) {
+	.container {
+		width: 97%;
+	}
+}
 /* this class for set div width and use all across the page same/ apply to every compo */
 
 .btn-org {
@@ -116,6 +121,11 @@ nav ul Button:hover {
 .sliderHome {
 	overflow: inherit !important;
 }
+.swiper {
+	overflow: hidden !important;
+	position: relative !important;
+}
+
 /* homeslider class */
 
 .swiper-button-prev,
@@ -206,6 +216,19 @@ nav ul Button:hover {
 .swiper-pagination-bullet-active {
 	/*this use for pagination bullet coler set on slider */
 	background: #ff5252 !important;
+}
+
+/* InnerImageZoom FIX */
+.iiz {
+	width: 100%;
+	height: 100%;
+}
+
+.iiz__img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain; /* cover if you want crop */
+	image-rendering: auto;
 }
 
 .homeSliderV2 .swiper-button-prev,

@@ -179,9 +179,12 @@ function ProductDetails() {
 
 	return (
 		<>
-			<div className="py-5">
+			<div className="py-3 sm:py-5">
 				<div className="container">
-					<Breadcrumbs aria-label="breadcrumb">
+					<Breadcrumbs
+						aria-label="breadcrumb"
+						className="flex flex-wrap gap-1 text-[12px] sm:text-[14px]"
+					>
 						<Link
 							underline="hover"
 							color="inherit"
@@ -212,12 +215,12 @@ function ProductDetails() {
 				{isLoading === true ? (
 					<ProductDetailsSkeleton />
 				) : (
-					<div className="container flex gap-8  ">
-						<div className="productZoomContainer w-[40%] ">
+					<div className="container flex flex-col lg:flex-row gap-6 lg:gap-8  ">
+						<div className="productZoomContainer w-full lg:w-[40%] ">
 							<ProductZoom images={productData.images} />
 						</div>
 
-						<div className="productContent w-[60%] px-10">
+						<div className="productContent w-full lg:w-[60%] px-0 sm:px-6 lg:px-10">
 							<ProductDetailsComponant
 								item={productData}
 								gotoReviews={gotoReviews}
@@ -227,10 +230,10 @@ function ProductDetails() {
 				)}
 
 				<div className="container py-10 ">
-					<div className="flex item-center gap-8">
+					<div className="flex flex-wrap items-center gap-4 sm:gap-8">
 						<span
 							onClick={() => setActiveTab(0)}
-							className={`link test-[17px] curser-pointer font-[500] ${
+							className={`link text-[15px] sm:text-[17px] curser-pointer font-[500] ${
 								activeTab === 0 && "text-[#ff5151]"
 							} `}
 						>
@@ -239,7 +242,7 @@ function ProductDetails() {
 
 						<span
 							onClick={() => setActiveTab(1)}
-							className={`link test-[17px] curser-pointer font-[500] ${
+							className={`link text-[15px] sm:text-[17px] curser-pointer font-[500] ${
 								activeTab === 1 && "text-[#ff5151]"
 							} `}
 							ref={reviewSec}
@@ -249,16 +252,16 @@ function ProductDetails() {
 					</div>
 
 					{activeTab === 0 && (
-						<div className="shadow-md w-[80%] py-4 px-8 rounded-md ">
+						<div className="shadow-md w-full lg:w-[80%] py-4 px-4 sm:px-8 rounded-md ">
 							<div
-								className="description-content text-gray-700 leading-relaxed"
+								className="description-content text-gray-700 leading-relaxed text-[14px]"
 								dangerouslySetInnerHTML={{ __html: productData.description }}
 							></div>
 						</div>
 					)}
 
 					{activeTab === 1 && (
-						<div className="shadow-md w-[80%] py-4 px-8 rounded-md ">
+						<div className="shadow-md w-full lg:w-[80%] py-4 px-4 sm:px-8 rounded-md ">
 							<div className="w-full productReviewContainer">
 								<h2>Customer Questions & Answers</h2>
 								<div className="w-full my-4 max-h-[320px] overflow-y-auto space-y-4 pr-2">
@@ -268,10 +271,10 @@ function ProductDetails() {
 										reviewsData.map((rev) => (
 											<div
 												key={rev._id}
-												className="review bg-white rounded-lg shadow-sm border p-4 flex gap-4 relative"
+												className="review bg-white rounded-lg shadow-sm border p-4 flex flex-col sm:flex-row gap-4 relative"
 											>
 												{/* User Avatar */}
-												<div className="w-[60px] h-[60px] rounded-full overflow-hidden border">
+												<div className="w-[48px] h-[48px] sm:w-[60px] sm:h-[60px] rounded-full overflow-hidden border">
 													<img
 														src={
 															rev?.userId?.avatar ||
@@ -324,7 +327,7 @@ function ProductDetails() {
 													{/* Review Image */}
 													{Array.isArray(rev.image) && rev.image[0] && (
 														<div className="mt-3">
-															<div className="w-[120px] h-[120px] rounded-md overflow-hidden border cursor-pointer hover:scale-105 transition">
+															<div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mt-2">
 																<img
 																	src={rev.image[0]}
 																	className="w-full h-full object-cover"
@@ -337,229 +340,12 @@ function ProductDetails() {
 											</div>
 										))
 									)}
-
-									{/* <div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div>{" "}
-									<div className="review mb-5 px-4 shadow-md w-full flex items-center justify-between">
-										<div className="info w-[60%] flex items-center gap-3 ">
-											<div className="img w-[80px] h-[80px] overflow-hidden rounded-full ">
-												<img
-													src="https://www.amity.edu/gurugram/microbackoffice/Uploads/TestimonialImage/98testi_RajivBasavaalumni.jpg"
-													alt="user img"
-													className="w-full"
-												/>
-											</div>
-											<div className="w-[80%]">
-												<h4 className="text-[16px] ">Suraj Patil</h4>
-												<h5 className="text-[13px] mb-0 ">2025-1-3</h5>
-												<p className="mt-0">
-													Lorem ipsum dolor, sit amet consectetur adipisicing
-													elit. Quidem, officia numquam veritatis, perspiciatis
-													minus harum exercitationem accusantium magnam neque
-													aut rerum ea, hic est facere.
-												</p>
-											</div>
-										</div>
-										<div className=" flex items-end justify-end">
-											<Rating name="size-small" defaultValue={4} readOnly />
-										</div>
-									</div> */}
 								</div>
 								{context.isLogin && (
-									<div className="reviewForm bg-white shadow-md p-6 rounded-xl border border-gray-200">
+									<div className="reviewForm bg-white shadow-md p-4 sm:p-6 rounded-xl border">
 										<form className="w-full space-y-6" onSubmit={saveReview}>
 											{/* Header */}
-											<div className="flex items-center justify-between border-b pb-3">
+											<div className="flex flex-col sm:flex-row sm:justify-between border-b pb-3">
 												<h2 className="text-[20px] font-semibold text-gray-800">
 													Write a Review
 												</h2>
@@ -608,7 +394,7 @@ function ProductDetails() {
 													Upload Image (optional)
 												</label>
 
-												<div className="grid grid-cols-6 gap-4 mt-2">
+												<div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-2">
 													{formFields.image ? (
 														<div className="relative group">
 															<button
@@ -666,7 +452,7 @@ function ProductDetails() {
 					)}
 				</div>
 				<div className="container">
-					<h2 className="text-[20px]">Related Products</h2>
+					<h2 className="text-[18px] sm:text-[20px] mb-3">Related Products</h2>
 					<ProductsSlider
 						items={6}
 						data={relatedProdData}

@@ -66,31 +66,36 @@ function Verify() {
 	};
 
 	return (
-		<section className="otpPage section py-10">
-			<div className="container">
-				<div className="card shadow-md w-[400px] m-auto rounded-md bg-white p-5 px-10 ">
-					<div className="text-center flex items-center justify-center ">
+		<section className="otpPage section py-6 sm:py-10">
+			<div className="container px-3 sm:px-0">
+				<div className="card bg-white shadow-md rounded-md max-h-fit w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[450px] mx-auto p-4 sm:p-6 lg:p-8">
+					<div className=" flex items-center justify-center ">
 						<img
 							src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1738133133/verify2_s6t1cv.png"
 							alt="verify img"
-							width="80"
+							className="w-[60px] sm:w-[80px]"
 						/>
 					</div>
-					<h3 className="text-center mt-4 mb-1 text-[18px] text-black ">
+					<h3 className="text-center mt-4 mb-1 text-[16px] sm:text-[18px] lg:text-[20px] font-semibold text-black">
 						Verify OTP
 					</h3>
 
-					<p className="text-center mb-4 ">
+					<p className="text-center mb-4 text-[13px] sm:text-[14px]">
 						OTP send to{" "}
-						<span className="text-[#ff5252] font-bold ">
+						<span className="text-[#ff5252] font-bold  break-all ">
 							{localStorage.getItem("userEmail")}
 						</span>
 					</p>
 					<form onSubmit={verifyOTP}>
-						<OtpBox length={6} onChange={handleOtpChange} />
+						<div className="flex justify-center">
+							<OtpBox length={6} onChange={handleOtpChange} />
+						</div>
 
-						<div className="flex items-center justify-center mt-5 px-3">
-							<Button type="submit" className="w-full btn-org btn-lg">
+						<div className="flex items-center justify-center mt-5 px-2 sm:px-3">
+							<Button
+								type="submit"
+								className="w-full btn-org btn-lg text-sm sm:text-base"
+							>
 								{isLoading === true ? (
 									<CircularProgress color="inherit" />
 								) : (

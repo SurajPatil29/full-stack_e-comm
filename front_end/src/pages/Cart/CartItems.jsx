@@ -144,25 +144,25 @@ function CartItems({ data, selected, onSelectChange }) {
 	};
 	return (
 		<>
-			<div className="cartItem w-full p-3 flex items-center gap-4 pb-5 border-b border-[rgba(0,0,0,0.2)] ">
+			<div className="cartItem w-full p-3 flex flex-col sm:flex-row gap-4 pb-5 border-b border-[rgba(0,0,0,0.2)] ">
 				<input
 					type="checkbox"
 					checked={selected}
 					onChange={(e) => onSelectChange(data._id, e.target.checked)}
 					className="w-4 h-4 accent-[#ff5151] cursor-pointer"
 				/>
-				<div className="img w-[15%] group border border-[rgba(0,0,0,0.2)] rounded-md">
+				<div className="img w-full sm:w-[120px] group border border-[rgba(0,0,0,0.2)] rounded-md">
 					<Link to={`/productDetails/${data?.productId}`}>
 						<img
 							src={data?.image}
 							alt={data?.productId}
-							className="w-full rounded-md group-hover:scale-105 transition-all"
+							className="w-full object-contain rounded-md group-hover:scale-105 transition-all"
 						/>
 					</Link>
 				</div>
-				<div className="info w-[85%] relative">
+				<div className="info w-full sm:flex-1 relative">
 					<button
-						className="!absolute !top-[2px] !right-[2px] rounded-full !w-[22px] !min-w-[22px] !h-[22px]  !bg-[#f1f1f1] !text-black !p-0"
+						className="!absolute !top-2 !right-2 rounded-full !w-[22px] !min-w-[22px] !h-[22px]  !bg-[#f1f1f1] !text-black !p-0"
 						onClick={() =>
 							removeItem(
 								data?._id,
@@ -186,7 +186,7 @@ function CartItems({ data, selected, onSelectChange }) {
 						size="small"
 						readOnly
 					/>
-					<div className="flex items-center gap-4">
+					<div className="flex flex-wrap items-center gap-3 mt-2">
 						{data?.sizeRange && (
 							<Dropdown
 								label="Size"
@@ -232,7 +232,7 @@ function CartItems({ data, selected, onSelectChange }) {
 						/>
 					</div>
 
-					<div className="flex items-center gap-4 mt-2 ">
+					<div className="flex flex-wrap items-center gap-3 mt-2 text-sm ">
 						<span className="pprice  text[14px] font-[600] ">
 							&#8377;{data?.price.toLocaleString()}
 						</span>

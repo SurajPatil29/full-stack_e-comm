@@ -60,7 +60,7 @@ function MyListItems({ data }) {
 			1, // default qty = 1
 			null, // RAM
 			null, // Size
-			null // Weight
+			null, // Weight
 		);
 	};
 
@@ -75,7 +75,7 @@ function MyListItems({ data }) {
 			} else {
 				openAlertBox(
 					"error",
-					res?.message || "Item not removed from your wishlist."
+					res?.message || "Item not removed from your wishlist.",
 				);
 			}
 
@@ -88,22 +88,25 @@ function MyListItems({ data }) {
 	};
 
 	return (
-		<div className="cartItem w-full p-3 flex items-center gap-4 pb-5 border-b border-[rgba(0,0,0,0.2)] ">
-			<div className="img w-[15%] group border border-[rgba(0,0,0,0.2)] rounded-md">
+		<div className="cartItem w-full p-3 pb-5 border-b border-[rgba(0,0,0,0.2)] flex flex-col sm:flex-row gap-4 ">
+			<div className="img w-full sm:w-[120px] md:w-[15px] group border border-[rgba(0,0,0,0.2)] rounded-md">
 				<Link to="/productDetails/123">
 					<img
 						src={data?.image}
 						alt={data?.productTitle}
-						className="w-full rounded-md group-hover:scale-105 transition-all"
+						className="w-full h-auto rounded-md object-cover group-hover:scale-105 transition-all"
 					/>
 				</Link>
 			</div>
-			<div className="info w-[85%] relative">
-				<button onClick={() => removeItem(data?._id)}>
-					<IoMdClose className="cursor-pointer absolute top-[0px] right-[0px] text-[22px] link transition-all " />
+			<div className="info w-full sm:flex-1 relative">
+				<button
+					onClick={() => removeItem(data?._id)}
+					className="absolute top-2 right-2 sm:top-0 sm:right-0"
+				>
+					<IoMdClose className="text-[22px] link transition-all" />
 				</button>
-				<span className="text-[13px] ">{data?.ProductBrand}</span>
-				<h3 className="tetx-[15px] ">
+				<span className="text-[12px] text-gray-500">{data?.ProductBrand}</span>
+				<h3 className="text-[14px] sm:text-[15px] font-medium">
 					<Link to={`/productDetails/${data?.productId}`} className="link">
 						{data?.productTitle}
 					</Link>
@@ -116,41 +119,43 @@ function MyListItems({ data }) {
 					readOnly
 				/>
 
-				<div className="flex items-center gap-4 mt-2 mb-2 ">
-					<span className="pprice  text[14px] font-[600] ">
+				<div className="flex flex-wrap items-center gap-3 mt-2 mb-2">
+					<span className="text-[14px] font-semibold">
 						&#8377;{data?.price.toLocaleString()}
 					</span>
-					<span className="oldPrice line-through text-gray-500 text-[14px] font[500] ">
+					<span className="line-through text-gray-500 text-[13px]">
 						&#8377;{data?.oldPrice.toLocaleString()}
 					</span>
 
-					<span className="pprice text-[#ff5151] text[12px] font-[500] ">
+					<span className="text-[#ff5151] text-[12px] font-medium">
 						{discount}% OFF
 					</span>
 				</div>
 
 				<br />
 				{/* ADD TO CART BUTTON */}
-				{isInCart ? (
-					<Button
-						className="!bg-green-500 !text-white !rounded-full btn-sm"
-						disabled
-					>
-						✓ Added In Cart
-					</Button>
-				) : (
-					<Button
-						onClick={handleAddToCart}
-						className="btn-org btn-sm flex items-center gap-2 !rounded-full"
-						disabled={isLoadingAddToCart}
-					>
-						{isLoadingAddToCart ? (
-							<CircularProgress size={20} thickness={5} />
-						) : (
-							"Add to Cart"
-						)}
-					</Button>
-				)}
+				<div className="mt-3">
+					{isInCart ? (
+						<Button
+							className="!bg-green-500 !text-white !rounded-full btn-sm w-full sm:w-auto"
+							disabled
+						>
+							✓ Added In Cart
+						</Button>
+					) : (
+						<Button
+							onClick={handleAddToCart}
+							className="btn-org btn-sm flex items-center justify-center gap-2 !rounded-full w-full sm:w-auto"
+							disabled={isLoadingAddToCart}
+						>
+							{isLoadingAddToCart ? (
+								<CircularProgress size={20} thickness={5} />
+							) : (
+								"Add to Cart"
+							)}
+						</Button>
+					)}
+				</div>
 			</div>
 		</div>
 	);

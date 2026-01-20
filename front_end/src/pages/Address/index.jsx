@@ -74,9 +74,9 @@ function Address({ closeDrawer }) {
 	};
 
 	return (
-		<form className="space-y-6 mt-3" onSubmit={handleSubmit}>
+		<form className="space-y-5 mt-3 px-1 sm:px-0" onSubmit={handleSubmit}>
 			{/* Name */}
-			<div className="flex flex-col md:flex-row items-center gap-5">
+			<div className="flex flex-col sm:flex-row  gap-4">
 				<TextField
 					label="Full Name"
 					name="name"
@@ -94,14 +94,14 @@ function Address({ closeDrawer }) {
 			</div>
 
 			{/* Address + City */}
-			<div className="flex flex-col md:flex-row items-center gap-5">
+			<div className="flex flex-col sm:flex-row  gap-5">
 				<TextField
 					label="Address"
 					name="address_line"
 					value={addressDetails.address_line}
 					onChange={onChangeInput}
 					size="small"
-					className="w-full md:w-[50%] bg-white"
+					className="w-full sm:w-1/2 bg-white"
 					sx={{
 						"& .MuiOutlinedInput-root": {
 							"&.Mui-focused fieldset": { borderColor: "#ff5151" },
@@ -116,7 +116,7 @@ function Address({ closeDrawer }) {
 					value={addressDetails.city}
 					onChange={onChangeInput}
 					size="small"
-					className="w-full md:w-[50%] bg-white"
+					className="w-full sm:w-1/2 bg-white"
 					sx={{
 						"& .MuiOutlinedInput-root": {
 							"&.Mui-focused fieldset": { borderColor: "#ff5151" },
@@ -127,14 +127,14 @@ function Address({ closeDrawer }) {
 			</div>
 
 			{/* Pincode, State, Country */}
-			<div className="flex flex-col md:flex-row items-center gap-5">
+			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 				<TextField
 					label="Pincode"
 					name="pincode"
 					value={addressDetails.pincode}
 					onChange={onChangeInput}
 					size="small"
-					className="w-full md:w-[33%] bg-white"
+					className="w-full bg-white"
 				/>
 
 				<TextField
@@ -143,7 +143,7 @@ function Address({ closeDrawer }) {
 					value={addressDetails.state}
 					onChange={onChangeInput}
 					size="small"
-					className="w-full md:w-[33%] bg-white"
+					className="w-full bg-white"
 				/>
 
 				<TextField
@@ -152,12 +152,12 @@ function Address({ closeDrawer }) {
 					value={addressDetails.country}
 					onChange={onChangeInput}
 					size="small"
-					className="w-full md:w-[33%] bg-white"
+					className="w-full bg-white"
 				/>
 			</div>
 
 			{/* Landmark + Phone */}
-			<div className="flex flex-col md:flex-row items-center gap-5">
+			<div className="flex flex-col md:flex-row  gap-4">
 				<TextField
 					label="Landmark"
 					name="landmark"
@@ -174,7 +174,7 @@ function Address({ closeDrawer }) {
 						onChange={(value) =>
 							setAddressDetails((prev) => ({ ...prev, mobile: value }))
 						}
-						inputClassName="w-full !h-10 !text-sm"
+						inputClassName="w-full !h-10 !text-sm !rounded-md"
 					/>
 				</div>
 			</div>
@@ -202,6 +202,7 @@ function Address({ closeDrawer }) {
 						name="addressType"
 						value={addressDetails.addressType}
 						onChange={onChangeInput}
+						className="flex flex-col sm:flex-row"
 					>
 						<FormControlLabel
 							value="Home"
@@ -233,10 +234,10 @@ function Address({ closeDrawer }) {
 			</div>
 
 			{/* Buttons */}
-			<div className="flex items-center gap-4 mt-3">
+			<div className="flex flex-col sm:flex-row gap-3 mt-4">
 				<Button
 					type="submit"
-					className="btn-org btn-lg w-[100px]"
+					className="btn-org btn-lg w-full sm:w-[120px]"
 					disabled={isLoading}
 				>
 					{isLoading ? <CircularProgress size={24} color="inherit" /> : "Save"}

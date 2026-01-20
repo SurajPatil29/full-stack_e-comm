@@ -35,7 +35,7 @@ function HomeBanner2({ data }) {
 			loop={true}
 			spaceBetween={30}
 			effect={"fade"}
-			navigation={true}
+			navigation={window.innerWidth >= 1024}
 			pagination={{
 				clickable: true,
 			}}
@@ -49,96 +49,36 @@ function HomeBanner2({ data }) {
 							<div className="item w-full rounded-md overflow-hidden relative">
 								<img src={item.images[0]} />
 
-								<div className="info absolute top-0 -right-[100%] opacity-0 w-[50%] h-[100%] z-50 p-8 flex items-center flex-col justify-center transition-all duration-700 ">
-									<h4 className="text-[18px] font[500] w-full text-left mb-3 relative -right-[100%] opacity-0 duration-1000 ">
+								<div className="info absolute top-0 -right-[100%] opacity-0 w-[60%] md:w-[50%] h-[100%] z-50 p-8 flex items-center flex-col justify-center transition-all duration-700 ">
+									<h4 className="text-[10px] sm:text-[13px] md:text-[16px] lg:text-[18px] font[500] w-full text-left mb-0 sm:mb-2 md:mb-3 relative -right-[100%] opacity-0 duration-1000 ">
 										{" "}
 										Big Saving Days Sale
 									</h4>
-									<h2 className="text-[35px] font-[700] w-full ">
-										{item.title}
+
+									<h2
+										title={item.title}
+										className="text-[14px] sm:text-[20px] md:text-[30px] lg:text-[35px] font-[700] w-full leading-tight "
+									>
+										{item.title?.length > 22
+											? item.title.slice(0, 22) + "..."
+											: item.title}
 									</h2>
-									<h3 className="flex items-center gap-3 text-[18px] font-[500] w-full text-left mt-3 mb-3 ">
+									<h3 className="flex items-center gap-2 text-[10px] sm:text-[15px] md:text-[18px] font-[500] w-full text-left mt-0 sm:mt-2 md:mt-3 mb-2 md:mb-3 ">
 										Starting At Only{" "}
-										<span className="text-[#ff5151] text-[30px] font-[700] ">
+										<span className="text-[#ff5151] text-[14px] sm:text-[22px] md:text-[26px] lg:text-[30px] font-[700] ">
 											₹{item.price}
 										</span>
 									</h3>
-									<div className="w-full text-left">
-										<Button className="btn-org ">SHOP NOW</Button>
+									<div className="w-full text-center md:text-left">
+										<Button className="md:btn-org !text-[#fff] !bg-[#ff5151] !text-[10px] sm:!text-[13px]	md:!text-[14px] !px-2	md:!px-4 !py-1  md:!py-2">
+											SHOP NOW
+										</Button>
 									</div>
 								</div>
 							</div>
 						</SwiperSlide>
 					) : null
 				)}
-			{/* <SwiperSlide>
-				//{" "}
-				<div className="item w-full rounded-md overflow-hidden relative">
-					//{" "}
-					<img src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734950380/sample-1_wu1kn9.jpg" />
-					//{" "}
-					<div className="info absolute top-0 -right-[100%] opacity-0 w-[50%] h-[100%] z-50 p-8 flex items-center flex-col justify-center transition-all duration-700 ">
-						//{" "}
-						<h4 className="text-[18px] font[500] w-full text-left mb-3 relative -right-[100%] opacity-0 duration-1000 ">
-							// // Big Saving Days Sale //{" "}
-						</h4>
-						//{" "}
-						<h2 className="text-[35px] font-[700] w-full ">
-							// Women Solid Round Green T-Shirt //{" "}
-						</h2>
-						//{" "}
-						<h3 className="flex items-center gap-3 text-[18px] font-[500] w-full text-left mt-3 mb-3 ">
-							// Starting At Only //{" "}
-							<span className="text-[#ff5151] text-[30px] font-[700] ">
-								// $29.00 //{" "}
-							</span>
-							//{" "}
-						</h3>
-						//{" "}
-						<div className="w-full text-left">
-							// <Button className="btn-org ">SHOP NOW</Button>
-							//{" "}
-						</div>
-						//{" "}
-					</div>
-					//{" "}
-				</div>
-				//{" "}
-			</SwiperSlide>
-			<SwiperSlide>
-				//{" "}
-				<div className="item w-full rounded-md overflow-hidden">
-					//{" "}
-					<img src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734950380/sample-2_m9k1kj.jpg" />
-					//{" "}
-					<div className="info absolute top-0 -right-[100%] opacity-0 w-[50%] h-[100%] z-50 p-8 flex items-center flex-col justify-center transition-all duration-700 ">
-						//{" "}
-						<h4 className="text-[18px] font[500] w-full text-left mb-3 relative -right-[100%] opacity-0 duration-1000 ">
-							// // Big Saving Days Sale //{" "}
-						</h4>
-						//{" "}
-						<h2 className="text-[35px] font-[700] w-full ">
-							// Buy Modern Chair In Black Color //{" "}
-						</h2>
-						//{" "}
-						<h3 className="flex items-center gap-3 text-[18px] font-[500] w-full text-left mt-3 mb-3 ">
-							// Starting At Only //{" "}
-							<span className="text-[#ff5151] text-[30px] font-[700] ">
-								// $99.00 //{" "}
-							</span>
-							//{" "}
-						</h3>
-						//{" "}
-						<div className="w-full text-left">
-							// <Button className="btn-org ">SHOP NOW</Button>
-							//{" "}
-						</div>
-						//{" "}
-					</div>
-					//{" "}
-				</div>
-				//{" "}
-			</SwiperSlide> */}
 		</Swiper>
 	);
 }

@@ -72,33 +72,39 @@ function Header() {
 	};
 
 	return (
-		<header className="bg-white sticky -top-[50px] z-50 shadow-[0px_1px_5px_#0000001a]  ">
+		<header className="bg-white sticky -top-[135px] z-50 shadow-[0px_1px_5px_#0000001a]  ">
 			{/* header include top strim line, mid search line, bottom navigation line */}
 			<div className="top-strim py-2 mt-1 border-t-[1px] border-gray-300 border-b-[1px]">
 				{/* top strim line */}
 				<div className="container">
-					<div className="flex items-center justify-between">
-						<div className="col1 w-[50%]">
-							<p className="text-[12px] font-[500]">
+					<div className="w-full bg-gray-100">
+						<div
+							className="
+			container mx-auto
+			flex items-center justify-between
+			px-3 py-2
+		"
+						>
+							{/* Left Text – hidden on small screens */}
+							<p className="hidden md:block text-[12px] font-medium">
 								Get up to 50% off new season styles, limited time only
 							</p>
-						</div>
 
-						<div className="col1 w-[50%] flex item-center justify-end">
-							<ul className="flex items-center gap-2">
-								<li className="list-none">
+							{/* Right Links */}
+							<ul className="flex items-center gap-6 ml-auto">
+								<li>
 									<Link
 										to="/help-center"
-										className="text-[12px] link font-[500] transition"
+										className="text-[12px] font-medium text-black/70 hover:text-black transition"
 									>
 										Help Center
 									</Link>
 								</li>
 
-								<li className="list-none">
+								<li>
 									<Link
 										to="/order-tracking"
-										className="text-[12px] link font-[500] transition"
+										className="text-[12px] font-medium text-black/70 hover:text-black transition"
 									>
 										Order Tracking
 									</Link>
@@ -112,31 +118,53 @@ function Header() {
 			<div className="header py-3  border-gray-300 border-b-[1px]">
 				{/* all componanat include search, login, register and fevorite cart */}
 				<div className="container flex items-center justify-between">
-					<div className="clo1 w-[25%]">
-						<Link to={"/"}>
-							<img src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png" />{" "}
+					<div className="clo1 w-[10%] md:w-[25%]">
+						<Link to="/">
+							{/* Desktop Logo */}
+							<img
+								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1735815171/logo_xqjli7.png"
+								alt="site_logo"
+								className="hidden md:block w-[200px] transition-all duration-300"
+							/>
+
+							{/* Mobile Logo */}
+							<img
+								src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1745725680/logocrop_brgoqw.png"
+								alt="site_logo"
+								className="block md:hidden w-[40px] transition-all duration-300"
+							/>
 						</Link>
 					</div>
-					<div className="clo2 w-[40%]">
+					<div className="clo2 w-[65%] md:w-[40%]">
 						<Search />
 					</div>
-					<div className="clo3 w-[35%] flex items-center pl-7">
+					<div className="clo3 flex items-center pl-3 sm:pl-7 w-auto sm:w-[35%]">
 						<ul className="flex items-center justify-end gap-3 w-full">
 							{isLogin === false ? (
 								<li className="list-none">
-									<Link
-										to="/login"
-										className="link transition text-[15px] font-[500]"
-									>
-										Login
-									</Link>
-									&nbsp; | &nbsp;
-									<Link
-										to="/register"
-										className="link transition text-[15px] font-[500]"
-									>
-										Register
-									</Link>
+									{/* Desktop */}
+									<div className="hidden sm:block">
+										<Link to="/login" className="link text-[15px] font-[500]">
+											Login
+										</Link>
+										&nbsp; | &nbsp;
+										<Link
+											to="/register"
+											className="link text-[15px] font-[500]"
+										>
+											Register
+										</Link>
+									</div>
+
+									{/* Mobile → only Register */}
+									<div className="block sm:hidden">
+										<Link
+											to="/register"
+											className="link text-[14px] font-[500]"
+										>
+											Register
+										</Link>
+									</div>
 								</li>
 							) : (
 								<>
@@ -156,7 +184,7 @@ function Header() {
 											)}
 										</Button>
 
-										<div className="info flex flex-col ">
+										<div className="info hidden sm:flex flex-col ">
 											<h4 className="leading-3 text-[14px] text-[rgba(0,0,0,06)] font-[500] mb-0 capitalize text-left justify-start ">
 												{context?.userData?.name}
 											</h4>
@@ -241,7 +269,7 @@ function Header() {
 								</>
 							)}
 
-							<li>
+							<li className="hidden md:block">
 								<Tooltip title="Favorite">
 									<IconButton aria-label="cart">
 										<StyledBadge
@@ -256,7 +284,7 @@ function Header() {
 								</Tooltip>
 							</li>
 
-							<li>
+							<li className="hidden md:block">
 								<Tooltip title="Cart">
 									<IconButton
 										aria-label="cart"

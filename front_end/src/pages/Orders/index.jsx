@@ -5,6 +5,7 @@ import Badges from "../../componants/Badge";
 import { useEffect, useState } from "react";
 import { fetchDataFromApi } from "../../utils/api";
 import Pagination from "@mui/material/Pagination";
+import { FiMenu } from "react-icons/fi";
 
 const OrderTableSkeleton = (rows = 5) => {
 	return (
@@ -55,6 +56,8 @@ const Orders = () => {
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 
+	const [sidebarOpen, setSidebarOpen] = useState(false);
+
 	const toggleOrder = (index) => {
 		setOpenOrderIndex(openOrderIndex === index ? null : index);
 	};
@@ -89,23 +92,50 @@ const Orders = () => {
 		fetchOrders();
 		window.scrollTo(0, 0);
 	}, []);
+
+	// for closing Accoubntsidebar
+	useEffect(() => {
+		if (sidebarOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+
+		return () => (document.body.style.overflow = "");
+	}, [sidebarOpen]);
 	return (
 		<section className="section py-10 ">
-			<div className="container  min-w-[80%] flex gap-5">
-				<div className="col1 w-[20%] ">
+			<div className="container max-w-7xl mx-auto flex gap-5 px-4 relative">
+				<div className="col1 hidden lg:block w-[22%] ">
 					<AccountSideBar />
 				</div>
-				<div className="leftPart w-[80%] ">
+				<div className="leftPart w-full lg:w-[78%] ">
 					<div className="shadow-md rounded-md  bg-white">
 						<div className="py-2 px-3 border-b border-[rgba(0,0,0,0.2)] ">
-							<h2>My orders</h2>
-							<p className="mt-0">
-								There are{" "}
-								<span className="font-bold text-[#ff5151]">
-									{loading ? "..." : orders.length}
-								</span>{" "}
-								orders
-							</p>
+							<div className="py-2 px-3 border-b border-[rgba(0,0,0,0.2)]">
+								{/* Header row */}
+								<div className="flex items-center justify-between gap-3">
+									<h2 className="text-[18px] font-semibold">My Orders</h2>
+
+									{/* Mobile menu button */}
+									<Button
+										onClick={() => setSidebarOpen(true)}
+										className="lg:hidden !min-w-[40px] !p-0 !text-[rgba(0,0,0,0.9)]"
+									>
+										<FiMenu className="text-[22px]" />
+									</Button>
+								</div>
+
+								{/* Subtitle */}
+								<p className="mt-1 text-[14px] text-gray-600">
+									There are{" "}
+									<span className="font-bold text-[#ff5151]">
+										{loading ? "..." : orders.length}
+									</span>{" "}
+									orders
+								</p>
+							</div>
+
 							{/* 🔹 SKELETON */}
 							{loading && OrderTableSkeleton()}
 
@@ -120,7 +150,7 @@ const Orders = () => {
 
 									return (
 										<div key={i} className="relative overflow-x-auto mt-5">
-											<table className="w-full text-sm text-left rtl:text-right text-gray-500">
+											<table className="min-w-[900px] w-full text-sm text-left rtl:text-right text-gray-500">
 												<thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
 													<tr>
 														<th scope="col" className="px-6 py-3">
@@ -191,10 +221,10 @@ const Orders = () => {
 																onClick={() => toggleOrder(actualIndex)}
 															>
 																{openOrderIndex === actualIndex ? (
-																	<FaAngleUp className="text-[16px] text-[rgba(0,0,0,0.7)] " />
+																	<FaAngleUp className="text-[16px] !text-[#ff5151] " />
 																) : (
 																	<FaAngleDown
-																		className={`transition-transform duration-300 ${
+																		className={`transition-transform duration-300 !text-[#ff5151] ${
 																			openOrderIndex === actualIndex
 																				? "rotate-180"
 																				: ""
@@ -237,7 +267,7 @@ const Orders = () => {
 
 														<td className="px-6 py-4 whitespace-nowrap">
 															{new Date(order.createdAt).toLocaleDateString(
-																"en-IN"
+																"en-IN",
 															)}
 														</td>
 													</tr>
@@ -356,6 +386,28 @@ const Orders = () => {
 					/>
 				</div>
 			)}
+
+			{/* overlay accountsidebar */}
+			{sidebarOpen && (
+				<div className="fixed inset-0 z-50 lg:hidden">
+					{/* backdrop */}
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setSidebarOpen(false)}
+					/>
+
+					{/* drawer */}
+					<div className="absolute left-0 top-0 h-full w-[80%] max-w-[320px] bg-white shadow-lg animate-slide-in">
+						<div className="flex justify-between items-center p-4 border-b">
+							<h3 className="font-semibold">My Account</h3>
+							<button onClick={() => setSidebarOpen(false)}>✕</button>
+						</div>
+
+						<AccountSideBar />
+					</div>
+				</div>
+			)}
+			{/* overlay accountsidebar */}
 		</section>
 	);
 };

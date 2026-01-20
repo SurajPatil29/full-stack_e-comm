@@ -15,6 +15,7 @@ import { fetchDataFromApi } from "../../utils/api";
 import ProductItemSkeleton from "../../componants/ProductItem/ProductItemSkeleton";
 import ProductItemListSkeleton from "../../componants/ProductItemListView/ProductItemListSkeleton";
 import MyContext from "../../context/MyContext";
+import { HiOutlineMenuAlt2 } from "react-icons/hi";
 
 function ProductListing() {
 	const [itemView, setItemView] = useState("grid");
@@ -24,6 +25,26 @@ function ProductListing() {
 	const [originalProducts, setOriginalProducts] = useState([]);
 	const [sortType, setSortType] = useState("relevance");
 	const [isLoading, setIsLoading] = useState(false);
+
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+	useEffect(() => {
+		const handleResize = () => {
+			const mobile = window.innerWidth < 640;
+			setIsMobile(mobile);
+
+			// 🔒 Force grid view on mobile
+			if (mobile) {
+				setItemView("grid");
+			}
+		};
+
+		handleResize(); // run on mount
+		window.addEventListener("resize", handleResize);
+
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const context = useContext(MyContext);
 
@@ -131,7 +152,13 @@ function ProductListing() {
 	};
 	return (
 		<section className="">
-			<div className="container py-5">
+			<div className="container py-5 flex items-center gap-3">
+				<button
+					onClick={() => setIsSidebarOpen(true)}
+					className="lg:hidden text-[22px] p-2 rounded-md border border-[rgb(0,0,0,0.4)] "
+				>
+					<HiOutlineMenuAlt2 />
+				</button>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link
 						underline="hover"
@@ -152,8 +179,8 @@ function ProductListing() {
 				</Breadcrumbs>
 			</div>
 			<div className="bg-white p-2 ">
-				<div className="container flex gap-3">
-					<div className="sidebarWrapper flex-shrink-0 w-[20%] h-full bg-white ">
+				<div className="container flex gap-3 relative">
+					<div className="sidebarWrapper hidden lg:block  flex-shrink-0 w-[20%]  h-full bg-white ">
 						<Sidebar
 							data={productsData}
 							originalData={originalProducts}
@@ -163,32 +190,66 @@ function ProductListing() {
 						/>
 					</div>
 
-					<div className="rightContent flex-grow w-80% py-3">
-						<div className="bg-[#f1f1f1] p-2 w-full mb-3 rounded-md flex items-center justify-between sticky top-[130px] z-auto ">
-							<div className="col1 flex items-center gap-3 itemViewAction">
-								<Button
-									onClick={() => showLoader(() => setItemView("list"))}
-									className={`!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
-										itemView === "list" && "active"
-									}`}
-								>
-									<FaListUl className="!text-[rgba(0,0,0,0.7)] " />
-								</Button>
+					{/* Overlay Background */}
+					<div
+						className={`fixed inset-0 bg-black/40 z-40 transition-opacity lg:hidden  ${
+							isSidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+						}`}
+						onClick={() => setIsSidebarOpen(false)}
+					/>
 
-								<Button
-									onClick={() => showLoader(() => setItemView("grid"))}
-									className={`!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
-										itemView === "grid" && "active"
-									}`}
-								>
-									<IoGrid className="!text-[rgba(0,0,0,0.7)] " />
-								</Button>
-								<span className="text-[14px] font-[500] pl-3 text-[rgba(0,0,0,0.7)] ">
-									There are {productsData.length} products
+					{/* Sidebar Drawer */}
+					<div
+						className={`fixed top-0 left-0 h-full p-4 w-[280px] bg-white z-50 transform transition-transform lg:hidden ${
+							isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+						}`}
+					>
+						<div className="p-3 border-b flex justify-between items-center">
+							<h3 className="font-[600]">Filters</h3>
+							<button onClick={() => setIsSidebarOpen(false)}>✕</button>
+						</div>
+
+						<div className="px-4">
+							<Sidebar
+								data={productsData}
+								originalData={originalProducts}
+								catId={id}
+								setProductsData={setProductsData}
+								showLoader={showLoader}
+							/>
+						</div>
+					</div>
+
+					<div className="rightContent flex-grow w-80% py-3">
+						<div className="bg-[#f1f1f1] p-2 w-full mb-3 rounded-md flex  gap-3 flex-row items-center justify-between ">
+							<div className="col1 flex flex-wrap items-center gap-3 itemViewAction">
+								<div className=" hidden sm:flex items-center gap-2">
+									<Button
+										onClick={() => showLoader(() => setItemView("list"))}
+										className={`hidden sm:block !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
+											itemView === "list" && "active"
+										}`}
+									>
+										<FaListUl className="!text-[rgba(0,0,0,0.7)] " />
+									</Button>
+
+									<Button
+										onClick={() => showLoader(() => setItemView("grid"))}
+										className={`!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
+											itemView === "grid" && "active"
+										}`}
+									>
+										<IoGrid className="!text-[rgba(0,0,0,0.7)] " />
+									</Button>
+								</div>
+								<span className="text-[14px] font-[500]  text-[rgba(0,0,0,0.7)] ">
+									There are{" "}
+									<span className="text-[#ff5151] ">{productsData.length}</span>{" "}
+									products
 								</span>
 							</div>
-							<div className="col2 ml-auto flex items-center justify-end gap-3 pr-3">
-								<span className="text-[14px] font-[500] text-[rgba(0,0,0,0.7)] ">
+							<div className="flex items-center gap-2 sm:gap-3 sm:justify-start">
+								<span className="text-[13px] sm:text-[14px] font-[500] text-[rgba(0,0,0,0.7)]">
 									Sort by :
 								</span>
 								<Button
@@ -197,7 +258,7 @@ function ProductListing() {
 									aria-haspopup="true"
 									aria-expanded={open ? "true" : undefined}
 									onClick={handleClick}
-									className="!bg-white !text-[12px] !text-[rgba(0,0,0,0.7)] !capitalize !border-2 !border-black"
+									className="!bg-white !text-[12px] !text-[rgba(0,0,0,0.7)] !capitalize !border-2 !border-black !px-3"
 								>
 									Dashboard
 								</Button>
@@ -255,11 +316,11 @@ function ProductListing() {
 							</div>
 						</div>
 						<div
-							className={`grid ${
+							className={`grid gap-4 ${
 								itemView === "grid"
-									? "grid-cols-4 md:grid-cols-4"
-									: "grid-cols-1 md:grid-cols-1"
-							}  gap-4`}
+									? "grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+									: "grid-cols-1 md:grid-cols-2"
+							}`}
 						>
 							{itemView === "grid" ? (
 								<>
@@ -303,7 +364,7 @@ function ProductListing() {
 								</>
 							)}
 						</div>
-						<div className="flex items-center justify-center mt-10">
+						<div className="flex items-center justify-center mt-8 sm:mt-10">
 							<Pagination
 								count={totalPages}
 								page={currentPage}
@@ -311,6 +372,7 @@ function ProductListing() {
 								shape="rounded"
 								showFirstButton
 								showLastButton
+								size="small"
 							/>
 						</div>
 					</div>

@@ -107,7 +107,7 @@ function Search() {
 				<input
 					type="text"
 					placeholder="Sarch for Products name, brand, category..."
-					className="w-full h-35px focus:outline-none bg-inherit p-2 text-[15px]"
+					className="w-full h-35px focus:outline-none bg-inherit p-2 pr-8 text-[15px]"
 					onChange={onChangeInput}
 					value={searchQuery}
 				/>

@@ -19,38 +19,148 @@ function Footer() {
 			<footer className="py-6 bg-[#fafafa]">
 				<hr />
 				<div className="container py-4 ">
-					<div className="flex items-center justify-around gap-2 text-black pb-8 px-20">
+					<div
+						className="
+      grid
+      grid-cols-1
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-5
+      gap-6
+      text-black
+      px-4
+      sm:px-10
+      lg:px-20
+    "
+					>
 						{/* this div contain info about site */}
 						<div className="col flex items-center justify-center flex-col group">
-							<LiaShippingFastSolid className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
-							<h3 className="text-[18px] font-[500]">Free Shipping</h3>
-							<p className="text-[13px] font-[400]">For all Order Over $100</p>
+							<LiaShippingFastSolid
+								className="
+  text-[40px]
+  sm:text-[45px]
+  md:text-[50px]
+  lg:text-[60px]
+  transition-all
+  duration-300
+  group-hover:text-[#ff5151]
+  group-hover:-translate-y-1
+"
+							/>
+							<h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-[500] text-center">
+								Free Shipping
+							</h3>
+							<p className="text-[12px] sm:text-[13px] font-[400] text-center">
+								For all Order Over $100
+							</p>
 						</div>
 						<div className="col flex items-center justify-center flex-col group">
-							<GiReturnArrow className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
-							<h3 className="text-[18px] font-[500]">30 Days Returns</h3>
-							<p className="text-[13px] font-[400]">For an Exchange Product</p>
+							<GiReturnArrow
+								className="
+  text-[40px]
+  sm:text-[45px]
+  md:text-[50px]
+  lg:text-[60px]
+  transition-all
+  duration-300
+  group-hover:text-[#ff5151]
+  group-hover:-translate-y-1
+"
+							/>
+							<h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-[500] text-center">
+								30 Days Returns
+							</h3>
+							<p className="text-[12px] sm:text-[13px] font-[400] text-center">
+								For an Exchange Product
+							</p>
 						</div>
 						<div className="col flex items-center justify-center flex-col group">
-							<IoWalletOutline className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
-							<h3 className="text-[18px] font-[500]">Secured Payment</h3>
-							<p className="text-[13px] font-[400]">Payment Cards Accepted</p>
+							<IoWalletOutline
+								className="
+  text-[40px]
+  sm:text-[45px]
+  md:text-[50px]
+  lg:text-[60px]
+  transition-all
+  duration-300
+  group-hover:text-[#ff5151]
+  group-hover:-translate-y-1
+"
+							/>
+							<h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-[500] text-center">
+								Secured Payment
+							</h3>
+							<p className="text-[12px] sm:text-[13px] font-[400] text-center">
+								Payment Cards Accepted
+							</p>
 						</div>
 						<div className="col flex items-center justify-center flex-col group">
-							<GrGift className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
-							<h3 className="text-[18px] font-[500]">Special Gifts</h3>
-							<p className="text-[13px] font-[400]">Our First Product Order</p>
+							<GrGift
+								className="
+  text-[40px]
+  sm:text-[45px]
+  md:text-[50px]
+  lg:text-[60px]
+  transition-all
+  duration-300
+  group-hover:text-[#ff5151]
+  group-hover:-translate-y-1
+"
+							/>
+							<h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-[500] text-center">
+								Special Gifts
+							</h3>
+							<p className="text-[12px] sm:text-[13px] font-[400] text-center">
+								Our First Product Order
+							</p>
 						</div>
 						<div className="col flex items-center justify-center flex-col group">
-							<BiSupport className="text-[60px] transition-all duration-300 group-hover:text-[#ff5151] group-hover:-translate-y-1" />
-							<h3 className="text-[18px] font-[500]">Support 24/7</h3>
-							<p className="text-[13px] font-[400]">Contact us Anytime</p>
+							<BiSupport
+								className="
+  text-[40px]
+  sm:text-[45px]
+  md:text-[50px]
+  lg:text-[60px]
+  transition-all
+  duration-300
+  group-hover:text-[#ff5151]
+  group-hover:-translate-y-1
+"
+							/>
+							<h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-[500] text-center">
+								Support 24/7
+							</h3>
+							<p className="text-[12px] sm:text-[13px] font-[400] text-center">
+								Contact us Anytime
+							</p>
 						</div>
 					</div>
 					<hr />
-					<div className="footer flex  py-8">
+					<div
+						className="
+  footer
+  flex
+  flex-col
+  lg:flex-row
+  py-8
+  px-4
+  sm:px-10
+  lg:px-20
+  gap-8
+"
+					>
 						{/* footer div contact us , product, our company, newsletter related info */}
-						<div className="part1 w-[25%] border-r border-[rgba(0,0,0,0.3)]">
+						<div
+							className="
+  part1
+  w-full
+  lg:w-[25%]
+  lg:border-r
+  border-[rgba(0,0,0,0.3)]
+  pr-0
+  lg:pr-6
+"
+						>
 							<h2 className="text-[20px] font-[600] mb-4 ">Contact Us</h2>
 							<p className="text-[14px] font-[400] pb-4 ">
 								Classyshop - Mega Super Store <br /> 507-Union Trade Center
@@ -70,7 +180,17 @@ function Footer() {
 							</div>
 						</div>
 
-						<div className="part2 w-[40%] flex justify-around">
+						<div
+							className="
+  part2
+  w-full
+  lg:w-[40%]
+  grid
+  grid-cols-1
+  sm:grid-cols-2
+  gap-8
+"
+						>
 							<div className="part2_col1">
 								<h2 className="text-[20px] font-[600] mb-4 ">Products</h2>
 
@@ -146,7 +266,15 @@ function Footer() {
 							</div>
 						</div>
 
-						<div className="part3 w-[35%] flex pl-8 flex-col pr-8">
+						<div
+							className="
+  part3
+  w-full
+  lg:w-[35%]
+  flex
+  flex-col
+"
+						>
 							<h2 className="text-[20px] font-[600] mb-4 ">
 								Subscribe to newsletter
 							</h2>
@@ -172,10 +300,22 @@ function Footer() {
 				</div>
 			</footer>
 
-			<div className="bottomStrip border-t border-[rgba(0,0,0,.2)] py-3 bg-white">
+			<div className="bottomStrip border-t border-[rgba(0,0,0,.2)] py-3 bg-white mb-10 md:mb-0">
 				{/* this div contain social media and payment partener info */}
-				<div className="container flex item-center justify-between">
-					<ul className="flex item-center justify-between gap-4">
+				<div
+					className="
+    container
+    flex
+    flex-col
+    md:flex-row
+    items-center
+    justify-between
+    gap-4
+    text-center
+    md:text-left
+  "
+				>
+					<ul className="flex items-center justify-center gap-4">
 						<li className="list-none">
 							<Link
 								to="/"
@@ -223,9 +363,11 @@ function Footer() {
 						</li>
 					</ul>
 
-					<p className="text-[13px] text-center">© 2024 - Ecommerce Templet™</p>
+					<p className="text-[12px] sm:text-[13px] text-center">
+						© 2024 - Ecommerce Templet™
+					</p>
 
-					<div className="flex items-center justify-center gap-1">
+					<div className="flex items-center justify-center gap-1 flex-wrap">
 						<img
 							src="https://res.cloudinary.com/dzy2z9h7m/image/upload/v1734944434/paypal_bqbf5i.png"
 							alt="image"

@@ -129,10 +129,12 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 	return (
 		<>
 			{/* TITLE */}
-			<h1 className="text-[24px] font-[600] mb-2">{name}</h1>
+			<h1 className="text-[18px] sm:text-[22px] lg:text-[24px] font-[600] mb-2 leading-snug">
+				{name}
+			</h1>
 
 			{/* BRAND + RATING */}
-			<div className="flex items-center gap-3">
+			<div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[12px] sm:text-[13px]">
 				<span className="text-gray-400 text-[13px]">
 					Brand: <span className="font-[500] text-black">{brand}</span>
 				</span>
@@ -140,7 +142,7 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 				<Rating size="small" value={avgRating || rating} readOnly />
 
 				<span
-					className="text-[13px] cursor-pointer"
+					className="cursor-pointer underline-offset-2 hover:underline"
 					onClick={gotoReviews || (() => {})}
 				>
 					Reviews {numReviews}
@@ -148,24 +150,24 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 			</div>
 
 			{/* PRICE */}
-			<div className="flex items-center gap-4 mt-4">
+			<div className="flex flex-wrap items-center gap-3 mt-4">
 				{oldPrice > price && (
-					<span className="line-through text-gray-500 text-[18px] font-[500]">
+					<span className="line-through text-gray-500 text-[14px] sm:text-[18px] font-[500]">
 						₹{oldPrice.toLocaleString()}
 					</span>
 				)}
 
-				<span className="text-[#ff5252] text-[18px] font-[600]">
+				<span className="text-[#ff5252] text-[18px] sm:text-[20px] font-[600]">
 					₹{price.toLocaleString()}
 				</span>
 
 				{discount > 0 && (
-					<span className="text-green-600 text-[14px] font-[600]">
+					<span className="text-green-600 text-[13px] sm:text-[14px] font-[600]">
 						{discount}% OFF
 					</span>
 				)}
 
-				<span className="text-[14px]">
+				<span className="text-[13px] sm:text-[14px]">
 					In Stock:
 					<span className="text-green-600 font-bold"> {countInStock}</span>
 				</span>
@@ -173,21 +175,21 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 
 			{/* DESCRIPTION */}
 			<div
-				className="description-content text-gray-700 leading-relaxed"
+				className="description-content text-gray-700 leading-relaxed text-[14px] sm:text-[15px] mt-4 break-words"
 				dangerouslySetInnerHTML={{ __html: description }}
 			></div>
 			{/* RAM OPTIONS */}
 			{productRam.length > 0 && (
-				<div className="flex items-center gap-3 mb-4">
-					<span className="text-[16px]">RAM:</span>
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4">
+					<span className="text-[15px] sm:text-[16px]">RAM:</span>
 
-					<div className="flex items-center gap-1 actions">
+					<div className="flex flex-wrap gap-2 actions">
 						{productRam.map((ram, index) => (
 							<Button
 								key={index}
-								className={`${
-									selectedRam === index && "!bg-[#ff5252] !text-white"
-								}`}
+								size="small"
+								className={`!px-3 !py-1 !text-[13px]
+				${selectedRam === index && "!bg-[#ff5252] !text-white"}`}
 								onClick={() => {
 									setSelectedRam(index);
 									updateCart({ ram: productRam[index] });
@@ -202,16 +204,16 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 
 			{/* SIZE OPTIONS */}
 			{size.length > 0 && (
-				<div className="flex items-center gap-3 mb-4">
-					<span className="text-[16px]">Size:</span>
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4">
+					<span className="text-[15px] sm:text-[16px]">Size:</span>
 
-					<div className="flex items-center gap-1 actions">
+					<div className="flex flex-wrap gap-2 actions">
 						{size.map((sz, index) => (
 							<Button
 								key={index}
-								className={`${
-									selectedSize === index && "!bg-[#ff5252] !text-white"
-								}`}
+								size="small"
+								className={`!px-3 !py-1 !text-[13px]
+				${selectedSize === index && "!bg-[#ff5252] !text-white"}`}
 								onClick={() => {
 									setSelectedSize(index);
 									updateCart({ size: size[index] });
@@ -226,16 +228,16 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 
 			{/* WEIGHT */}
 			{productWeight.length > 0 && (
-				<div className="flex items-center gap-3 mb-4 ">
-					<span className="text-[16px]">Weight :</span>
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4">
+					<span className="text-[15px] sm:text-[16px]">Weight :</span>
 
-					<div className="flex items-center gap-1 actions">
+					<div className="flex flex-wrap gap-2 actions">
 						{productWeight.map((w, index) => (
 							<Button
 								key={index}
-								className={`${
-									selectedWeight === index && "!bg-[#ff5252] !text-white"
-								}`}
+								size="small"
+								className={`!px-3 !py-1 !text-[13px]
+				${selectedWeight === index && "!bg-[#ff5252] !text-white"}`}
 								onClick={() => {
 									setSelectedWeight(index);
 									updateCart({ weight: productWeight[index] });
@@ -262,8 +264,8 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 							✓ Already in Cart
 						</Button>
 					) : (
-						<div className="flex items-center mt-4 gap-4">
-							<div className="w-[70px]">
+						<div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4">
+							<div className="w-[80px]">
 								<QtyBox
 									quantity={quantity}
 									setQuantity={(val) => {
@@ -275,7 +277,7 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 							</div>
 
 							<Button
-								className={`btn-org flex gap-2 !py-3 !rounded-full !text-[16px]`}
+								className="btn-org w-full sm:w-auto flex gap-2 !py-3 !rounded-full !text-[15px] sm:!text-[16px]"
 								onClick={handleAddToCart}
 								disabled={isLoadingAddToCart || item?.countInStock <= 0}
 							>
@@ -296,7 +298,7 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 			)}
 
 			{/* WISHLIST + COMPARE */}
-			<div className="flex items-center gap-5 mt-4">
+			<div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-5">
 				{/* Add to Wishlist */}
 				<button
 					onClick={() => {
@@ -331,10 +333,6 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 				</button>
 
 				{/* Compare Button */}
-				<span className="flex items-center gap-2 text-[14px] font-[500] cursor-pointer">
-					<IoGitCompareOutline className="text-[18px]" />
-					Add to Compare
-				</span>
 			</div>
 		</>
 	);

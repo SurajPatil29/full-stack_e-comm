@@ -261,19 +261,31 @@ function Home() {
 			<section className="bg-white py-8">
 				{/* catagory product - slider contain catagory and below it products of perticular catagory  */}
 				<div className="container ">
-					<div className="flex items-center justify-between">
+					<div
+						className="
+  flex
+  flex-col
+  lg:flex-row
+  items-start
+  lg:items-center
+  justify-between
+  gap-4
+"
+					>
 						<div className="leftSec text-black">
-							<h2 className="text-[20px] font-[600]">Popular Products</h2>
-							<p className="text-[14px] font-[400]">
+							<h2 className="text-[18px] sm:text-[20px] font-[600]">
+								Popular Products
+							</h2>
+							<p className="text-[13px] sm:text-[14px] font-[400]">
 								Do not miss the current offers util the end of March
 							</p>
 						</div>
 
-						<div className="rightSec">
+						<div className="rightSec w-full lg:w-auto">
 							<Box
 								sx={{
-									maxWidth: { xs: 320, sm: 480 },
-									bgcolor: "background.paper",
+									width: "100%",
+									maxWidth: { xs: "100%", sm: 480, md: 600 },
 								}}
 							>
 								{value && (
@@ -282,7 +294,8 @@ function Home() {
 										onChange={handleChange}
 										variant="scrollable"
 										scrollButtons="auto"
-										aria-label="scrollable auto tabs example"
+										allowScrollButtonsMobile
+										aria-label="category tabs"
 									>
 										{context.catData.map((cat) => (
 											<Tab key={cat._id} label={cat.name} value={cat._id} />
@@ -313,8 +326,8 @@ function Home() {
 
 			{/* homeslider v2 */}
 			<section className="py-6">
-				<div className="container flex items-center">
-					<div className="part1 w-[70%]">
+				<div className="container  flex flex-col lg:flex-row gap-5">
+					<div className="part1 w-full lg:w-[70%]">
 						{isBannerLoadingV2 ? (
 							<HomeBanner2Skeleton />
 						) : homeslideDataV2?.length > 0 ? (
@@ -323,14 +336,14 @@ function Home() {
 							<HomeBanner2 data={[]} /> // this will use fallback template
 						)}
 					</div>
-					<div className="part2 w-[30%] h-[470px] flex items-center justify-between flex-col gap-5">
+					<div className="part2 w-full lg:w-[30%]">
 						{isBannerBoxV1Loading ? (
 							<AddBannerSliderV2Skeleton />
 						) : bannerBoxV1Data?.length > 0 ? (
 							<AddBannerSliderV2
-								dir={"vertical"}
-								items={2}
-								data={bannerBoxV1Data}
+								dir={window.innerWidth < 1024 ? "horizontal" : "vertical"}
+								items={window.innerWidth < 1024 ? 1.2 : 2}
+								data={bannerBoxV1Data || []}
 							/>
 						) : (
 							<AddBannerSliderV2 dir={"vertical"} items={2} data={[]} /> // fallback used inside component
@@ -341,24 +354,47 @@ function Home() {
 
 			<section className="py-16 p-4 bg-white">
 				<div className="container ">
-					<div className="freeShiping w-[80%] m-auto p-4 border-[3px] border-[#c33535] flex items-center justify-between rounded-lg">
+					<div
+						className="
+    freeShiping
+    w-full
+    lg:w-[80%]
+    mx-auto
+    p-4
+    sm:p-5
+    border-[3px]
+    border-[#c33535]
+    rounded-lg
+    flex
+    flex-col
+    sm:flex-row
+    items-center
+    justify-center
+    sm:justify-between
+    gap-3
+    sm:gap-6
+    text-center
+    sm:text-left
+  "
+					>
 						{/* Ads div */}
-						<div className="col1 flex items-center gap-4">
-							<FaShippingFast className="text-[#ff5252] text-[50px]" />
-							<h1 className="text-[20px] font-[600] text-black">
+						<div className="col1 flex items-center gap-3">
+							<FaShippingFast className="text-[#ff5252] text-[36px] sm:text-[42px] lg:text-[50px]" />
+							<h1 className="text-[16px] sm:text-[18px] lg:text-[20px] font-[600] text-black">
 								FREE SHIPPING
 							</h1>
 						</div>
 
-						<div className="col2 ">
-							<p className="text-[18px] font-[500] text-black">
+						<div className="col2">
+							<p className="text-[14px] sm:text-[16px] lg:text-[18px] font-[500] text-black">
 								Free Delivery Now On Your First Order and over $200
 							</p>
 						</div>
 
 						<div className="col3">
-							{" "}
-							<h1 className="text-[20px] font-[600] text-black">-ONLY $200*</h1>
+							<h1 className="text-[16px] sm:text-[18px] lg:text-[20px] font-[600] text-black">
+								- ONLY $200*
+							</h1>
 						</div>
 					</div>
 				</div>
@@ -368,7 +404,15 @@ function Home() {
 					) : bannerBoxV1Data?.length > 0 ? (
 						<AddBannerSliderV2
 							dir={"horizontal"}
-							items={4}
+							items={
+								window.innerWidth < 440
+									? 1.2
+									: window.innerWidth < 720
+									? 1.8
+									: window.innerWidth < 1024
+									? 2.3
+									: 4
+							}
 							data={bannerBoxV1Data}
 						/>
 					) : (

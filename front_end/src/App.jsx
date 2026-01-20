@@ -50,6 +50,7 @@ function App() {
 	const [searchData, setSearchData] = useState([]);
 
 	const [openAddressPanel, setOpenAddressPanel] = useState(false);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	const toggleAddressDrawer = (newOpen) => () => {
 		setOpenAddressPanel(newOpen);
@@ -124,7 +125,16 @@ function App() {
 				setCatData(res?.data);
 			}
 		});
+
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
 		window.scrollTo(0, 0);
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
 	}, []);
 
 	const addToCart = async (
@@ -357,6 +367,7 @@ function App() {
 		setOpenAddressPanel: setOpenAddressPanel,
 		searchData: searchData,
 		setSearchData: setSearchData,
+		windowWidth: windowWidth,
 	};
 
 	function PrivateRoutes({ children }) {
@@ -473,18 +484,19 @@ function App() {
 					maxWidth="lg"
 					className="productDetailsModel "
 				>
-					<DialogContent>
-						<div className="productDetailsModelContainer flex item-center w-full relative">
+					<DialogContent className="!p-0">
+						{" "}
+						<div className="productDetailsModelContainer flex flex-col lg:flex-row w-full relative">
 							<Button
-								className="!absolute !w-[40px] !min-w-[40px] !h-[40px] !bg-[#f1f1f1] !rounded-full !text-black right-0 top-0"
+								className="!absolute !w-[40px] !min-w-[40px] !h-[40px] !bg-[#f1f1f1] !rounded-full !text-black top-2 right-2 z-10"
 								onClick={handleCloseProductDetailsModel}
 							>
 								<IoMdClose className="!text-[18px]  " />
 							</Button>
-							<div className="col1 w-[43%] ">
+							<div className="col1 w-full lg:w-[43%] p-4 ">
 								<ProductZoom images={openProductDetailsModel.item.images} />
 							</div>
-							<div className="col2 productContent w-[57%] px-5 ">
+							<div className="col2 productContent w-full lg:w-[57%] px-4 lg:px-5 overflow-y-auto ">
 								<ProductDetailsComponant item={openProductDetailsModel.item} />
 							</div>
 						</div>
@@ -554,10 +566,16 @@ function App() {
 					onClose={toggleAddressDrawer(false)}
 					anchor="right"
 					PaperProps={{
-						sx: { width: "500px", padding: "20px" },
+						sx: {
+							width: {
+								xs: "100%", // mobile
+								sm: "420px", // tablet
+								md: "500px", // desktop
+							},
+						},
 					}}
 				>
-					<div className="w-full py-3 px-4">
+					<div className="w-full h-full flex flex-col p-3">
 						{/* Drawer Header */}
 						<div className="flex items-center justify-between border-b pb-2">
 							<h4 className="text-lg font-semibold">Add Address</h4>
@@ -571,7 +589,9 @@ function App() {
 						</div>
 
 						{/* ⭐ Address Form Component */}
-						<Address closeDrawer={toggleAddressDrawer(false)} />
+						<div className="flex-1 overflow-y-auto px-4 py-3">
+							<Address closeDrawer={toggleAddressDrawer(false)} />
+						</div>
 					</div>
 				</Drawer>
 			</MyContext.Provider>

@@ -63,15 +63,22 @@ function ForgotPassword() {
 	};
 
 	return (
-		<section className="section py-10">
-			<div className="container">
-				<div className="card shadow-md w-[400px] m-auto rounded-md bg-white p-5 px-10 ">
-					<h3 className="text-center text-[18px] text-black ">
+		<section className="section py-6 sm:py-10">
+			<div className="container px-3 sm:px-0">
+				<div
+					className="
+        card bg-white shadow-md rounded-md
+        w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[450px]
+        mx-auto
+        p-4 sm:p-6 lg:p-8
+      "
+				>
+					<h3 className="text-center text-[16px] sm:text-[18px] lg:text-[20px] font-semibold text-black">
 						Forgot Password
 					</h3>
 
-					<form className="w-full mt-5" onSubmit={changePass}>
-						<div className="form-group w-full mb-5 relative">
+					<form className="w-full mt-4 sm:mt-6" onSubmit={changePass}>
+						<div className="form-group w-full mb-4 sm:mb-5 relative">
 							<TextField
 								type={`${isShowPassword1 === true ? "text" : "password"}`}
 								id="password"
@@ -94,21 +101,23 @@ function ForgotPassword() {
 									},
 								}}
 							/>
-							{isShowPassword1 === false ? (
-								<Button
-									onClick={() => setIsShowPassWord1(!isShowPassword1)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibility className="16px" />
-								</Button>
-							) : (
-								<Button
-									onClick={() => setIsShowPassWord1(!isShowPassword1)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibilityOff className="16px" />
-								</Button>
-							)}
+							<Button
+								onClick={() => setIsShowPassWord1(!isShowPassword1)}
+								className="
+    !absolute
+    top-[10px] right-[10px]
+    !w-[32px] !h-[32px] sm:!w-[35px] sm:!h-[35px]
+    !min-w-0
+    !rounded-md
+    !text-black
+  "
+							>
+								{isShowPassword1 ? (
+									<MdVisibilityOff className="text-[16px]" />
+								) : (
+									<MdVisibility className="text-[16px]" />
+								)}
+							</Button>
 						</div>
 
 						<div className="form-group w-full mb-5 relative">
@@ -134,27 +143,29 @@ function ForgotPassword() {
 									},
 								}}
 							/>
-							{isShowPassword2 === false ? (
-								<Button
-									onClick={() => setIsShowPassWord2(!isShowPassword2)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibility className="16px" />
-								</Button>
-							) : (
-								<Button
-									onClick={() => setIsShowPassWord2(!isShowPassword2)}
-									className="!absolute !w-[35px] !min-w-[35px] !h-[35px] top-[10px] right-[10px] !rounded-md !text-black "
-								>
-									<MdVisibilityOff className="16px" />
-								</Button>
-							)}
+							<Button
+								onClick={() => setIsShowPassWord1(!isShowPassword1)}
+								className="
+    !absolute
+    top-[10px] right-[10px]
+    !w-[32px] !h-[32px] sm:!w-[35px] sm:!h-[35px]
+    !min-w-0
+    !rounded-md
+    !text-black
+  "
+							>
+								{isShowPassword1 ? (
+									<MdVisibilityOff className="text-[16px]" />
+								) : (
+									<MdVisibility className="text-[16px]" />
+								)}
+							</Button>
 						</div>
 
 						<div className="flex items-center w-full mt-3 mb-3">
 							<Button
 								type="submit"
-								className="btn-org btn-lg w-full"
+								className="btn-org btn-lg !capitalize w-full !text-[12px] sm:!text-[18px]"
 								disabled={!valideValue}
 							>
 								{isLoading === true ? (

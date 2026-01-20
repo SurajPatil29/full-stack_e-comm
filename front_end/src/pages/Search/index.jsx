@@ -15,6 +15,7 @@ import { fetchDataFromApi } from "../../utils/api";
 import ProductItemSkeleton from "../../componants/ProductItem/ProductItemSkeleton";
 import ProductItemListSkeleton from "../../componants/ProductItemListView/ProductItemListSkeleton";
 import MyContext from "../../context/MyContext";
+import { HiOutlineMenuAlt2 } from "react-icons/hi";
 
 function SearchPage() {
 	const [itemView, setItemView] = useState("grid");
@@ -24,6 +25,8 @@ function SearchPage() {
 	const [originalProducts, setOriginalProducts] = useState([]);
 	const [sortType, setSortType] = useState("relevance");
 	const [isLoading, setIsLoading] = useState(false);
+
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 	const context = useContext(MyContext);
 
@@ -136,7 +139,13 @@ function SearchPage() {
 	};
 	return (
 		<section className="">
-			<div className="container py-5">
+			<div className="container py-5 flex items-center gap-3">
+				<button
+					onClick={() => setIsSidebarOpen(true)}
+					className="lg:hidden text-[22px] p-2 rounded-md border border-[rgb(0,0,0,0.4)] "
+				>
+					<HiOutlineMenuAlt2 />
+				</button>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link
 						underline="hover"
@@ -156,8 +165,8 @@ function SearchPage() {
 				</Breadcrumbs>
 			</div>
 			<div className="bg-white p-2 ">
-				<div className="container flex gap-3">
-					<div className="sidebarWrapper flex-shrink-0 w-[20%] h-full bg-white ">
+				<div className="container flex gap-3 relative">
+					<div className="sidebarWrapper hidden lg:block w-[20%] flex-shrink-0 bg-white ">
 						<Sidebar
 							data={productsData}
 							originalData={originalProducts}
@@ -167,12 +176,41 @@ function SearchPage() {
 						/>
 					</div>
 
+					<div
+						className={`fixed inset-0 bg-black/40 z-40 transition-opacity lg:hidden  ${
+							isSidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+						}`}
+						onClick={() => setIsSidebarOpen(false)}
+					/>
+
+					{/* Mobile Drawer */}
+					<div
+						className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50 p-4 transition-transform lg:hidden ${
+							isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+						}`}
+					>
+						<div className="flex justify-between items-center border-b pb-2">
+							<h3 className="font-semibold">Filters</h3>
+							<button onClick={() => setIsSidebarOpen(false)}>✕</button>
+						</div>
+
+						<div className="mt-3">
+							<Sidebar
+								data={productsData}
+								originalData={originalProducts}
+								catId={id}
+								setProductsData={setProductsData}
+								showLoader={showLoader} // FIXED 🔥 passed here
+							/>
+						</div>
+					</div>
+
 					<div className="rightContent flex-grow w-80% py-3">
-						<div className="bg-[#f1f1f1] p-2 w-full mb-3 rounded-md flex items-center justify-between sticky top-[130px] z-auto ">
-							<div className="col1 flex items-center gap-3 itemViewAction">
+						<div className="bg-[#f1f1f1] p-2 w-full mb-3 rounded-md flex  gap-3 flex-row items-center justify-between ">
+							<div className="col1 flex flex-wrap items-center gap-3 itemViewAction">
 								<Button
 									onClick={() => showLoader(() => setItemView("list"))}
-									className={`!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
+									className={`hidden sm:block !w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] ${
 										itemView === "list" && "active"
 									}`}
 								>
@@ -191,8 +229,8 @@ function SearchPage() {
 									There are {productsData.length} products
 								</span>
 							</div>
-							<div className="col2 ml-auto flex items-center justify-end gap-3 pr-3">
-								<span className="text-[14px] font-[500] text-[rgba(0,0,0,0.7)] ">
+							<div className="flex items-center gap-2 sm:gap-3 sm:justify-start">
+								<span className="text-[13px] sm:text-[14px] font-[500] text-[rgba(0,0,0,0.7)]">
 									Sort by :
 								</span>
 								<Button
@@ -201,7 +239,7 @@ function SearchPage() {
 									aria-haspopup="true"
 									aria-expanded={open ? "true" : undefined}
 									onClick={handleClick}
-									className="!bg-white !text-[12px] !text-[rgba(0,0,0,0.7)] !capitalize !border-2 !border-black"
+									className="!bg-white !text-[12px] !text-[rgba(0,0,0,0.7)] !capitalize !border-2 !border-black !px-3"
 								>
 									Dashboard
 								</Button>
@@ -259,11 +297,11 @@ function SearchPage() {
 							</div>
 						</div>
 						<div
-							className={`grid ${
+							className={`grid gap-4 ${
 								itemView === "grid"
-									? "grid-cols-4 md:grid-cols-4"
-									: "grid-cols-1 md:grid-cols-1"
-							}  gap-4`}
+									? "grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+									: "grid-cols-1 md:grid-cols-2"
+							}`}
 						>
 							{itemView === "grid" ? (
 								<>
@@ -307,7 +345,7 @@ function SearchPage() {
 								</>
 							)}
 						</div>
-						<div className="flex items-center justify-center mt-10">
+						<div className="flex items-center justify-center mt-8 sm:mt-10">
 							<Pagination
 								count={totalPages}
 								page={currentPage}

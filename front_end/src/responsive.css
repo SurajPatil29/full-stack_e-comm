@@ -1,0 +1,63 @@
+@media only screen and (min-width: 320px) and (max-width: 992px) {
+	html,
+	body {
+		overflow-x: hidden;
+	}
+}
+
+/* ===============================
+   THUMB SLIDER – DESKTOP (vertical)
+================================ */
+@media (min-width: 640px) {
+	.zoomProductSliderThumbs.swiper-vertical .swiper-button-prev,
+	.zoomProductSliderThumbs.swiper-vertical .swiper-button-next {
+		left: 50% !important;
+		transform: translateX(-50%) !important;
+	}
+
+	.zoomProductSliderThumbs .swiper-button-prev {
+		top: 0 !important;
+	}
+
+	.zoomProductSliderThumbs .swiper-button-next {
+		bottom: 0 !important;
+		top: auto !important;
+	}
+}
+
+/* ===============================
+   THUMB SLIDER – MOBILE (horizontal)
+================================ */
+@media (max-width: 639px) {
+	.zoomProductSliderThumbs {
+		padding: 0 32px;
+	}
+
+	.zoomProductSliderThumbs .swiper-button-prev,
+	.zoomProductSliderThumbs .swiper-button-next {
+		top: 50% !important;
+		transform: translateY(-50%) !important;
+		width: 28px;
+		height: 28px;
+		border-radius: 9999px;
+		background: #fff;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+		opacity: 1 !important;
+	}
+
+	.zoomProductSliderThumbs .swiper-button-prev {
+		left: 0 !important;
+		right: auto !important;
+	}
+
+	.zoomProductSliderThumbs .swiper-button-next {
+		right: 0 !important;
+		left: auto !important;
+	}
+
+	/* 🔥 RESET vertical arrow rotation */
+	.zoomProductSliderThumbs .swiper-button-prev::after,
+	.zoomProductSliderThumbs .swiper-button-next::after {
+		transform: rotate(0deg) !important;
+	}
+}

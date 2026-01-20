@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 function BannerBox({ img, link }) {
 	// here i write code for img div this will take a 2 props img and link
 	return (
-		<div className=" box bannerBox overflow-hidden rounded-3xl group">
+		<div className=" box bannerBox overflow-hidden rounded-[6px] group">
 			<Link to={link}>
 				<img
 					src={img}

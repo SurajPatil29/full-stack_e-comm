@@ -28,26 +28,52 @@ function HomeSlider({ data }) {
 			<div className="container">
 				<Swiper // swiper sliders main compo this contain banners/ sliders img
 					loop={true} //loop of slider
-					spaceBetween={20} //space between slider
+					spaceBetween={16} //space between slider
 					centeredSlides={true} //slider in position in center
-					navigation={true} // navigation button true
 					autoplay={{
 						// autoplay slider with given time
 						delay: 2500,
 						disableOnInteraction: false,
 					}}
 					modules={[Autoplay, Navigation]} //use of  moduls
+					navigation={false} // default OFF (mobile first)
+					breakpoints={{
+						// 📱 Mobile
+						0: {
+							slidesPerView: 1,
+							navigation: false,
+						},
+
+						// 📱 Tablet
+						640: {
+							slidesPerView: 1,
+							navigation: false,
+						},
+
+						// 💻 Desktop
+						1024: {
+							slidesPerView: 1,
+							navigation: true, // show buttons only on desktop
+						},
+					}}
 					className="sliderHome"
 				>
 					{data?.length > 0 &&
 						data.map((item, i) =>
 							item.isActive ? (
 								<SwiperSlide key={i}>
-									<div className="item rounded-[20px] overflow-hidden">
+									<div className="item rounded-[6px] overflow-hidden">
 										<img
 											src={item.images[0]}
 											alt={`banner-${i}`}
-											className="w-full"
+											className="
+										w-full 
+										h-[160px] 
+										sm:h-[220px] 
+										md:h-[280px] 
+										lg:h-[360px] 
+										object-cover
+									"
 										/>
 									</div>
 								</SwiperSlide>

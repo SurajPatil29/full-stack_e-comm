@@ -27,12 +27,33 @@ function AddBannerSlider({ items, data, prodType }) {
 	return (
 		<div className="pt-10 px-8 w-full">
 			<Swiper
-				slidesPerView={items}
-				loop={true}
-				spaceBetween={30}
-				navigation={true}
+				loop={data?.length > items}
+				spaceBetween={16}
+				navigation={false}
 				modules={[Navigation]}
 				className="smlBtn"
+				breakpoints={{
+					// 📱 Mobile
+					0: {
+						slidesPerView: 1.2,
+						spaceBetween: 12,
+						navigation: false,
+					},
+
+					// 📱 Tablet
+					640: {
+						slidesPerView: 2.2,
+						spaceBetween: 20,
+						navigation: false,
+					},
+
+					// 💻 Desktop
+					1024: {
+						slidesPerView: items, // 3
+						spaceBetween: 30,
+						navigation: true,
+					},
+				}}
 			>
 				{data?.length !== 0 && data.length > 0
 					? data?.map((item, i) =>

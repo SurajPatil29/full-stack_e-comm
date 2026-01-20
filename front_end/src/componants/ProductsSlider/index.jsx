@@ -10,7 +10,7 @@ function ProductsSlider({ items, data = [], loading }) {
 	return (
 		<div className="productsSlider py-4 smlBtn">
 			{loading ? (
-				<div className="grid grid-cols-5 gap-6 ">
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
 					{Array.from({ length: 5 }).map((_, i) => (
 						<ProductItemSkeleton key={i} />
 					))}
@@ -18,10 +18,39 @@ function ProductsSlider({ items, data = [], loading }) {
 			) : (
 				<Swiper
 					slidesPerView={items}
-					loop={data?.length >= items * 2}
-					spaceBetween={40}
-					navigation={true}
+					loop={data?.length >= 10}
+					spaceBetween={12}
+					navigation={false}
 					modules={[Navigation]}
+					breakpoints={{
+						// 📱 Mobile
+						0: {
+							slidesPerView: 1.3,
+							spaceBetween: 12,
+							navigation: false,
+						},
+
+						// 📱 Tablet
+						640: {
+							slidesPerView: 2.2,
+							spaceBetween: 16,
+							navigation: false,
+						},
+
+						// 💻 Laptop
+						1024: {
+							slidesPerView: items || 4,
+							spaceBetween: 24,
+							navigation: true,
+						},
+
+						// 🖥️ Desktop
+						1280: {
+							slidesPerView: items || 5,
+							spaceBetween: 40,
+							navigation: true,
+						},
+					}}
 					className="mySwiper"
 				>
 					{data?.map((item, i) => (

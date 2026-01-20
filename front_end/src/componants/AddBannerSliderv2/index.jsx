@@ -26,23 +26,22 @@ function AddBannerSliderV2({ items, data, dir }) {
 	}
 
 	return (
-		<div className=" px-8 w-full h-full gap-4">
+		<div className=" px-8 w-full  gap-4">
 			<Swiper
 				direction={dir} // "vertical"
 				slidesPerView={items} // 2 items
 				loop={data.length > items}
-				spaceBetween={20}
+				spaceBetween={16}
 				// MOUSEWHEEL only when vertical
-				mousewheel={dir === "vertical"}
-				// NAVIGATION only when horizontal
-				navigation={dir === "horizontal"}
+				mousewheel={dir === "vertical" && window.innerWidth >= 1024} // NAVIGATION only when horizontal
+				navigation={dir === "horizontal" && window.innerWidth >= 1024}
 				modules={[Navigation, Mousewheel]}
 				className="smlBtn"
-				style={{ height: "100%" }}
+				style={{ height: dir === "vertical" ? "470px" : "auto" }}
 			>
 				{data.map((item, i) =>
 					item.slide === dir ? (
-						<SwiperSlide key={i} style={{ height: "50%" }}>
+						<SwiperSlide key={i} className="h-auto lg:h-[50%]">
 							<BannerBoxV2
 								info={item.angle}
 								image={item.images?.[0] || ""}

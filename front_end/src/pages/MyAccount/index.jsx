@@ -23,6 +23,7 @@ import { PhoneInput } from "react-international-phone";
 import MyContext from "../../context/MyContext";
 import AddressCard from "./AddressCard";
 import { useNavigate } from "react-router-dom";
+import { FiMenu } from "react-icons/fi";
 
 function MyAccount() {
 	const [userDetails, setUserDetails] = useState({
@@ -55,6 +56,8 @@ function MyAccount() {
 	const selectedAddress = address?.find((a) => a.status === true);
 	const otherAddresses = address?.filter((a) => a.status !== true);
 	const [openDrawer, setOpenDrawer] = useState(false);
+
+	const [sidebarOpen, setSidebarOpen] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -129,7 +132,7 @@ function MyAccount() {
 			if (!oldPassword || !newPassword || !confermPassword) {
 				setChangePass(true);
 				setMessage(
-					"❌ Old, new, and confirm password are required when changing email."
+					"❌ Old, new, and confirm password are required when changing email.",
 				);
 				return;
 			}
@@ -143,7 +146,7 @@ function MyAccount() {
 		if (passwordChangeOnly) {
 			if (!oldPassword || !newPassword || !confermPassword) {
 				setMessage(
-					"❌ Old, new, and confirm password are required when changing password."
+					"❌ Old, new, and confirm password are required when changing password.",
 				);
 				return;
 			}
@@ -183,17 +186,38 @@ function MyAccount() {
 		}
 	};
 
+	// for closing Accoubntsidebar
+	useEffect(() => {
+		if (sidebarOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+
+		return () => (document.body.style.overflow = "");
+	}, [sidebarOpen]);
+
 	return (
 		<section className="py-10 w-full">
-			<div className="container flex gap-5">
-				<div className="col1 w-[20%]">
+			<div className="container max-w-7xl mx-auto flex gap-5 px-4">
+				<div className="col1 hidden lg:block w-[22%]">
 					<AccountSideBar />
 				</div>
 
-				<div className="col2 w-[50%]">
+				<div className="col2 w-full">
 					<div className="card bg-white p-5 shadow-md rounded-md">
 						<div className="flex justify-between ">
 							<h2 className="pb-3">My Profile</h2>
+
+							<Button
+								onClick={() => setSidebarOpen(true)}
+								className="lg:hidden !min-w-[40px] !p-0 !text-[rgba(0,0,0,0.8)]"
+							>
+								<FiMenu className="text-[22px]" />
+							</Button>
+						</div>
+						<hr />
+						<div className="flex items-center justify-end">
 							{!isGoogleLogIn && (
 								<Button
 									className="!text-[#ff5252] !hover:underline cursor-pointer"
@@ -203,7 +227,6 @@ function MyAccount() {
 								</Button>
 							)}
 						</div>
-						<hr />
 
 						<form className="mt-5" onSubmit={handleSave} autoComplete="off">
 							<input
@@ -219,8 +242,8 @@ function MyAccount() {
 								style={{ display: "none" }}
 							/>
 
-							<div className="flex items-center gap-5">
-								<div className="w-[50%]">
+							<div className="flex flex-col md:flex-row gap-5">
+								<div className="w-full md:w-[50%]">
 									<TextField
 										label="Name"
 										name="name"
@@ -244,7 +267,7 @@ function MyAccount() {
 										}}
 									/>
 								</div>
-								<div className="w-[50%] relative">
+								<div className="w-full md:w-[50%] relative">
 									{" "}
 									{/* make parent relative */}
 									<PhoneInput
@@ -254,7 +277,7 @@ function MyAccount() {
 											onChangeInput({ target: { name: "mobile", value } })
 										}
 										disabled={!editMode.mobile} // editable only when true
-										inputClassName="w-full !h-10 !text-sm pr-10" // add padding so text doesn't clash with icon
+										inputClassName="w-full !bg-white !h-10 !text-sm pr-10" // add padding so text doesn't clash with icon
 									/>
 									{/* Edit/Check button inside container */}
 									<IconButton
@@ -293,8 +316,8 @@ function MyAccount() {
 								/>
 							</div>
 							{!selectedAddress ? (
-								<div className="my-4 p-4 border rounded-lg bg-white shadow-sm text-center">
-									<p className="text-gray-700 font-medium">
+								<div className="my-4 p-4 sm:p-5	border	rounded-lg	bg-white shadow-sm text-center max-w-full sm:max-w-[420px]	mx-auto">
+									<p className="text-gray-700 font-medium text-sm sm:text-base">
 										No address selected
 									</p>
 
@@ -302,7 +325,7 @@ function MyAccount() {
 										// If user already has addresses → allow them to select
 										<button
 											type="button"
-											className="text-[#ff5151] underline text-sm mt-2"
+											className="	mt-3 text-[#ff5151] underline text-sm sm:text-base font-medium	active:opacity-70"
 											onClick={() => setOpenDrawer(true)}
 										>
 											Select Address
@@ -310,7 +333,7 @@ function MyAccount() {
 									) : (
 										// If user has no addresses → show Add Address
 										<button
-											className="text-[#ff5151] underline text-sm mt-2"
+											className="mt-3 text-[#ff5151] underline text-sm sm:text-base font-medium	active:opacity-70"
 											onClick={() => {
 												navigate("/address");
 											}}
@@ -321,40 +344,62 @@ function MyAccount() {
 								</div>
 							) : (
 								/* SELECTED ADDRESS CARD */
-								<div className="my-4 p-4 border rounded-lg bg-white shadow-md">
+								<div
+									className="
+		my-4
+		p-4 sm:p-5
+		border
+		rounded-lg
+		bg-white
+		shadow-md
+		max-w-full
+	"
+								>
 									{/* Top Section */}
-									<div className="flex justify-between items-start">
-										<div>
-											<p className="text-[15px] font-semibold text-gray-900">
+									<div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+										<div className="flex-1">
+											<p className="text-sm sm:text-[15px] font-semibold text-gray-900">
 												{selectedAddress.addressType} Address
 											</p>
 
-											{/* ⭐ NEW: SHOW NAME */}
-											<p className="text-gray-900 font-medium mt-1">
+											{/* Name */}
+											<p className="text-gray-900 font-medium mt-1 text-sm sm:text-base">
 												{selectedAddress?.name}
 											</p>
 
-											<p className="text-gray-700 mt-1 leading-5">
+											{/* Address */}
+											<p className="text-gray-700 mt-1 leading-5 text-sm sm:text-base break-words">
 												{selectedAddress.address_line}, {selectedAddress.city},{" "}
 												{selectedAddress.state} - {selectedAddress.pincode}
 											</p>
 
 											{/* Landmark */}
 											{selectedAddress.landmark && (
-												<p className="text-gray-600 text-sm mt-1">
+												<p className="text-gray-600 text-xs sm:text-sm mt-1 break-words">
 													Landmark: {selectedAddress.landmark}
 												</p>
 											)}
 
 											{/* Mobile */}
-											<p className="text-gray-800 font-medium text-sm mt-1">
+											<p className="text-gray-800 font-medium text-xs sm:text-sm mt-1">
 												Phone: {selectedAddress.mobile}
 											</p>
 										</div>
 
 										{/* DEFAULT BADGE */}
 										{selectedAddress.status === true && (
-											<span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
+											<span
+												className="
+					self-start
+					text-[10px] sm:text-xs
+					bg-blue-100
+					text-blue-700
+					px-2 py-1
+					rounded
+					font-semibold
+					whitespace-nowrap
+				"
+											>
 												DEFAULT
 											</span>
 										)}
@@ -364,11 +409,17 @@ function MyAccount() {
 									<div className="border-t my-3"></div>
 
 									{/* Actions */}
-									<div className="flex justify-end gap-4">
+									<div className="flex justify-end gap-6">
 										<button
 											type="button"
 											onClick={() => handleDeleteAddress(selectedAddress._id)}
-											className="text-red-500 hover:text-red-700 font-semibold text-sm"
+											className="
+				text-red-500
+				font-semibold
+				text-xs sm:text-sm
+				hover:text-red-700
+				active:opacity-70
+			"
 										>
 											DELETE
 										</button>
@@ -376,7 +427,13 @@ function MyAccount() {
 										<button
 											type="button"
 											onClick={() => setOpenDrawer(true)}
-											className="text-[#ff5151] font-semibold text-sm"
+											className="
+				text-[#ff5151]
+				font-semibold
+				text-xs sm:text-sm
+				hover:underline
+				active:opacity-70
+			"
 										>
 											CHANGE
 										</button>
@@ -390,10 +447,12 @@ function MyAccount() {
 								open={openDrawer}
 								onClose={() => setOpenDrawer(false)}
 							>
-								<div className="w-[350px] p-4">
-									<h3 className="text-lg font-semibold mb-4">Select Address</h3>
+								<div className="w-screen sm:w-[380px] md:w-[420px] lg:w-[450px]	p-4 sm:p-5 flex flex-col">
+									<h3 className="text-base sm:text-lg font-semibold mb-4">
+										Select Address
+									</h3>
 
-									<div className="space-y-3">
+									<div className="space-y-3 overflow-y-auto flex-1">
 										{otherAddresses?.length > 0 ? (
 											otherAddresses.map((addr) => (
 												<AddressCard
@@ -408,8 +467,8 @@ function MyAccount() {
 											))
 										) : (
 											/* ⭐ Fallback If No Other Addresses */
-											<div className="text-center py-6 text-gray-600">
-												<p className="text-sm font-medium">
+											<div className="text-center py-10 text-gray-600">
+												<p className="text-sm sm:text-base font-medium">
 													No other addresses available
 												</p>
 
@@ -419,7 +478,7 @@ function MyAccount() {
 														setOpenDrawer(false);
 														navigate("/address"); // or open add address form
 													}}
-													className="mt-3 text-[#ff5151] underline text-sm font-medium"
+													className="mt-3 text-[#ff5151] underline text-sm sm:text-base font-medium"
 												>
 													Add New Address
 												</button>
@@ -430,104 +489,101 @@ function MyAccount() {
 							</Drawer>
 
 							{changePass && (
-								<div>
-									<h4 className="text-[13px] mt-5">Change Password</h4>
+								<div className="mt-6">
+									<h4 className="text-sm font-semibold mb-4">
+										Change Password
+									</h4>
 
 									{!isGoogleLogIn && (
-										<div className="flex items-center gap-5 mt-4">
-											<div className="w-[33%]">
-												<TextField
-													label="Old Password"
-													type={showPassword.old ? "text" : "password"}
-													name="oldPassword"
-													value={userDetails.oldPassword}
-													onChange={onChangeInput}
-													variant="outlined"
-													autoComplete="off"
-													size="small"
-													className="w-full"
-													InputProps={{
-														endAdornment: (
-															<InputAdornment position="end">
-																<IconButton
-																	onClick={() =>
-																		togglePasswordVisibility("old")
-																	}
-																	edge="end"
-																>
-																	{showPassword.old ? (
-																		<FaEyeSlash />
-																	) : (
-																		<FaEye />
-																	)}
-																</IconButton>
-															</InputAdornment>
-														),
-													}}
-												/>
-											</div>
-											<div className="w-[33%]">
-												<TextField
-													label="New Password"
-													type={showPassword.new ? "text" : "password"}
-													name="newPassword"
-													value={userDetails.newPassword}
-													onChange={onChangeInput}
-													variant="outlined"
-													autoComplete="off"
-													size="small"
-													className="w-full"
-													InputProps={{
-														endAdornment: (
-															<InputAdornment position="end">
-																<IconButton
-																	onClick={() =>
-																		togglePasswordVisibility("new")
-																	}
-																	edge="end"
-																>
-																	{showPassword.new ? (
-																		<FaEyeSlash />
-																	) : (
-																		<FaEye />
-																	)}
-																</IconButton>
-															</InputAdornment>
-														),
-													}}
-												/>
-											</div>
-											<div className="w-[33%]">
-												<TextField
-													label="Confirm Password"
-													type={showPassword.confirm ? "text" : "password"}
-													name="confermPassword"
-													value={userDetails.confermPassword}
-													onChange={onChangeInput}
-													variant="outlined"
-													autoComplete="off"
-													size="small"
-													className="w-full"
-													InputProps={{
-														endAdornment: (
-															<InputAdornment position="end">
-																<IconButton
-																	onClick={() =>
-																		togglePasswordVisibility("confirm")
-																	}
-																	edge="end"
-																>
-																	{showPassword.confirm ? (
-																		<FaEyeSlash />
-																	) : (
-																		<FaEye />
-																	)}
-																</IconButton>
-															</InputAdornment>
-														),
-													}}
-												/>
-											</div>
+										<div
+											className="
+					grid
+					grid-cols-1
+					sm:grid-cols-2
+					lg:grid-cols-3
+					gap-4
+				"
+										>
+											{/* Old Password */}
+											<TextField
+												label="Old Password"
+												type={showPassword.old ? "text" : "password"}
+												name="oldPassword"
+												value={userDetails.oldPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() => togglePasswordVisibility("old")}
+																edge="end"
+															>
+																{showPassword.old ? <FaEyeSlash /> : <FaEye />}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
+
+											{/* New Password */}
+											<TextField
+												label="New Password"
+												type={showPassword.new ? "text" : "password"}
+												name="newPassword"
+												value={userDetails.newPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() => togglePasswordVisibility("new")}
+																edge="end"
+															>
+																{showPassword.new ? <FaEyeSlash /> : <FaEye />}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
+
+											{/* Confirm Password */}
+											<TextField
+												label="Confirm Password"
+												type={showPassword.confirm ? "text" : "password"}
+												name="confermPassword"
+												value={userDetails.confermPassword}
+												onChange={onChangeInput}
+												variant="outlined"
+												autoComplete="off"
+												size="small"
+												className="w-full"
+												InputProps={{
+													endAdornment: (
+														<InputAdornment position="end">
+															<IconButton
+																onClick={() =>
+																	togglePasswordVisibility("confirm")
+																}
+																edge="end"
+															>
+																{showPassword.confirm ? (
+																	<FaEyeSlash />
+																) : (
+																	<FaEye />
+																)}
+															</IconButton>
+														</InputAdornment>
+													),
+												}}
+											/>
 										</div>
 									)}
 								</div>
@@ -536,17 +592,17 @@ function MyAccount() {
 							<br />
 							{message && (
 								<p
-									className="text-sm mb-2"
+									className="text-sm mt-4 mb-2"
 									style={{ color: message.includes("✅") ? "green" : "red" }}
 								>
 									{message}
 								</p>
 							)}
 
-							<div className="flex items-center gap-4">
+							<div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4">
 								<Button
 									type="submit"
-									className="btn-org btn-lg w-[100px]"
+									className="btn-org btn-lg w-full sm:w-[120px]"
 									disabled={loading}
 								>
 									{loading ? (
@@ -559,7 +615,7 @@ function MyAccount() {
 								<Button
 									type="button"
 									onClick={() => window.location.reload()}
-									className="btn-org btn-lg btn-border w-[100px]"
+									className="btn-org btn-lg btn-border w-full sm:w-[120px]"
 								>
 									Cancel
 								</Button>
@@ -568,6 +624,28 @@ function MyAccount() {
 					</div>
 				</div>
 			</div>
+
+			{/* overlay accountsidebar */}
+			{sidebarOpen && (
+				<div className="fixed inset-0 z-50 lg:hidden">
+					{/* backdrop */}
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setSidebarOpen(false)}
+					/>
+
+					{/* drawer */}
+					<div className="absolute left-0 top-0 h-full w-[80%] max-w-[320px] bg-white shadow-lg animate-slide-in">
+						<div className="flex justify-between items-center p-4 border-b">
+							<h3 className="font-semibold">My Account</h3>
+							<button onClick={() => setSidebarOpen(false)}>✕</button>
+						</div>
+
+						<AccountSideBar />
+					</div>
+				</div>
+			)}
+			{/* overlay accountsidebar */}
 		</section>
 	);
 }

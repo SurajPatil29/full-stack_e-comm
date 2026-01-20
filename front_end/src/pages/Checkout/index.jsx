@@ -276,8 +276,8 @@ function Checkout() {
 
 	return (
 		<section className="py-10">
-			<div className="container flex gap-5">
-				<div className="leftCol w-[70%] pl-20 ">
+			<div className="container flex flex-col md:flex-row gap-5">
+				<div className="leftCol w-full md:w-[70%] px-4 md:pl-10 ">
 					<div className="flex justify-between items-center ">
 						<h3 className="text-xl font-semibold">Addresses</h3>
 
@@ -289,12 +289,13 @@ function Checkout() {
 									backgroundColor: "#ff5151",
 									"&:hover": { backgroundColor: "#e64545" },
 								}}
+								className="!capitalize !text-[12px] sm:!text-[15px] "
 							>
 								Add New Address
 							</Button>
 						)}
 					</div>
-					<div className="pl-20 relative">
+					<div className="px-0 lg:px-20 relative">
 						{addressIsLoading && (
 							<div className="absolute inset-0 z-10 bg-white/60 flex items-center justify-center rounded-lg">
 								<CircularProgress size={40} color="error" />
@@ -304,7 +305,7 @@ function Checkout() {
 							Addresses?.map((item, i) => (
 								<div
 									key={i}
-									className={`my-4 p-4 rounded-lg w-[70%] transition-all cursor-pointer
+									className={`my-4 p-4 rounded-lg w-full  transition-all cursor-pointer
 					${
 						item.status
 							? "border-2 border-[#ff5151] bg-[#fff5f5] shadow-md"
@@ -316,7 +317,7 @@ function Checkout() {
 										!addressIsLoading && handleDefaultAddressSelection(item._id)
 									}
 								>
-									<div className="flex gap-4 items-start">
+									<div className="flex flex-col sm:flex-row gap-4">
 										{/* Radio for Default */}
 										<input
 											type="radio"
@@ -359,7 +360,7 @@ function Checkout() {
 												Phone : {item.mobile}
 											</p>
 											{item.status === true && (
-												<button className="w-[90%] bg-[#ff5151] text-white rounded-md  !capitalize py-2 ">
+												<button className="w-full !text-[12px] sm:!text-[15px] sm:w-[90%] bg-[#ff5151] text-white rounded-md  !capitalize py-2 ">
 													Deliver to this Address
 												</button>
 											)}
@@ -410,8 +411,8 @@ function Checkout() {
 					</div>
 				</div>
 
-				<div className="rightCol w-[30%] ">
-					<div className="card shadow-md bg-white p-5 rounded-md">
+				<div className="rightCol w-full md:w-[30%] ">
+					<div className="card shadow-md bg-white p-5 rounded-md lg:sticky lg:top-20">
 						<h2 className="mb-4 ">Your Order</h2>
 
 						<div className="flex items-center justify-between py-3 border-t border-b border-[rgba(0,0,0,0.1)] ">
@@ -419,11 +420,11 @@ function Checkout() {
 							<span className="text-[14px] font-[600]">Subtotal</span>
 						</div>
 
-						<div className="scroll max-h-[300px] overflow-x-hidden overflow-y-scroll ">
+						<div className="scroll max-h-[220px] sm:max-h-[300px] overflow-x-hidden overflow-y-scroll ">
 							{selectedCartItems?.length > 0 &&
 								selectedCartItems?.map((item, i) => (
 									<div
-										className="flex items-center justify-between py-2"
+										className="flex flex-col sm:flex-row sm:items-center justify-between py-2 gap-2 "
 										key={i}
 									>
 										<div className="part1 flex items-center gap-3">
@@ -482,7 +483,7 @@ function Checkout() {
 
 								<div className="space-y-3">
 									{/* Razorpay */}
-									<label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:border-[#ff5151]">
+									<label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:border-[#ff5151]">
 										<input
 											type="radio"
 											name="paymentMethod"

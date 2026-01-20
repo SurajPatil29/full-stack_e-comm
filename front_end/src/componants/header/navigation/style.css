@@ -24,5 +24,13 @@
 	visibility: inherit;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}
+.scrollbar-hide {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
 /* this css is use to navbar and catagory pannel  */
 /* use to hide the submenu and inner menu and show it when hover on the container this css will say */

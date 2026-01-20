@@ -16,9 +16,9 @@ function OrderSuccess() {
 	}
 
 	return (
-		<section className="min-h-[70vh] flex items-center justify-center">
-			<div className="bg-white shadow-lg rounded-lg p-8 w-[420px] text-center">
-				<BsCheckCircleFill className="text-green-500 text-6xl mx-auto" />
+		<section className="min-h-[70vh] flex items-center justify-center px-4">
+			<div className="bg-white shadow-lg rounded-lg  p-6 sm:p-8 w-full max-w-[420px] text-center">
+				<BsCheckCircleFill className="text-green-500 text-5xl sm:text-6xl mx-auto" />
 
 				<h2 className="text-2xl font-bold mt-4">
 					Order Placed Successfully 🎉
@@ -26,14 +26,14 @@ function OrderSuccess() {
 
 				<p className="text-gray-600 mt-2">Thank you for shopping with us.</p>
 
-				<div className="bg-gray-50 p-3 rounded-md mt-4">
+				<div className="bg-gray-50 p-3 rounded-md mt-4 text-sm">
 					<p className="text-sm text-gray-700">
 						Order ID:
 						<span className="font-semibold ml-1">{orderId}</span>
 					</p>
 				</div>
 
-				<div className="flex gap-3 mt-6">
+				<div className="flex flex-col sm:flex-row gap-3 mt-6">
 					<Link to="/my-orders" className="w-full">
 						<Button
 							variant="outlined"
