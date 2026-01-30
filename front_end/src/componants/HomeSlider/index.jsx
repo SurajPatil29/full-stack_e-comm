@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import { Autoplay, Navigation } from "swiper/modules"; //moduls from swiper slider use in swiper componant
 
 import "./style.css";
+import { Link } from "react-router-dom";
 
 function HomeSlider({ data }) {
 	if (!data || data.length === 0) {
@@ -23,6 +24,7 @@ function HomeSlider({ data }) {
 			</div>
 		);
 	}
+	// console.log(data);
 	return (
 		<div className="homeSlider py-4">
 			<div className="container">
@@ -63,10 +65,14 @@ function HomeSlider({ data }) {
 							item.isActive ? (
 								<SwiperSlide key={i}>
 									<div className="item rounded-[6px] overflow-hidden">
-										<img
-											src={item.images[0]}
-											alt={`banner-${i}`}
-											className="
+										<Link
+											to={`/productDetails/${item?.productId}`}
+											className="pointer-events-auto"
+										>
+											<img
+												src={item.images[0]}
+												alt={`banner-${i}`}
+												className="
 										w-full 
 										h-[160px] 
 										sm:h-[220px] 
@@ -74,10 +80,11 @@ function HomeSlider({ data }) {
 										lg:h-[360px] 
 										object-cover
 									"
-										/>
+											/>
+										</Link>
 									</div>
 								</SwiperSlide>
-							) : null
+							) : null,
 						)}
 				</Swiper>
 			</div>

@@ -51,7 +51,7 @@ productRouter.post(
 	"/uploadReviewImages",
 	auth,
 	upload.array("images"),
-	uploadReviewImage
+	uploadReviewImage,
 );
 
 productRouter.post("/create", auth, createProduct);
@@ -70,11 +70,11 @@ productRouter.get("/getAllProductsBySubCatId/:Id", getAllProductsBySubCatId);
 productRouter.get("/getAllProductsBySubCatName", getAllProductsBySubCatName);
 productRouter.get(
 	"/getAllProductsByThirdLevelCatId/:Id",
-	getAllProductsByThirdLevelCatId
+	getAllProductsByThirdLevelCatId,
 );
 productRouter.get(
 	"/getAllProductsByThirdLevelCatName",
-	getAllProductsByThirdLevelCatName
+	getAllProductsByThirdLevelCatName,
 );
 productRouter.get("/filter", getFilteredProducts);
 productRouter.get("/getAllProductsByPrice", getAllProductsByPrice);
@@ -87,11 +87,11 @@ productRouter.delete("/deleteMultiple", deleteMultipleProduct);
 productRouter.delete("/productRAMs/deleteMultiple", deleteMultipleProductRAMs);
 productRouter.delete(
 	"/productSizes/deleteMultiple",
-	deleteMultipleProductSizes
+	deleteMultipleProductSizes,
 );
 productRouter.delete(
 	"/productWeights/deleteMultiple",
-	deleteMultipleProductWeights
+	deleteMultipleProductWeights,
 );
 productRouter.delete("/:id", deleteProduct);
 productRouter.delete("/productRAMs/:id", deleteProductRAMs);

@@ -20,7 +20,7 @@ import { HiOutlineMenuAlt2 } from "react-icons/hi";
 function ProductListing() {
 	const [itemView, setItemView] = useState("grid");
 	const [anchorEl, setAnchorEl] = useState(null);
-	const { id } = useParams();
+	const { type, id } = useParams();
 	const [productsData, setProductsData] = useState([]);
 	const [originalProducts, setOriginalProducts] = useState([]);
 	const [sortType, setSortType] = useState("relevance");
@@ -117,9 +117,17 @@ function ProductListing() {
 		const fetchProducts = async () => {
 			try {
 				setIsLoading(true);
-				const res = await fetchDataFromApi(
-					`/api/product/getAllProductsByCatId/${id}`
-				);
+				let apiUrl = "";
+
+				if (type === "cat") {
+					apiUrl = `/api/product/getAllProductsByCatId/${id}`;
+				} else if (type === "sub") {
+					apiUrl = `/api/product/getAllProductsBySubCatId/${id}`;
+				} else if (type === "third") {
+					apiUrl = `/api/product/getAllProductsByThirdLevelCatId/${id}`;
+				}
+
+				const res = await fetchDataFromApi(apiUrl);
 
 				if (res?.success) {
 					setOriginalProducts(res.products);

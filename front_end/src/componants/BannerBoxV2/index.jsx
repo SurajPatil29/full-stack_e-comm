@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 
 function BannerBoxV2(props) {
 	const side = (props.info || "").toLowerCase();
+	const categoryId = props?.item?.catId;
+
+	// console.log(props);
 
 	return (
 		<div className="bannerBoxV2 w-full overflow-hidden rounded-[6px] group relative">
@@ -31,12 +34,14 @@ function BannerBoxV2(props) {
 				</span>
 
 				<div className="w-full">
-					<Link
-						to="/"
-						className="link text-[11px] sm:text-[18px] md:text-[20px]  lg:text-[16px] font-[500]"
-					>
-						SHOP NOW
-					</Link>
+					{categoryId && (
+						<Link
+							to={`/productListing/cat/${categoryId}`}
+							className="link text-[11px] sm:text-[18px] md:text-[20px] lg:text-[16px] font-[500]"
+						>
+							SHOP NOW
+						</Link>
+					)}
 				</div>
 			</div>
 		</div>
@@ -45,9 +50,14 @@ function BannerBoxV2(props) {
 
 BannerBoxV2.propTypes = {
 	image: PropTypes.string.isRequired,
-	info: PropTypes.string.isRequired, // FIXED
+	info: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	item: PropTypes.shape({
+		catId: PropTypes.string,
+		subCatId: PropTypes.string,
+		thirdsubCatId: PropTypes.string,
+	}),
 };
 
 export default BannerBoxV2;

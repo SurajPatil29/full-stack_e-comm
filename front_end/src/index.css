@@ -187,6 +187,7 @@ nav ul Button:hover {
 .swiper-button-prev:hover {
 	background: #ff5252 !important;
 }
+
 /* swiper buttons css set default */
 
 .swiper-button-next:hover::after,
@@ -194,6 +195,14 @@ nav ul Button:hover {
 	color: #fff !important;
 }
 /* swiper buttons css set default */
+
+/* Hide arrows on mobile */
+@media (max-width: 1023px) {
+	.swiper-button-prev,
+	.swiper-button-next {
+		display: none !important;
+	}
+}
 
 .homeCatSlider .item:hover img {
 	transform: scale(1.1);

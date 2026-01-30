@@ -143,7 +143,7 @@ function App() {
 		quantity = 1,
 		ram,
 		size,
-		weight
+		weight,
 	) => {
 		try {
 			setIsLoadingAddToCart(true);
@@ -189,7 +189,7 @@ function App() {
 			if (quantity > product.countInStock) {
 				openAlertBox(
 					"error",
-					`Only ${product.countInStock} items available in stock.`
+					`Only ${product.countInStock} items available in stock.`,
 				);
 				setIsLoadingAddToCart(false);
 
@@ -396,7 +396,7 @@ function App() {
 				<Routes>
 					<Route path={"/"} exact={true} element={<Home />} />
 					<Route
-						path={"/productListing/:id"}
+						path={"/productListing/:type/:id"}
 						exact={true}
 						element={<ProductListing />}
 					/>

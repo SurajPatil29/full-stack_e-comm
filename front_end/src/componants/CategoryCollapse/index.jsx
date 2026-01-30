@@ -23,16 +23,20 @@ function CategoryCollapse({ data }) {
 					<li key={cat._id} className="relative">
 						{/* Main Category Button */}
 						<div
-							onClick={() => toggleMenu(i)}
 							className="flex justify-between items-center px-3 py-3 cursor-pointer
 							 bg-white hover:bg-gray-100 rounded-md shadow-sm border 
 							 transition-all duration-200"
 						>
-							<span className="font-medium text-[15px] text-gray-800">
-								{cat.name}
-							</span>
+							<Link to={`/productListing/cat/${cat._id}`}>
+								<span className="font-medium text-[15px] text-gray-800">
+									{cat.name}
+								</span>
+							</Link>
 
-							<div className="transition-transform duration-300">
+							<div
+								className="transition-transform duration-300"
+								onClick={() => toggleMenu(i)}
+							>
 								{openMenu === i ? (
 									<AiOutlineMinus className="text-gray-600" />
 								) : (
@@ -50,16 +54,20 @@ function CategoryCollapse({ data }) {
 								{cat.children.map((sub, j) => (
 									<li key={sub._id} className="relative">
 										<div
-											onClick={() => toggleSub(j)}
 											className="flex justify-between items-center py-2 cursor-pointer
 											 hover:bg-gray-100 rounded px-2 transition"
 										>
-											<span className="text-[14px] text-gray-700 font-normal">
-												{sub.name}
-											</span>
+											<Link to={`/productListing/sub/${sub._id}`}>
+												<span className="text-[14px] text-gray-700 font-normal">
+													{sub.name}
+												</span>
+											</Link>
 
 											{sub.children?.length > 0 && (
-												<div className="transition-transform duration-300">
+												<div
+													className="transition-transform duration-300"
+													onClick={() => toggleSub(j)}
+												>
 													{openSubMenu === j ? (
 														<AiOutlineMinus className="text-gray-600" />
 													) : (
@@ -75,7 +83,7 @@ function CategoryCollapse({ data }) {
 												{sub.children.map((inner) => (
 													<li key={inner._id}>
 														<Link
-															to={`/products/${inner._id}`}
+															to={`/productListing/third/${inner._id}`}
 															className="block py-1 text-[14px] text-gray-600 hover:text-primary hover:font-medium transition"
 														>
 															{inner.name}

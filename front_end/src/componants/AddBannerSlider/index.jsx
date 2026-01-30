@@ -29,7 +29,7 @@ function AddBannerSlider({ items, data, prodType }) {
 			<Swiper
 				loop={data?.length > items}
 				spaceBetween={16}
-				navigation={false}
+				navigation={true}
 				modules={[Navigation]}
 				className="smlBtn"
 				breakpoints={{
@@ -59,10 +59,13 @@ function AddBannerSlider({ items, data, prodType }) {
 					? data?.map((item, i) =>
 							prodType === item.prodType ? (
 								<SwiperSlide key={i}>
-									<BannerBox img={item.images[0]} link={"/"} />
+									<BannerBox
+										img={item.images[0]}
+										link={`/productListing/cat/${item?.catId}`}
+									/>
 								</SwiperSlide>
-							) : null
-					  )
+							) : null,
+						)
 					: null}
 				{/* <SwiperSlide>
 					<BannerBox

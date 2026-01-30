@@ -60,7 +60,6 @@ function DashboardBoxes() {
 			<Swiper
 				slidesPerView={4}
 				spaceBetween={10}
-				navigation={true}
 				scrollbar={{
 					draggable: true, // 👈 enable drag
 					hide: false, // 👈 always visible (optional)
@@ -81,9 +80,11 @@ function DashboardBoxes() {
 					},
 					1080: {
 						slidesPerView: 3, // 720px – 1079px
+						navigation: true,
 					},
 					1280: {
 						slidesPerView: 4, // desktop
+						navigation: true,
 					},
 				}}
 			>

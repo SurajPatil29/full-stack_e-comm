@@ -111,7 +111,7 @@ function ProductListCompo() {
 				params.append("thirdsubCatId", thirdCategoryValue);
 
 			const res = await fetchDataFromApi(
-				`/api/product/filter?${params.toString()}`
+				`/api/product/filter?${params.toString()}`,
 			);
 			setTimeout(() => {
 				setProducts(res.products || []);
@@ -153,7 +153,7 @@ function ProductListCompo() {
 		setSubCategoryValue(selectedSubId);
 
 		const selectedSubCategory = subCatData.find(
-			(sub) => sub._id === selectedSubId
+			(sub) => sub._id === selectedSubId,
 		);
 		setThirdCatData(selectedSubCategory?.children || []);
 		setThirdCategoryValue("");
@@ -202,7 +202,7 @@ function ProductListCompo() {
 
 	const handleSelectOne = (id) => {
 		setSelected((prev) =>
-			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
 		);
 	};
 
@@ -212,7 +212,7 @@ function ProductListCompo() {
 			const response = await deleteData(`/api/product/${id}`);
 			setTimeout(() => {
 				setProducts((prevProducts) =>
-					prevProducts.filter((product) => product._id !== id)
+					prevProducts.filter((product) => product._id !== id),
 				);
 				setLoading(false);
 			}, 1000);
@@ -230,13 +230,13 @@ function ProductListCompo() {
 					if (res.success) {
 						setTimeout(() => {
 							setProducts((prev) =>
-								prev.filter((p) => !selected.includes(p._id))
+								prev.filter((p) => !selected.includes(p._id)),
 							);
 							context.openAlertBox("success", "Products deleted");
 							setLoading(false);
 						}, 1000);
 					}
-				}
+				},
 			);
 		} catch (error) {
 			console.log(error);
@@ -415,10 +415,21 @@ function ProductListCompo() {
 													</Link>
 												</div>
 												<div>
-													<h3 className="font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
+													<h3 className="relative group font-[600] text-[12px] leading-4 hover:text-[#3872fa]">
 														<Link to={`/productDetails/${product._id}`}>
-															{product.name}
+															{product?.name?.length > 22
+																? product.name.slice(0, 20) + "..."
+																: product?.name}
 														</Link>
+
+														{/* Tooltip */}
+														<div
+															className="absolute left-1/2 top-full z-50 hidden w-max max-w-[250px]
+                  -translate-x-1/2 rounded-md bg-black px-2 py-1 text-[11px]
+                  text-white shadow-md group-hover:block"
+														>
+															{product?.name}
+														</div>
 													</h3>
 													<p className="text-[12px]">{product.brand}</p>
 												</div>
@@ -533,7 +544,7 @@ function ProductListCompo() {
 														onClick={() => {
 															if (
 																window.confirm(
-																	"Are you sure you want to delete this product?"
+																	"Are you sure you want to delete this product?",
 																)
 															) {
 																deleteProduct(product._id);

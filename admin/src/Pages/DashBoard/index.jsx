@@ -22,6 +22,7 @@ import { useState } from "react";
 import { fetchDataFromApi } from "../../utils/api";
 import { useEffect } from "react";
 import Chart from "./Chart";
+import { Link } from "react-router-dom";
 // here was 2 tooltip because i rename tooltip
 
 // custom tooltip for chart
@@ -92,17 +93,25 @@ flex md:flex-row items-center gap-6 mb-5 justify-between rounded-md"
 						once.
 					</p>
 
-					<Button
-						className="btn-blue !capitalize gap-3 w-full sm:w-auto"
-						onClick={() =>
-							context.setIsOpenFullScreenPanel({
-								open: true,
-								model: "Add Product",
-							})
-						}
-					>
-						<FaPlus /> Add Product
-					</Button>
+					{context.isLogin ? (
+						<Button
+							className="btn-blue !capitalize gap-3 w-full sm:w-auto"
+							onClick={() =>
+								context.setIsOpenFullScreenPanel({
+									open: true,
+									model: "Add Product",
+								})
+							}
+						>
+							<FaPlus /> Add Product
+						</Button>
+					) : (
+						<Link to="/login">
+							<Button className="btn-blue !capitalize gap-3 w-full sm:w-auto">
+								LogIn
+							</Button>
+						</Link>
+					)}
 				</div>
 
 				{/* RIGHT IMAGE */}
@@ -113,18 +122,22 @@ flex md:flex-row items-center gap-6 mb-5 justify-between rounded-md"
 				/>
 			</div>
 
-			<DashboardBoxes />
+			{context.isLogin && (
+				<>
+					<DashboardBoxes />
 
-			{/* Product Table */}
-			<ProductListCompo />
+					{/* Product Table */}
+					<ProductListCompo />
 
-			{/* recent order table */}
+					{/* recent order table */}
 
-			<OrdersCompo />
+					<OrdersCompo />
 
-			{/* recent order table */}
+					{/* recent order table */}
 
-			<Chart />
+					<Chart />
+				</>
+			)}
 		</>
 	);
 }

@@ -46,23 +46,28 @@ function EditBanner() {
 	const [product, setProduct] = useState({});
 
 	// FIXED USEEFFECT
-	useEffect(() => {
-		const fetchProduct = async () => {
-			try {
-				const res = await fetchDataFromApi(
-					`/api/product/${formFields.productId}`
-				);
-				if (res?.error === false) {
-					setProduct(res.data);
-				}
-			} catch (error) {
-				console.log(error);
-				setMessage("❌ Failed to get product details. Try again.");
-			}
-		};
 
-		fetchProduct();
-	}, []);
+	// const fetchProduct = async () => {
+	// 	try {
+	// 		console.log(formFields);
+	// 		const res = await fetchDataFromApi(
+	// 			`/api/product/${formFields.productId._id}`,
+	// 		);
+	// 		if (res?.error === false) {
+	// 			setProduct(res.data);
+	// 			console.log(res.data);
+	// 		}
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 		setMessage("❌ Failed to get product details. Try again.");
+	// 	}
+	// };
+
+	// useEffect(() => {
+	// 	if (!formFields.productId) return;
+
+	// 	fetchProduct();
+	// }, [formFields.productId]);
 
 	// ✅ Fetch existing banner details
 	useEffect(() => {
@@ -75,6 +80,7 @@ function EditBanner() {
 				// console.log(banner.images);
 				setFormFields({
 					image: banner.images[0] || "",
+					productId: banner.productId || "",
 				});
 			}
 		});
@@ -87,7 +93,7 @@ function EditBanner() {
 			setIsLoading(true);
 			const res = await deleteImagefromCloudi(
 				"/api/banner/remove-image",
-				formFields.image
+				formFields.image,
 			);
 			console.log(res);
 			setFormFields((prev) => ({ ...prev, image: "" }));
@@ -144,7 +150,7 @@ function EditBanner() {
 						<InputBox
 							label="Product Name"
 							name="productName"
-							value={product.name}
+							value={formFields.productId.name}
 							required
 							readOnly
 						/>

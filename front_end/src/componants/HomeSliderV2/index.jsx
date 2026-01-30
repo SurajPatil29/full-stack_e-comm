@@ -9,6 +9,7 @@ import "swiper/css/pagination";
 // import required modules
 import { EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 function HomeBanner2({ data }) {
 	// this home main / top slider is crete using swiper slider this is v2
@@ -70,14 +71,16 @@ function HomeBanner2({ data }) {
 										</span>
 									</h3>
 									<div className="w-full text-center md:text-left">
-										<Button className="md:btn-org !text-[#fff] !bg-[#ff5151] !text-[10px] sm:!text-[13px]	md:!text-[14px] !px-2	md:!px-4 !py-1  md:!py-2">
-											SHOP NOW
-										</Button>
+										<Link to={`/productDetails/${item?.productId}`}>
+											<Button className="md:btn-org !text-[#fff] !bg-[#ff5151] !text-[10px] sm:!text-[13px]	md:!text-[14px] !px-2	md:!px-4 !py-1  md:!py-2">
+												SHOP NOW
+											</Button>
+										</Link>
 									</div>
 								</div>
 							</div>
 						</SwiperSlide>
-					) : null
+					) : null,
 				)}
 		</Swiper>
 	);

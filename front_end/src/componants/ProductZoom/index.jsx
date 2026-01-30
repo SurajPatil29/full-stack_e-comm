@@ -22,23 +22,23 @@ function ProductZoom({ images = [] }) {
 			<div className="w-full sm:w-[10%] order-2 hidden sm:block sm:order-1">
 				<Swiper
 					ref={zoomSliderSml}
+					navigation={true}
 					breakpoints={{
-						0: {
-							direction: "horizontal",
-							slidesPerView: 4,
-							navigation: "false",
-						},
 						640: {
 							direction: "vertical",
-							slidesPerView: 6,
-							navigation: "true",
+							slidesPerView: 4,
+						},
+
+						840: {
+							direction: "vertical",
+							slidesPerView: 5,
 						},
 					}}
 					mousewheel={true}
 					spaceBetween={10}
 					// navigation={true}
 					modules={[Mousewheel, Navigation]}
-					className="zoomProductSliderThumbs h-[90px] sm:h-[420px] overflow-hidden"
+					className="zoomProductSliderThumbs pt-5  h-[90px] sm:h-[440px] overflow-hidden"
 				>
 					{images.map((img, index) => (
 						<SwiperSlide key={index}>

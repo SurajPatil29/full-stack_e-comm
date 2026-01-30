@@ -24,7 +24,7 @@ function AddBannerSliderV2({ items, data, dir }) {
 			</div>
 		);
 	}
-
+	// console.log(data);
 	return (
 		<div className=" px-8 w-full  gap-4">
 			<Swiper
@@ -47,9 +47,10 @@ function AddBannerSliderV2({ items, data, dir }) {
 								image={item.images?.[0] || ""}
 								title={item.title}
 								price={item.price}
+								item={item}
 							/>
 						</SwiperSlide>
-					) : null
+					) : null,
 				)}
 			</Swiper>
 		</div>

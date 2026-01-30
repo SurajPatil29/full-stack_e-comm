@@ -7,7 +7,7 @@ import SliderBannerV2 from "../models/sliderBannerV2.model.js";
 // ✅ Upload to Cloudinary helper
 const uploadToCloudinary = async (
 	files = [],
-	folder = "classyshop/bannerimgV2"
+	folder = "classyshop/bannerimgV2",
 ) => {
 	const uploadedImages = [];
 	const validMimeTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -86,7 +86,7 @@ export async function getBanner(req, res, next) {
 		if (!mongoose.Types.ObjectId.isValid(id))
 			return sendError(res, "Invalid banner ID", 400);
 
-		const banner = await SliderBannerV2.findById(id);
+		const banner = await SliderBannerV2.findById(id).populate("productId");
 		if (!banner) return sendError(res, "Banner not found", 404);
 
 		return sendSuccess(res, "Banner fetched successfully", { data: banner });
@@ -106,7 +106,7 @@ export async function removeBannerImage(req, res, next) {
 
 		// Extract public_id from Cloudinary URL
 		const match = imgUrl.match(
-			/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
+			/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/,
 		);
 
 		if (!match || !match[1]) {
@@ -122,7 +122,7 @@ export async function removeBannerImage(req, res, next) {
 			return sendError(
 				res,
 				"Image not found on Cloudinary or deletion failed",
-				404
+				404,
 			);
 		}
 
@@ -169,7 +169,7 @@ export async function updateBanner(req, res, next) {
 			updateData,
 			{
 				new: true,
-			}
+			},
 		);
 
 		if (!updatedBanner) return sendError(res, "Banner not found", 404);
@@ -196,7 +196,7 @@ export async function isActiveBanner(req, res, next) {
 		const updatedBanner = await SliderBannerV2.findByIdAndUpdate(
 			id,
 			{ isActive },
-			{ new: true }
+			{ new: true },
 		);
 		if (!updatedBanner) return sendError(res, "Banner not found", 404);
 
@@ -219,7 +219,7 @@ export async function deleteBanner(req, res, next) {
 		// Delete all images from Cloudinary
 		const deleteImagePromises = banner.images.map(async (imgUrl) => {
 			const match = imgUrl.match(
-				/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
+				/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/,
 			);
 			if (match && match[1]) {
 				await cloudinary.uploader.destroy(match[1]);
@@ -252,7 +252,7 @@ export async function deleteMultipleBanners(req, res, next) {
 			// Delete all images from Cloudinary
 			const deleteImagePromises = banner.images.map(async (imgUrl) => {
 				const match = imgUrl.match(
-					/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/
+					/upload\/(?:v\d+\/)?(.+)\.(jpg|jpeg|png|webp|gif)/,
 				);
 				if (match && match[1]) {
 					await cloudinary.uploader.destroy(match[1]);

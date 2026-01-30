@@ -25,6 +25,8 @@ function Blog({ items = 4, data = [], loading }) {
 				<Swiper
 					spaceBetween={16}
 					loop={data?.length > items}
+					navigation={true}
+					modules={[Navigation]}
 					breakpoints={{
 						// 📱 Mobile
 						0: {

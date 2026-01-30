@@ -89,7 +89,7 @@ function ProductDetails() {
 
 		const loadRelated = async () => {
 			const res = await fetchDataFromApi(
-				`/api/product/getAllProductsByCatId/${productData.catId}`
+				`/api/product/getAllProductsByCatId/${productData.catId}`,
 			);
 
 			// console.log("Related response:", res);
@@ -123,7 +123,7 @@ function ProductDetails() {
 		try {
 			const res = await deleteDataReview(
 				`/api/product/reviewDelete/${id}`,
-				{ userId: formFields.userId } // must be object
+				{ userId: formFields.userId }, // must be object
 			);
 
 			if (res.success) {
@@ -316,7 +316,7 @@ function ProductDetails() {
 
 													<p className="text-gray-500 text-[12px]">
 														{new Date(rev.createdAt).toLocaleDateString(
-															"en-IN"
+															"en-IN",
 														)}
 													</p>
 
@@ -454,7 +454,7 @@ function ProductDetails() {
 				<div className="container">
 					<h2 className="text-[18px] sm:text-[20px] mb-3">Related Products</h2>
 					<ProductsSlider
-						items={6}
+						items={5}
 						data={relatedProdData}
 						loading={isLoading}
 					/>

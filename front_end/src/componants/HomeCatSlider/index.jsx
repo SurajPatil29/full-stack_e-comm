@@ -25,7 +25,7 @@ function HomeCatSlider({ data }) {
 				<Swiper
 					loop={true}
 					spaceBetween={12}
-					navigation={false}
+					navigation={true}
 					modules={[Navigation]}
 					breakpoints={{
 						// 📱 Mobile
@@ -60,7 +60,7 @@ function HomeCatSlider({ data }) {
 				>
 					{data?.map((cat, i) => (
 						<SwiperSlide key={i}>
-							<Link to="/">
+							<Link to={`/productListing/cat/${cat?._id}`}>
 								<div className="item py-6 px-3 bg-white rounded-[6px] text-center flex items-center justify-center flex-col transition-all duration-300 hover:shadow-lg">
 									<img
 										src={cat.images[0]}

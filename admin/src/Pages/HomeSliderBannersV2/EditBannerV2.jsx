@@ -49,23 +49,23 @@ function EditBannerV2() {
 	const [product, setProduct] = useState({});
 
 	// FIXED USEEFFECT
-	useEffect(() => {
-		const fetchProduct = async () => {
-			try {
-				const res = await fetchDataFromApi(
-					`/api/product/${formFields.productId}`
-				);
-				if (res?.error === false) {
-					setProduct(res.data);
-				}
-			} catch (error) {
-				console.log(error);
-				setMessage("❌ Failed to get product details. Try again.");
-			}
-		};
+	// useEffect(() => {
+	// 	const fetchProduct = async () => {
+	// 		try {
+	// 			const res = await fetchDataFromApi(
+	// 				`/api/product/${formFields.productId}`
+	// 			);
+	// 			if (res?.error === false) {
+	// 				setProduct(res.data);
+	// 			}
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 			setMessage("❌ Failed to get product details. Try again.");
+	// 		}
+	// 	};
 
-		fetchProduct();
-	}, []);
+	// 	fetchProduct();
+	// }, []);
 
 	const id = context.isOpenFullScreenPanel.id;
 
@@ -85,7 +85,7 @@ function EditBannerV2() {
 					images: banner.images?.[0] || "",
 					title: String(banner.title || ""),
 					price: String(banner.price || ""),
-					productId: String(banner.productId || ""),
+					productId: banner.productId || "",
 				});
 			}
 		};
@@ -104,7 +104,7 @@ function EditBannerV2() {
 
 			await deleteImagefromCloudi(
 				"/api/bannerv2/remove-image",
-				formFields.images
+				formFields.images,
 			);
 
 			setFormFields((prev) => ({ ...prev, images: "" }));
@@ -188,7 +188,7 @@ function EditBannerV2() {
 						<InputBox
 							label="Product Name"
 							name="Product name"
-							value={product.name}
+							value={formFields.productId.name}
 							readOnly
 							required
 						/>
