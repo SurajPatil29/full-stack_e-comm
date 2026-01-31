@@ -159,7 +159,7 @@ VITE_FIREBASE_APP_MEASUREMENT_ID=your_measurement_id
 
 VITE_APP_RAZORPAY_KEY_ID=your_razorpay_key
 VITE_APP_RAZORPAY_KEY_SECRET=your_razorpay_secret
-
+````
 ## ▶️ Run Frontend Locally
 
 ### Prerequisites
@@ -172,31 +172,31 @@ VITE_APP_RAZORPAY_KEY_SECRET=your_razorpay_secret
 cd front-end
 npm install
 npm run dev
-
+```
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home](../screenshots/HomePageClint.png)
+![Home](../ScreenShots/HomePageClint.png)
 
 ### 🛍 Product Listing
-![Products](../screenshots/ProductListingClint.png)
+![Products](../ScreenShots/ProductListingClint.png)
 
 ### 🔍 Product Details
-![Product Details](../screenshots/ProductDetailClint.png)
-````
+![Product Details](../ScreenShots/ProductDetailClint.png)
+
 
 ## 🔁 API Flow Diagrams
 
-examplys how work api in img
+Examples of how the work api in img
 
 ### 🔐 User Authentication Flow
 
-![Login API Flow](../screenshots/loginflow.png)
+![Login API Flow](../ScreenShots/loginflow.png)
 
 ### 🛍 Product Browsing Flow
 
-![Product API Flow](../screenshots/productflow.pngg)
+![Product API Flow](../ScreenShots/productflow.pngg)
 
 ### 💳 Order & Payment Flow
 
-![Payment API Flow](../screenshots/paymenflow.png)
+![Payment API Flow](../ScreenShots/paymenflow.png)
