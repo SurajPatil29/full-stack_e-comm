@@ -175,40 +175,40 @@ VITE_APP_RAZORPAY_KEY_SECRET=your_razorpay_secret
 
 ### 🏠 User Storefront
 
-![Home Page](./screenshots/HomePageClint.png)
+![Home Page](./ScreenShots/HomePageClint.png)
 
 ### 🛒 Product Listing
 
-![Product Listing Page](./screenshots/ProductListingClint.png)
+![Product Listing Page](./ScreenShots/ProductListingClint.png)
 
 ### Product Details
 
-![Product Detail Page](./screenshots/ProductDetailClint.png)
+![Product Detail Page](./ScreenShots/ProductDetailClint.png)
 
 ### Cart Page
 
-![Cart Page](./screenshots/CartPageClint.png)
+![Cart Page](./ScreenShots/CartPageClint.png)
 
 ### Checkout Page
 
-![Checkout Page](./screenshots/CheckOutClint.png)
+![Checkout Page](./ScreenShots/CheckOutClint.png)
 
 ### 💳 Payment Gateway
 
-![Payment Page](./screenshots/PaymentPageClint.png)
+![Payment Page](./ScreenShots/PaymentPageClint.png)
 
 ### 🧑‍💼 Admin Dashboard
 
-![Admin Dashboard Page](./screenshots/AdminDashbord.png)
+![Admin Dashboard Page](./ScreenShots/AdminDashbord.png)
 
 ### Product Management
 
-![Admin productmanagemet Page](./screenshots/AdminProductChart.png)
+![Admin productmanagemet Page](./ScreenShots/AdminProductChart.png)
 
 ## 📂 Module Documentation
 
-- 📘 [Backend API Documentation](./back-end/README.md)
-- 🛍 [Frontend Application](./front-end/README.md)
+- 📘 [Backend API Documentation](./back_end/README.md)
+- 🛍 [Frontend Application](./front_end/README.md)
 - 🧑‍💼 [Admin Dashboard](./admin/README.md)
 
 ## 👨‍💻 Author
@@ -220,6 +220,6 @@ Full-Stack MERN Developer
 
 The following diagram illustrates the high-level architecture of the Fullstack E-Commerce application, showing how the frontend, backend, database, and third-party services interact.
 
-### Pie Digram Management
+### Pie Diagram Management
 
-![Admin productmanagemet Page](./screenshots/PieDigram.png)
+![Admin productmanagemet Page](./ScreenShots/PieDigram.png)
