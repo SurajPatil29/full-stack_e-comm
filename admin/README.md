@@ -95,7 +95,7 @@ VITE_FIREBASE_APP_STORAGE_BUCKET=your_bucket
 VITE_FIREBASE_APP_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_APP_ID=your_app_id
 VITE_FIREBASE_APP_MEASUREMENT_ID=your_measurement_id
-
+````
 ## ▶️ Run Admin Locally
 
 ### Prerequisites
@@ -108,12 +108,12 @@ VITE_FIREBASE_APP_MEASUREMENT_ID=your_measurement_id
 cd admin
 npm install
 npm run dev
-
+```
 ## 📸 Screenshots
 
 ### 📊 Dashboard Analytics
-![Admin Dashboard](../screenshots/AdminDashbord.png)
+![Admin Dashboard](../ScreenShots/AdminDashbord.png)
 
 ### 📦 Product Management
-![Product Management](../screenshots/AdminProductChart.png)
-````
+![Product Management](../ScreenShots/AdminProductChart.png)
+
