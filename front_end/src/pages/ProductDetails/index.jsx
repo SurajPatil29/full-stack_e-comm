@@ -177,6 +177,14 @@ function ProductDetails() {
 		setActiveTab(1);
 	};
 
+	const gotoDiscription = () => {
+		window.scrollTo({
+			top: reviewSec?.current.offsetTop - 150,
+			behavior: "smooth",
+		});
+		setActiveTab(0);
+	};
+
 	return (
 		<>
 			<div className="py-3 sm:py-5">
@@ -224,6 +232,7 @@ function ProductDetails() {
 							<ProductDetailsComponant
 								item={productData}
 								gotoReviews={gotoReviews}
+								gotoDiscription={gotoDiscription}
 							/>
 						</div>
 					</div>

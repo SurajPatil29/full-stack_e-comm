@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Rating } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QtyBox from "../QtyBox";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -8,7 +8,7 @@ import { useContext } from "react";
 import MyContext from "../../context/MyContext";
 import { putData } from "../../utils/api";
 
-function ProductDetailsComponant({ item = {}, gotoReviews }) {
+function ProductDetailsComponant({ item = {}, gotoReviews, gotoDiscription }) {
 	const {
 		isLogin,
 		userData,
@@ -22,15 +22,15 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 	} = useContext(MyContext);
 
 	const isInCart = cartData?.some(
-		(cartItem) => cartItem.productId === item._id
+		(cartItem) => cartItem.productId === item._id,
 	);
 
 	const cartItem = cartData?.find(
-		(cartItem) => cartItem.productId === item._id
+		(cartItem) => cartItem.productId === item._id,
 	);
 
 	const isInMyList = myListData?.some(
-		(listItem) => listItem.productId === item._id
+		(listItem) => listItem.productId === item._id,
 	);
 
 	const {
@@ -48,16 +48,29 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 		numReviews = 0,
 	} = item;
 
+	const descRef = useRef(null);
+	const [showReadMore, setShowReadMore] = useState(false);
+
+	useEffect(() => {
+		if (descRef.current) {
+			const el = descRef.current;
+			// Check if content overflows (more than 3 lines)
+			if (el.scrollHeight > el.clientHeight) {
+				setShowReadMore(true);
+			}
+		}
+	}, [description]);
+
 	const [selectedRam, setSelectedRam] = useState(
-		cartItem ? productRam.indexOf(cartItem.ram) : null
+		cartItem ? productRam.indexOf(cartItem.ram) : null,
 	);
 
 	const [selectedSize, setSelectedSize] = useState(
-		cartItem ? size.indexOf(cartItem.size) : null
+		cartItem ? size.indexOf(cartItem.size) : null,
 	);
 
 	const [selectedWeight, setSelectedWeight] = useState(
-		cartItem ? productWeight.indexOf(cartItem.weight) : null
+		cartItem ? productWeight.indexOf(cartItem.weight) : null,
 	);
 
 	const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
@@ -105,7 +118,7 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 			quantity,
 			selectedRamValue,
 			selectedSizeValue,
-			selectedWeightValue
+			selectedWeightValue,
 		);
 	};
 
@@ -174,10 +187,30 @@ function ProductDetailsComponant({ item = {}, gotoReviews }) {
 			</div>
 
 			{/* DESCRIPTION */}
-			<div
-				className="description-content text-gray-700 leading-relaxed text-[14px] sm:text-[15px] mt-4 break-words"
-				dangerouslySetInnerHTML={{ __html: description }}
-			></div>
+			<div className="mt-4">
+				<div
+					ref={descRef}
+					className="
+					description-content 
+					text-gray-700 
+					leading-relaxed 
+					text-[14px] 
+					sm:text-[15px] 
+					break-words 
+					line-clamp-3
+				"
+					dangerouslySetInnerHTML={{ __html: description }}
+				/>
+
+				{showReadMore && (
+					<button
+						onClick={gotoDiscription}
+						className="mt-1 text-[#ff5151] text-sm font-medium"
+					>
+						Read more
+					</button>
+				)}
+			</div>
 			{/* RAM OPTIONS */}
 			{productRam.length > 0 && (
 				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4">
