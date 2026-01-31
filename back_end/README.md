@@ -51,6 +51,7 @@ back-end/
 ├── uploads/         # Temporary file storage (if applicable)
 ├── index.js         # Application entry point
 └── package.json
+````
 
 ## 🔐 Authentication Flow
 
@@ -341,7 +342,7 @@ All backend APIs are prefixed with `/api` and are consumed by both the **Admin D
 cd back-end
 npm install
 npm run dev
-
+```
 ## 🔒 Security Practices
 
 - Passwords are securely hashed using **bcryptjs**
@@ -353,7 +354,7 @@ npm run dev
 - Secure HTTP headers via **Helmet**
 - CORS configured to allow trusted origins only
 - Environment variables used for all sensitive credentials
-````
+  
 
 ## 🏗 System Architecture
 
