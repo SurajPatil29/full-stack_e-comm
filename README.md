@@ -18,12 +18,13 @@ It also includes real-world concepts such as **Firebase authentication**, **role
 ---
 
 ## 📁 Project Structure
-
+```
 full-stack_e-comm/
 │
 ├── admin/ → Seller/Admin dashboard (React)
 ├── front-end/ → User storefront (React)
 └── back-end/ → REST API (Node.js + Express + MongoDB)
+```
 
 This repository is organized into three main modules, each responsible for a specific part of the application:
 
