@@ -195,7 +195,7 @@ Examples of how the work api in img
 
 ### 🛍 Product Browsing Flow
 
-![Product API Flow](../ScreenShots/productflow.pngg)
+![Product API Flow](../ScreenShots/productflow.png)
 
 ### 💳 Order & Payment Flow
 
